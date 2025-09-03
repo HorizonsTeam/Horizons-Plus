@@ -1,16 +1,13 @@
-```markdown
 # 🤝 Guide de Contribution
 
 Merci de contribuer à ce projet 🚀  
 Ce document explique les règles et bonnes pratiques pour collaborer efficacement et éviter les conflits de code.
 
----
 
 ## 🔄 Gestion des branches
 - La branche **`main`** contient uniquement du code **stable et validé**.
 - La branche **`develop`** est utilisée pour intégrer les nouvelles fonctionnalités.
 - Chaque fonctionnalité ou correction doit être développée sur une **branche dédiée** :
-```
 
 feature/nom-fonctionnalite
 fix/nom-correctif
@@ -18,7 +15,7 @@ fix/nom-correctif
 ````
 Exemple : `feature/recherche-trajets` ou `fix/bug-affichage-form`.
 
----
+````
 
 ## 📝 Workflow Git
 1. **Avant de commencer**, mettre à jour la branche `develop` :
@@ -26,7 +23,7 @@ Exemple : `feature/recherche-trajets` ou `fix/bug-affichage-form`.
  git checkout develop
  git pull origin develop
  git checkout -b feature/ma-feature
-````
+ ```
 
 2. **Développer sur la branche créée**
 
