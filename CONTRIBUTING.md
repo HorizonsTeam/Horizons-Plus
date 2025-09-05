@@ -10,6 +10,7 @@ Ce document explique les règles et bonnes pratiques pour collaborer efficacemen
 - Chaque fonctionnalité ou correction doit être développée sur une **branche dédiée** :
 
 feature/nom-fonctionnalite
+
 fix/nom-correctif
 
 ````
