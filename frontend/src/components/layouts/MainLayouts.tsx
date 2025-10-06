@@ -1,18 +1,15 @@
-import type { FC, ReactNode } from "react";
+import { Outlet } from 'react-router-dom';
+import Header from './Header';
+import Footer from './Footer';
 
-type Props = {
-  children?: ReactNode
+export default function MainLayout() {
+  return (
+    <div className="flex flex-col min-h-screen">
+      <Header />
+      <main className="flex-grow">
+        <Outlet />
+      </main>
+      <Footer />
+    </div>
+  );
 }
-
-export const MainLayout: FC<Props> = function() {
-    return <>
-      <h1>Je suis la navbar</h1>
-    </>;
-};
-
-
-
-
-
-
-//Mise à jour de l'architecture - configuration installation de tailwind css ainsi 
