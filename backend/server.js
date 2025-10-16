@@ -20,3 +20,5 @@ const db = mysql.createConnection({
 app.listen(8081, () => {
     console.log("Running. ..");
 })
+
+// Fichier à supprimer mais pas tout de suite car peut etre utile
