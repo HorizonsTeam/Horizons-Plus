@@ -14,7 +14,10 @@ export default function Header() {
           <div className="flex items-center justify-between h-16 lg:hidden">
             {/* Basket Icon */}
             <div className="w-10 h-10 flex justify-center items-center">
-              <ShoppingBasket size={50}/>
+              {/*<ShoppingBasket size={50}/>*/}
+               <Link to="/login" className="bg-primary text-dark font-semibold px-4 py-2 rounded-lg hover:bg-primary/80 transition-colors">
+                  Connexion
+                </Link>
             </div>
 
             {/* Logo */}
