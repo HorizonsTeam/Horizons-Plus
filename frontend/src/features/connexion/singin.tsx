@@ -9,7 +9,7 @@ export default function Singin() {
   return (
         <PageTransition>
     
-    <div className="text-center min-h-screen flex flex-col mt-10 -mb-40 gap-6">
+    <div className="text-center min-h-screen flex flex-col mt-10  gap-6">
         <h1 className="text-4xl font-bold   text-[#98EAF3]">
             Crée un Compte
         </h1>
