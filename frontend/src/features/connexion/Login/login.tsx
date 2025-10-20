@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import PageTransition from '../../features/connexion/pageTransitions';
+import PageTransition from '../pageTransitions';
 
 export default function Login() {
   return (

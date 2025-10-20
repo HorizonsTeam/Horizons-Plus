@@ -2,8 +2,8 @@ import './App.css'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import MainLayout from './components/layouts/MainLayouts.tsx'
 import HomePage from './features/home/HomePage.tsx'
-import Login from './features/connexion/login';
-import Singin from './features/connexion/singin.tsx';
+import Login from './features/connexion/Login/login.tsx';
+import Singin from './features/connexion/Singin/singin.tsx';
 
 function App() {
 
