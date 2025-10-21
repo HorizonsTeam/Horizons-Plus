@@ -5,21 +5,21 @@ import HomePage from './features/home/HomePage.tsx'
 import Login from './features/connexion/login';
 import Singin from './features/connexion/singin.tsx';
 
-function App() {
 
+function App() {
   return (
-    <>
-      <BrowserRouter>
+    <BrowserRouter>
       <Routes>
+        {/* Routes imbriquées sous ton layout principal */}
         <Route path="/" element={<MainLayout />}>
           <Route index element={<HomePage />} />
           <Route path="login" element={<Login />} />
           <Route path="singin" element={<Singin />} />
         </Route>
+        
       </Routes>
     </BrowserRouter>
-    </>
-  )
+  );
 }
 
-export default App
+export default App;
