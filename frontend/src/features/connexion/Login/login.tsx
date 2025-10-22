@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import PageTransition from '../../features/connexion/pageTransitions';
+import PageTransition from '../pageTransitions';
 
 export default function Login() {
   return (
@@ -35,7 +35,7 @@ export default function Login() {
       <img src="src/assets/Google_Favicon_2025.svg" alt="google logo" className="mr-2 w-6 h-6"/>
       Continuer avec Google
     </button>
-    <h2>Pas de Compte ?<Link to="/singin" className="text-[#98EAF3]">Inscrivez-vous</Link>
+    <h2>Pas de Compte ?<Link to="/singin" className="text-[#98EAF3]"> Inscrivez-vous</Link>
  </h2>
 
   </div>
