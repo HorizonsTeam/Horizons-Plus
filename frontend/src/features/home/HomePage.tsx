@@ -1,112 +1,196 @@
 import { useState } from 'react';
+import { Calendar, MapPin, Users, ArrowDownUp, X, Plus } from 'lucide-react';
 import imageJeu from '../../assets/image-jeu.png';
 import nuage from '../../assets/nuage.png';
+
 export default function HomePage() {
-  const [activeTab, setActiveTab] = useState<'depart' | 'arrivee'>('depart');
+  const [showReturnDate, setShowReturnDate] = useState(true);
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section - Mobile First Search */}
+      {/* Hero Section - Search Form */}
       <section className="bg-dark px-4 py-8 lg:py-16">
-        <div className="max-w-md mx-auto lg:max-w-4xl">
+        <div className="max-w-md mx-auto lg:max-w-5xl">
           <h1 className="text-3xl lg:text-5xl font-bold text-center mb-8 lg:mb-12">
             Envie de voyager ?
           </h1>
 
-          {/* Mobile Search Form */}
-          <div className="bg-secondary/50 backdrop-blur-sm rounded-2xl p-6 lg:p-8">
-            {/* Tabs - Mobile: Depart/Arrivee */}
-            <div className="flex gap-2 mb-6 lg:hidden">
-              <button
-                onClick={() => setActiveTab('depart')}
-                className={`flex-1 py-3 px-4 rounded-lg font-medium transition-colors ${
-                  activeTab === 'depart' 
-                    ? 'bg-primary text-dark' 
-                    : 'bg-dark/50 text-white'
-                }`}
-              >
-                Départ
-              </button>
-              <button
-                onClick={() => setActiveTab('arrivee')}
-                className={`flex-1 py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
-                  activeTab === 'arrivee' 
-                    ? 'bg-primary text-dark' 
-                    : 'bg-dark/50 text-white'
-                }`}
-              >
-                <span>Arrivée</span>
-                {activeTab === 'arrivee' && (
-                  <span className="bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
-                    2
-                  </span>
+          {/* Search Form */}
+          <div className="backdrop-blur-md rounded-3xl p-4 lg:p-8">
+            
+            {/* Mobile View */}
+            <div className="lg:hidden">
+              {/* Location Inputs with Swap Button */}
+              <div className="relative mb-4">
+                <div className="space-y-3">
+                  {/* Ville départ */}
+                  <div className="relative">
+                    <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Ville départ"
+                      className="w-full bg-dark/80 text-white placeholder-gray-400 rounded-xl py-4 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-primary transition-all border border-secondary/30"
+                    />
+                  </div>
+
+                  {/* Ville arrivée */}
+                  <div className="relative">
+                    <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Ville arrivée"
+                      className="w-full bg-dark/80 text-white placeholder-gray-400 rounded-xl py-4 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-primary transition-all border border-secondary/30"
+                    />
+                  </div>
+                </div>
+
+                {/* Swap Button */}
+                <button className="absolute right-3 top-1/2 -translate-y-1/2 bg-primary text-dark w-10 h-10 rounded-full flex items-center justify-center shadow-lg hover:bg-primary/90 transition-all">
+                  <ArrowDownUp className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Date Tabs */}
+              <div className="flex gap-2 mb-4">
+                <button className="flex-1 bg-dark/80 text-white py-4 px-4 rounded-xl font-medium flex items-center justify-center gap-2 border border-secondary/30">
+                  <Calendar className="w-5 h-5" />
+                  <span>Départ</span>
+                </button>
+                {showReturnDate ? (
+                  <button 
+                    onClick={() => setShowReturnDate(false)}
+                    className="flex-1 bg-dark/80 text-white py-4 px-4 rounded-xl font-medium flex items-center justify-center gap-2 relative hover:bg-dark transition-all border border-secondary/30"
+                  >
+                    <Calendar className="w-5 h-5" />
+                    <span>Arrivée</span>
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center font-bold hover:bg-red-600 transition-all">
+                      <X className="w-4 h-4" />
+                    </span>
+                  </button>
+                ) : (
+                  <button 
+                    onClick={() => setShowReturnDate(true)}
+                    className="flex-1 bg-dark/80 text-white py-4 px-4 rounded-xl font-medium flex items-center justify-center gap-2 hover:bg-dark transition-all border border-secondary/30"
+                  >
+                    <Plus className="w-5 h-5" />
+                    <span>Ajouter retour</span>
+                  </button>
                 )}
+              </div>
+
+              {/* Passagers */}
+              <div className="relative mb-6">
+                <Users className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Passagers"
+                  className="w-full bg-dark/80 text-white placeholder-gray-400 rounded-xl py-4 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-primary transition-all border border-secondary/30"
+                />
+              </div>
+
+              {/* Search Button */}
+              <button className="btn-primary w-full text-lg">
+                Rechercher
               </button>
             </div>
 
-            {/* Mobile Input Fields */}
-            <div className="space-y-4 lg:hidden">
-              <input
-                type="text"
-                placeholder="Où"
-                className="search-input w-full"
-              />
-              <input
-                type="text"
-                placeholder="Quand"
-                className="search-input w-full"
-              />
-            </div>
+            {/* Desktop View */}
+            <div className="hidden lg:block">
+              <div className="grid grid-cols-2 gap-6 mb-6">
+                <div>
+                  <label className="block text-sm text-gray-300 mb-3 font-medium">
+                    Ville départ
+                  </label>
+                  <div className="relative">
+                    <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="D'où partez-vous ?"
+                      className="search-input w-full pl-12"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm text-gray-300 mb-3 font-medium">
+                    Ville arrivée
+                  </label>
+                  <div className="relative">
+                    <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Où allez-vous ?"
+                      className="search-input w-full pl-12"
+                    />
+                  </div>
+                </div>
+              </div>
 
-            {/* Desktop Inputs */}
-            <div className="hidden lg:grid lg:grid-cols-2 gap-4 mb-6">
-              <div>
-                <label className="block text-sm text-gray-400 mb-2">Départ</label>
-                <input
-                  type="text"
-                  placeholder="D'où partez-vous ?"
-                  className="search-input w-full"
-                />
+              <div className="grid grid-cols-3 gap-6 mb-8">
+                <div>
+                  <label className="block text-sm text-gray-300 mb-3 font-medium">
+                    Départ
+                  </label>
+                  <div className="relative">
+                    <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <input
+                      type="date"
+                      className="search-input w-full pl-12"
+                    />
+                  </div>
+                </div>
+                {showReturnDate ? (
+                  <div>
+                    <label className="block text-sm text-gray-300 mb-3 font-medium flex items-center justify-between">
+                      <span>Arrivée</span>
+                      <button 
+                        onClick={() => setShowReturnDate(false)}
+                        className="bg-red-500 hover:bg-red-600 text-white w-5 h-5 rounded-full flex items-center justify-center transition-all"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </label>
+                    <div className="relative">
+                      <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                      <input
+                        type="date"
+                        className="search-input w-full pl-12"
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    <label className="block text-sm text-gray-300 mb-3 font-medium">
+                      &nbsp;
+                    </label>
+                    <button 
+                      onClick={() => setShowReturnDate(true)}
+                      className="w-full bg-dark/80 hover:bg-dark text-white rounded-xl py-4 px-4 focus:outline-none focus:ring-2 focus:ring-primary transition-all flex items-center justify-center gap-2 border border-secondary/30"
+                    >
+                      <Plus className="w-5 h-5" />
+                      <span>Ajouter retour</span>
+                    </button>
+                  </div>
+                )}
+                <div>
+                  <label className="block text-sm text-gray-300 mb-3 font-medium">
+                    Passagers
+                  </label>
+                  <div className="relative">
+                    <Users className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <select className="search-input w-full pl-12 appearance-none cursor-pointer">
+                      <option>1 passager</option>
+                      <option>2 passagers</option>
+                      <option>3 passagers</option>
+                      <option>4+ passagers</option>
+                    </select>
+                  </div>
+                </div>
               </div>
-              <div>
-                <label className="block text-sm text-gray-400 mb-2">Arrivée</label>
-                <input
-                  type="text"
-                  placeholder="Où allez-vous ?"
-                  className="search-input w-full"
-                />
-              </div>
-            </div>
 
-            <div className="hidden lg:grid lg:grid-cols-3 gap-4 mb-6">
-              <div>
-                <label className="block text-sm text-gray-400 mb-2">Date de départ</label>
-                <input
-                  type="date"
-                  className="search-input w-full"
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-400 mb-2">Date de retour</label>
-                <input
-                  type="date"
-                  className="search-input w-full"
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-400 mb-2">Passagers</label>
-                <select className="search-input w-full">
-                  <option>1 passager</option>
-                  <option>2 passagers</option>
-                  <option>3 passagers</option>
-                  <option>4+ passagers</option>
-                </select>
-              </div>
+              <button className="btn-primary w-full text-lg">
+                Rechercher
+              </button>
             </div>
-
-            <button className="btn-primary w-full text-lg mt-6">
-              Rechercher
-            </button>
           </div>
         </div>
       </section>
@@ -120,7 +204,6 @@ export default function HomePage() {
           </p>
           
           <div className="relative rounded-2xl overflow-hidden h-56 lg:h-96 mb-6">
-            {/* Clouds behind and to the sides (adjust positions/sizes as needed) */}
             <img
               src={nuage}
               alt="Nuages arrière gauche"
@@ -137,14 +220,12 @@ export default function HomePage() {
               className="absolute right-8 -top-6 w-56 lg:w-96 opacity-85 z-0 pointer-events-none select-none"
             />
 
-            {/* Plane image - keep it contained so clouds are visible around it */}
             <img
               src={imageJeu}
               alt="Avion en vol"
               className="relative mx-auto h-full object-contain z-10"
             />
 
-            {/* Overlay gradient and caption */}
             <div className="absolute inset-0 bg-gradient-to-t from-dark/90 to-transparent z-20"></div>
             <div className="absolute bottom-4 left-4 z-30">
               <p className="text-sm text-primary">Paris → New York à partir de 299€</p>
