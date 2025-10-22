@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import imageJeu from '../../assets/image-jeu.png';
 import nuage from '../../assets/nuage.png';
+import PlaneImage from '../../assets/avion-deco.png';
+import { Link } from 'react-router-dom';
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState<'depart' | 'arrivee'>('depart');
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen ">
       {/* Hero Section - Mobile First Search */}
-      <section className="bg-dark px-4 py-8 lg:py-16">
+      <section className="bg-dark px-4 py-8 lg:py-16 mb-30">
         <div className="max-w-md mx-auto lg:max-w-4xl">
           <h1 className="text-3xl lg:text-5xl font-bold text-center mb-8 lg:mb-12">
             Envie de voyager ?
@@ -112,37 +114,18 @@ export default function HomePage() {
       </section>
 
       {/* Flight Section */}
-      <section className="px-4 py-12 lg:py-16 bg-dark">
-        <div className="max-w-md mx-auto lg:max-w-7xl">
+      <section className="px-0 py-12 lg:py-16 w-screen h-screen -ml-5 bg-dark">
+        <div className="min-h-200 lg:max-w-7xl">
           <h2 className="text-2xl lg:text-3xl font-bold mb-3">Voyagez en avion</h2>
           <p className="text-gray-400 mb-6 lg:mb-8 text-sm lg:text-base">
             Trouvez le vol idéal pour votre prochaine destination.
           </p>
           
-          <div className="relative rounded-2xl overflow-hidden h-56 lg:h-96 mb-6">
+          <div className="relative rounded-2xl overflow-hidden h-56 lg:h-96 mb-6 w-full">
             {/* Clouds behind and to the sides (adjust positions/sizes as needed) */}
-            <img
-              src={nuage}
-              alt="Nuages arrière gauche"
-              className="absolute -left-20 -top-10 w-48 lg:w-96 opacity-90 z-0 pointer-events-none select-none"
+            <img src={PlaneImage} className='scale-125  min-w-110 '
             />
-            <img
-              src={nuage}
-              alt="Nuages arrière droite"
-              className="absolute -right-10 bottom-0 w-40 lg:w-80 opacity-80 z-0 pointer-events-none select-none"
-            />
-            <img
-              src={nuage}
-              alt="Nuage centre droit"
-              className="absolute right-8 -top-6 w-56 lg:w-96 opacity-85 z-0 pointer-events-none select-none"
-            />
-
-            {/* Plane image - keep it contained so clouds are visible around it */}
-            <img
-              src={imageJeu}
-              alt="Avion en vol"
-              className="relative mx-auto h-full object-contain z-10"
-            />
+            
 
             {/* Overlay gradient and caption */}
             <div className="absolute inset-0 bg-gradient-to-t from-dark/90 to-transparent z-20"></div>
@@ -193,23 +176,25 @@ export default function HomePage() {
           
           <div className="space-y-4 lg:grid lg:grid-cols-3 lg:gap-6 lg:space-y-0 mb-8">
             {/* Rome */}
-            <div className="destination-card">
-              <div className="relative h-48 lg:h-56">
-                <img
-                  src="https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=600&h=400&fit=crop"
-                  alt="Rome Colisée"
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-dark/90 to-transparent"></div>
-                <div className="absolute bottom-4 left-4">
-                  <h3 className="text-xl font-bold">Rome</h3>
-                  <div className="flex items-center mt-1">
-                    <span className="text-yellow-400 text-lg">⭐</span>
-                    <span className="ml-1 text-lg font-semibold">4.5</span>
+            <Link to="/Ville" className="text-[#98EAF3]">
+              <div className="destination-card">
+                <div className="relative h-48 lg:h-56">
+                  <img
+                    src="https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=600&h=400&fit=crop"
+                    alt="Rome Colisée"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-dark/90 to-transparent"></div>
+                  <div className="absolute bottom-4 left-4">
+                    <h3 className="text-xl font-bold">Rome</h3>
+                    <div className="flex items-center mt-1">
+                      <span className="text-yellow-400 text-lg">⭐</span>
+                      <span className="ml-1 text-lg font-semibold">4.5</span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            </Link>
 
             {/* Paris */}
             <div className="destination-card">

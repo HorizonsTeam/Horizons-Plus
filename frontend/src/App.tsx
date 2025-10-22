@@ -4,6 +4,7 @@ import MainLayout from './components/layouts/MainLayouts.tsx'
 import HomePage from './features/home/HomePage.tsx'
 import Login from './features/connexion/Login/login.tsx';
 import Singin from './features/connexion/Singin/singin.tsx';
+import Ville from './features/Villes/ville.tsx';
 
 function App() {
 
@@ -15,6 +16,8 @@ function App() {
           <Route index element={<HomePage />} />
           <Route path="login" element={<Login />} />
           <Route path="singin" element={<Singin />} />
+          <Route path="Ville" element={<Ville />} />
+
         </Route>
       </Routes>
     </BrowserRouter>

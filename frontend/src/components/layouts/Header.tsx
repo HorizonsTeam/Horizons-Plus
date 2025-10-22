@@ -11,10 +11,10 @@ export default function Header() {
 
   return (
     <>
-      <header className="bg-[#103035] sticky top-0 z-50">
+      <header className="bg-[#103035] sticky top-0 z-40">
         <div className="   px-4">
           {/* Mobile Header */}
-          <div className="flex items-center justify-between h-16 lg:hidden gap-10">
+          <div className="flex items-center justify-between h-16 lg:hidden ">
             
             {/* Basket Icon with Notification Dot */}
             <div className="relative w-[27px] h-[33px] flex items-center justify-center">
@@ -82,16 +82,18 @@ export default function Header() {
       </header>
 
       {/* Overlay */}
-      {isMenuOpen && (
-        <div 
-          className="fixed inset-0 bg-opacity-50 z-40 lg:hidden transition-opacity"
-          onClick={() => setIsMenuOpen(false)}
-        />
-      )}
+          {isMenuOpen && (
+  <div
+    className="fixed inset-0 z-40 lg:hidden transition-opacity duration-300"
+    style={{ backgroundColor: 'rgba(16, 48, 53, 0.8)' }}
+    onClick={() => setIsMenuOpen(false)}
+  />
+)}
+
 
       {/* Offcanvas Menu (depuis la droite) */}
       <div>
-      <div className={`fixed top-0 right-0 h-full w-65 bg-dark shadow-2xl z-50 transform transition-transform duration-300 ease-in-out lg:hidden ${
+      <div className={`fixed top-0 right-0 h-full w-50 bg-dark shadow-2xl z-50 transform transition-transform duration-300 ease-in-out lg:hidden ${
         isMenuOpen ? 'translate-x-0' : 'translate-x-full'
       }`} style={{backgroundColor: '#2C474B'}}>
         {/* Header du menu */}
@@ -106,46 +108,46 @@ export default function Header() {
             </svg>
           </button>
         </div>
-        <img src={logoNavBar} className='mx-auto w-[20vw] ' alt="Horizon+ logo" />
+        <img src={logoNavBar} className='mx-auto w-[15vw] -mt-6' alt="Horizon+ logo" />
         {/* Navigation */}
         <nav className="space-y-4 p-6 flex flex-col items-center justify-center w-full mb-15 mt-4">
-          <div className="flex items-center justify-center w-full max-w-md">
-            <Link to="/booking" onClick={() => setIsMenuOpen(false)} className="w-50 py-3 px-5 text-white bg-[#103035] rounded-3xl flex items-center gap-3 font-semibold">
-              <img src={Search_Svg} alt="Search Logo" className="w-6 h-6" />
-              <span>Search</span>
+          <div className="flex items-center justify-center w-40  ">
+            <Link to="/search" onClick={() => setIsMenuOpen(false)} className="w-50 h-10 py-3 px-5 text-white bg-[#103035] rounded-3xl flex items-center gap-3 font-semibold">
+              <img src={Search_Svg} alt="Search Logo" className="w-4 h-4" />
+              <span >Search</span>
             </Link>
           </div>
           <div className="flex items-center justify-center w-full max-w-md">
             <Link to="/booking" onClick={() => setIsMenuOpen(false)} className="w-50 py-3 px-5 text-white bg-[#103035] rounded-3xl flex items-center gap-3 font-semibold">
-              <img src={Destination_Svg} alt="Search Logo" className="w-6 h-6" />
+              <img src={Destination_Svg} alt="Search Logo" className="w-4 h-4" />
               <span>Destinations</span>
             </Link>
           </div>
           <div className="flex items-center justify-center w-full max-w-md">
             <Link to="/booking" onClick={() => setIsMenuOpen(false)} className="w-50 py-3 px-5 text-white bg-[#103035] rounded-3xl flex items-center gap-3 font-semibold">
-              <img src={Promotions_Svg} alt="Search Logo" className="w-6 h-6" />
+              <img src={Promotions_Svg} alt="Search Logo" className="w-4 h-4" />
               <span>Promotions</span>
             </Link>
           </div>
           <div className="flex items-center justify-center w-full max-w-md">
             <Link to="/booking" onClick={() => setIsMenuOpen(false)} className="w-50 py-3 px-5 text-white bg-[#103035] rounded-3xl flex items-center gap-3 font-semibold">
-              <img src={Events_Svg} alt="Search Logo" className="w-6 h-6" />
+              <img src={Events_Svg} alt="Search Logo" className="w-4 h-4" />
               <span>Evenments</span>
             </Link>
           </div>
           
         </nav>
         {/* User Actions */}
-        <div className="flex flex-col items-center gap-4 p-6 justify-center">
-          <button className="w-50 py-3 text-white bg-[#98EAF3] rounded-3xl text-lg font-semibold">
+        <div className="flex flex-col items-center gap-4 p-6 justify-center ">
+          <button className="w-40 py-3 text-white bg-[#98EAF3] rounded-3xl text-lg font-semibold">
             
             <Link to="/login" onClick={() => setIsMenuOpen(false)}  className="bg-primary text-dark font-semibold px-4 py-2 rounded-lg hover:bg-primary/80 transition-colors">
                   Se connecter
                 </Link>
           </button>
-          <button className="w-50 py-3 text-white bg-[#103035] rounded-3xl text-lg font-semibold">
+          <button className="w-40 py-3 text-white bg-[#FFB856] rounded-3xl text-lg font-semibold">
               
-              <Link to="/singin" onClick={() => setIsMenuOpen(false)} >S’inscrire</Link>
+              <Link to="/singin" onClick={() => setIsMenuOpen(false)} className='text-[#115E66]' >S’inscrire</Link>
 
           </button>
         </div>
