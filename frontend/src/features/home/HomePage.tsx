@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from 'react'; 
 import PlaneImage from '../../assets/avion-deco.png';
 import { Link } from 'react-router-dom';
 export default function HomePage() {
