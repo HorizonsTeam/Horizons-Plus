@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Calendar, MapPin, Users, ArrowDownUp, X, Plus } from 'lucide-react';
+import { Calendar, MapPin, Users, ArrowDownUp, Minus, Plus } from 'lucide-react';
 import imageJeu from '../../assets/image-jeu.png';
 import nuage from '../../assets/nuage.png';
 
@@ -11,12 +11,12 @@ export default function HomePage() {
       {/* Hero Section - Search Form */}
       <section className="bg-dark px-4 py-8 lg:py-16">
         <div className="max-w-md mx-auto lg:max-w-5xl">
-          <h1 className="text-3xl lg:text-5xl font-bold text-center mb-8 lg:mb-12">
+          <h1 className="mt-5 text-5xl lg:text-5xl font-bold text-center mb-8 lg:mb-12 text-[#98EAF3]">
             Envie de voyager ?
           </h1>
 
           {/* Search Form */}
-          <div className="backdrop-blur-md rounded-3xl p-4 lg:p-8">
+          <div className="">
             
             {/* Mobile View */}
             <div className="lg:hidden">
@@ -29,7 +29,7 @@ export default function HomePage() {
                     <input
                       type="text"
                       placeholder="Ville départ"
-                      className="w-full bg-dark/80 text-white placeholder-gray-400 rounded-xl py-4 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-primary transition-all border border-secondary/30"
+                      className="w-full search-input text-white placeholder-gray-400 rounded-xl py-4 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-primary transition-all border border-secondary/30"
                     />
                   </div>
 
@@ -39,7 +39,7 @@ export default function HomePage() {
                     <input
                       type="text"
                       placeholder="Ville arrivée"
-                      className="w-full bg-dark/80 text-white placeholder-gray-400 rounded-xl py-4 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-primary transition-all border border-secondary/30"
+                      className="w-full search-input text-white placeholder-gray-400 rounded-xl py-4 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-primary transition-all border border-secondary/30"
                     />
                   </div>
                 </div>
@@ -52,25 +52,25 @@ export default function HomePage() {
 
               {/* Date Tabs */}
               <div className="flex gap-2 mb-4">
-                <button className="flex-1 bg-dark/80 text-white py-4 px-4 rounded-xl font-medium flex items-center justify-center gap-2 border border-secondary/30">
+                <button className="flex-1 search-input text-white py-4 px-4 rounded-xl font-medium flex items-center justify-center gap-2 border border-secondary/30">
                   <Calendar className="w-5 h-5" />
                   <span>Départ</span>
                 </button>
                 {showReturnDate ? (
                   <button 
                     onClick={() => setShowReturnDate(false)}
-                    className="flex-1 bg-dark/80 text-white py-4 px-4 rounded-xl font-medium flex items-center justify-center gap-2 relative hover:bg-dark transition-all border border-secondary/30"
+                    className="flex-1 search-input text-white py-4 px-4 rounded-xl font-medium flex items-center justify-center gap-2 relative hover:bg-dark transition-all border border-secondary/30"
                   >
                     <Calendar className="w-5 h-5" />
                     <span>Arrivée</span>
                     <span className="absolute -top-1 -right-1 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center font-bold hover:bg-red-600 transition-all">
-                      <X className="w-4 h-4" />
+                      <Minus className="w-4 h-4" />
                     </span>
                   </button>
                 ) : (
                   <button 
                     onClick={() => setShowReturnDate(true)}
-                    className="flex-1 bg-dark/80 text-white py-4 px-4 rounded-xl font-medium flex items-center justify-center gap-2 hover:bg-dark transition-all border border-secondary/30"
+                    className="flex-1 search-input text-white py-4 px-4 rounded-xl font-medium flex items-center justify-center gap-2 hover:bg-dark transition-all border border-secondary/30"
                   >
                     <Plus className="w-5 h-5" />
                     <span>Ajouter retour</span>
@@ -84,7 +84,7 @@ export default function HomePage() {
                 <input
                   type="text"
                   placeholder="Passagers"
-                  className="w-full bg-dark/80 text-white placeholder-gray-400 rounded-xl py-4 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-primary transition-all border border-secondary/30"
+                  className="w-full search-input text-white placeholder-gray-400 rounded-xl py-4 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-primary transition-all border border-secondary/30"
                 />
               </div>
 
@@ -146,7 +146,7 @@ export default function HomePage() {
                         onClick={() => setShowReturnDate(false)}
                         className="bg-red-500 hover:bg-red-600 text-white w-5 h-5 rounded-full flex items-center justify-center transition-all"
                       >
-                        <X className="w-3 h-3" />
+                        <Minus className="w-3 h-3" />
                       </button>
                     </label>
                     <div className="relative">
@@ -194,6 +194,7 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+      
 
       {/* Flight Section */}
       <section className="px-4 py-12 lg:py-16 bg-dark">
