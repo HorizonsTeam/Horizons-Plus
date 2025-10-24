@@ -11,7 +11,7 @@ export default function Header() {
 
   return (
     <>
-      <header className="bg-[#103035] sticky top-0 z-40">
+      <header className="bg-[#103035] sticky top-0 z-40 w-97 -ml-4">
         <div className="   px-4">
           {/* Mobile Header */}
           <div className="flex items-center justify-between h-16 lg:hidden ">

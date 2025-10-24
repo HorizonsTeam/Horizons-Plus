@@ -132,7 +132,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          <button className="btn-primary w-full lg:w-auto">
+          <button className="btn-primary  w-80">
             Rechercher un vol
           </button>
         </div>
