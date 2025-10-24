@@ -205,11 +205,8 @@ export default function HomePage() {
           </p>
           
           <div className="relative rounded-2xl overflow-hidden h-56 lg:h-96 mb-6 w-full">
-            {/* Clouds behind and to the sides (adjust positions/sizes as needed) */}
             <img src={PlaneImage} className='scale-125  min-w-110 '
             />
-            
-
             <div className="absolute inset-0 bg-gradient-to-t from-dark/90 to-transparent z-20"></div>
             <div className="absolute bottom-4 left-4 z-30">
               <p className="text-sm text-primary">Paris → New York à partir de 299€</p>
