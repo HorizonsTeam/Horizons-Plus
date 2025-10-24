@@ -1,5 +1,7 @@
 import './App.css'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import 'leaflet/dist/leaflet.css';
+
 import MainLayout from './components/layouts/MainLayouts.tsx'
 import HomePage from './features/home/HomePage.tsx'
 import Login from './features/connexion/Login/login.tsx';

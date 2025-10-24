@@ -1,6 +1,4 @@
-import { useState } from 'react';
-import imageJeu from '../../assets/image-jeu.png';
-import nuage from '../../assets/nuage.png';
+import { useState } from 'react'; 
 import PlaneImage from '../../assets/avion-deco.png';
 import { Link } from 'react-router-dom';
 export default function HomePage() {
