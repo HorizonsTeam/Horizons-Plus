@@ -17,10 +17,13 @@ export default function Header() {
           <div className="flex items-center justify-between h-16 lg:hidden  ">
             
             {/* Basket Icon with Notification Dot */}
+            <Link to="/panier" >
             <div className="relative w-[27px] h-[33px] flex items-center justify-center ml-7">
               <img src={Panier_Ico} alt="Panier" className="w-full h-full" />
+              
               <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full border border-white" />
             </div>
+            </Link>
 
             {/* Logo Centered */}
             <Link to="/" className="absolute left-1/2 transform -translate-x-1/2 text-[2rem] font-bold" style={{ color: '#98EAF3' }}>
