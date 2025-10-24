@@ -14,10 +14,10 @@ export default function Header() {
       <header className="bg-[#103035] sticky top-0 z-40 w-97 -ml-4">
         <div className="   px-4">
           {/* Mobile Header */}
-          <div className="flex items-center justify-between h-16 lg:hidden ">
+          <div className="flex items-center justify-between h-16 lg:hidden  ">
             
             {/* Basket Icon with Notification Dot */}
-            <div className="relative w-[27px] h-[33px] flex items-center justify-center">
+            <div className="relative w-[27px] h-[33px] flex items-center justify-center ml-7">
               <img src={Panier_Ico} alt="Panier" className="w-full h-full" />
               <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full border border-white" />
             </div>
@@ -30,7 +30,7 @@ export default function Header() {
             {/* Hamburger Menu */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="p-2 text-white"
+              className="p-2 text-white mr-7 "
               aria-label="Menu"
             >
               <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
