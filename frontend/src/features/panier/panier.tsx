@@ -1,4 +1,3 @@
-import { Train } from 'lucide-react';
 import ReturnBtn from '../../assets/ReturnBtn.svg';
 import Planecard from './ProductCards/Plane'
 import Traincard from './ProductCards/Train'
