@@ -7,6 +7,8 @@ import HomePage from './features/home/HomePage.tsx'
 import Login from './features/connexion/Login/login.tsx';
 import Singin from './features/connexion/Singin/singin.tsx';
 import Ville from './features/Villes/ville.tsx';
+import Panier from './features/panier/panier.tsx';
+
 
 
 function App() {
