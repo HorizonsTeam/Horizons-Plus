@@ -8,14 +8,12 @@ import Login from './features/connexion/Login/login.tsx';
 import Singin from './features/connexion/Singin/singin.tsx';
 import Ville from './features/Villes/ville.tsx';
 
-import Panier from './features/panier/panier.tsx';
 
 function App() {
-
   return (
-    <>
-      <BrowserRouter>
+    <BrowserRouter>
       <Routes>
+        {/* Routes imbriquées sous ton layout principal */}
         <Route path="/" element={<MainLayout />}>
           <Route index element={<HomePage />} />
           <Route path="login" element={<Login />} />
@@ -24,10 +22,10 @@ function App() {
           <Route path="panier" element={<Panier />} />
 
         </Route>
+        
       </Routes>
     </BrowserRouter>
-    </>
-  )
+  );
 }
 
-export default App
+export default App;
