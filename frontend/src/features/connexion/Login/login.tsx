@@ -4,8 +4,8 @@ import PageTransition from '../pageTransitions';
 export default function Login() {
   return (
     <PageTransition>
-   <div className="text-center min-h-screen flex flex-col mt-10   gap-6 ">
-  <h1 className="text-4xl font-bold mt-5 mb-10 text-[#98EAF3]">
+   <div className="text-center min-h-screen flex flex-col   gap-6 ">
+  <h1 className="text-4xl font-bold mt-5 mb-5 text-[#98EAF3]">
     Connectez-vous
   </h1>
 

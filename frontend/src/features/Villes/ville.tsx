@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import CityMap from './cityMap';
 import villesData from './villesData.json';
 
@@ -8,12 +9,22 @@ const getCityFeature = (cityName: string) => {
 };
 
 const Ville = () => {
-  const cityName = 'Rome'; // Tu peux le rendre dynamique plus tard
+  const [cityName, setCityName] = useState('Paris');
   const feature = getCityFeature(cityName);
 
-  if (!feature) return <p>Ville "{cityName}" non trouvée.</p>;
+  return (
+    <>
+      <select onChange={e => setCityName(e.target.value)} value={cityName}>
+        {villesData.features.map(f => (
+          <option key={f.properties.name} value={f.properties.name}>
+            {f.properties.name}
+          </option>
+        ))}
+      </select>
 
-  return <CityMap feature={feature} />;
+      {feature ? <CityMap feature={feature} /> : <p>Ville "{cityName}" non trouvée.</p>}
+    </>
+  );
 };
 
 export default Ville;

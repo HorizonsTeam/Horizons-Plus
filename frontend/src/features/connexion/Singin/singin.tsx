@@ -39,7 +39,7 @@ export default function Singin() {
                 className="w-full max-w-md bg-[#2C474B] text-white placeholder-gray-400 rounded-lg p-3 outline-none focus:ring-2 focus:ring-[#98EAF3] transition mb-10" 
                 />
             <button className="bg-[#98EAF3] text-[#115E66] w-full h-10 rounded-lg max-w-md font-bold -mb-3">
-                Se Connecter
+                Crée un compte 
             </button>
             <div className="flex items-center justify-center w-full max-w-md my-10 mb-17 gap-3">
             <div className="flex-grow h-px bg-[#98EAF3]"></div>

@@ -19,6 +19,7 @@ function App() {
           <Route path="login" element={<Login />} />
           <Route path="singin" element={<Singin />} />
           <Route path="Ville" element={<Ville />} />
+          <Route path="panier" element={<Panier />} />
 
         </Route>
         

@@ -22,6 +22,10 @@ const getCenter = (coordinates: number[][]): LatLngExpression => {
 };
 
 const CityMap = ({ feature }: Props) => {
+  if (!feature || !feature.geometry?.coordinates?.length) {
+    return <p>Aucune donnée géographique disponible.</p>;
+  }
+
   const coords = feature.geometry.coordinates[0];
   const center: LatLngExpression = getCenter(coords);
 
