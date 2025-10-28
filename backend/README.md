@@ -26,7 +26,7 @@ Configuration
 3. Configuration de l'environnement (.env)
 Un fichier .env.example est fourni comme modèle.
 Copier le fichier d'exemple
-bashcp .env.example .env
+bash cp .env.example .env
 Configurer la base de données
 Ouvrez le fichier .env et configurez DATABASE_URL selon votre installation MySQL :
 
@@ -46,6 +46,7 @@ FLUSH PRIVILEGES;
 Configurez dans .env :
 
 envDATABASE_URL="mysql://horizons:motdepassefort@localhost:3306/horizons_auth"
+
 Variables d'environnement par défaut (développement)
 Le reste des variables peut rester inchangé pour le développement :
 envPORT=3005
@@ -59,17 +60,18 @@ Initialisation de la base de données
 
 4. Préparer la base AUTH avec Prisma
 Première utilisation obligatoire :
-bashnpx prisma migrate dev
+npx prisma migrate dev
 Cette commande :
 
 Lit le schéma défini dans prisma/schema.prisma
 Crée automatiquement les tables : user, session, account, verification
 
 Optionnel - Visualiser les données avec Prisma Studio :
-bashnpx prisma studio
+npx prisma studio
+
 Démarrage des serveurs
 5. Lancer le backend
-bashnpm run dev
+npm run dev
 ```
 
 ✅ Message attendu :
@@ -82,7 +84,7 @@ GET http://localhost:3005/api/me → informations utilisateur connecté (401 si 
 
 6. Lancer le frontend
 Dans un nouveau terminal :
-bashcd frontend
+cd frontend
 npm run dev
 Le frontend est accessible sur : http://localhost:5173
 Tester l'authentification
@@ -109,7 +111,7 @@ Vérification possible via http://localhost:3005/api/me → affiche vos données
 
 Ouvrez http://localhost:5173/login
 Entrez l'email et le mot de passe créés précédemment
-Après connexion réussie :
+Après connexion réussie : 
 
 Votre prénom apparaît dans le menu burger
 Bouton "Se déconnecter" disponible
