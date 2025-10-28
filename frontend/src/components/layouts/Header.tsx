@@ -1,22 +1,28 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { authClient } from "../../lib/auth-clients";
 
-import logoNavBar from '../../assets/logo-navbar.png';
-import Search_Svg from '../../assets/Search_Svg.svg';
-import Destination_Svg from '../../assets/Destinations_Logo.svg';
-import Promotions_Svg from '../../assets/Promotion_Icon.svg';
-import Events_Svg from '../../assets/Events_Eco.svg';
-import Panier_Ico from '../../assets/Panier_Ico.svg';
+import logoNavBar from "../../assets/logo-navbar.png";
+import Search_Svg from "../../assets/Search_Svg.svg";
+import Destination_Svg from "../../assets/Destinations_Logo.svg";
+import Promotions_Svg from "../../assets/Promotion_Icon.svg";
+import Events_Svg from "../../assets/Events_Eco.svg";
+import Panier_Ico from "../../assets/Panier_Ico.svg";
+
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  // Récupération d'utilisateur connecté
-  const [user, setUser] = useState<null | { name?: string; email: string }>(null);
+  // état utilisateur
+  const [user, setUser] = useState<null | { name?: string; email: string }>(
+    null
+  );
   const [loadingUser, setLoadingUser] = useState(true);
 
+  const navigate = useNavigate();
+
+  // Récupère l'utilisateur connecté (session)
   useEffect(() => {
-    // on met credentials: "include" pour envoyer le cookie de session
     fetch("http://localhost:3005/api/me", {
       credentials: "include",
     })
@@ -28,7 +34,7 @@ export default function Header() {
       })
       .then((data) => {
         if (data && data.user) {
-          // setUser(data.user); Name, mail
+          setUser(data.user);
         } else {
           setUser(null);
         }
@@ -42,59 +48,90 @@ export default function Header() {
       });
   }, []);
 
+  // joli prénom affiché
   const displayName = (() => {
     if (!user?.name || user.name.trim() === "") {
       return user?.email ?? "Utilisateur";
     }
-    // on prend le premier mot du name pour faire "Bonjour Lionel"
     return user.name.split(" ")[0];
   })();
 
+  // clic sur "Se déconnecter"
+  const handleLogout = async () => {
+    try {
+      
+      await authClient.signOut();
+      setUser(null); // n'affiche plus l'utilisateur
+      setIsMenuOpen(false); // ferme le menu burger
+      navigate("/login"); // renvoie sur login
+    } catch (err) {
+      console.error("Erreur déconnexion:", err);
+    }
+  };
+
   return (
     <>
+      {/* Header principal */}
       <header className="bg-[#103035] sticky top-0 z-40">
         <div className="px-4">
-          {/* Mobile Header */}
+          {/* Mobile header */}
           <div className="flex items-center justify-between h-16 lg:hidden ">
-            {/* Basket Icon with Notification Dot */}
+            {/* Panier (mobile) */}
             <div className="relative w-[27px] h-[33px] flex items-center justify-center">
               <img src={Panier_Ico} alt="Panier" className="w-full h-full" />
               <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full border border-white" />
             </div>
 
-            {/* Logo Centered */}
+            {/* Logo centré */}
             <Link
               to="/"
               className="absolute left-1/2 transform -translate-x-1/2 text-[2rem] font-bold"
-              style={{ color: '#98EAF3' }}
+              style={{ color: "#98EAF3" }}
             >
               Horizons+
             </Link>
 
-            {/* Hamburger Menu */}
+            {/* Bouton burger */}
             <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              onClick={() => setIsMenuOpen((prev) => !prev)}
               className="p-2 text-white"
               aria-label="Menu"
             >
-              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg
+                className="w-8 h-8"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
                 {isMenuOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
                 )}
               </svg>
             </button>
           </div>
 
-          {/* Desktop Header */}
+          {/* Desktop header*/}
           <div className="hidden lg:flex items-center justify-between h-20">
-            {/* Logo */}
+            {/* Logo desktop */}
             <Link to="/" className="flex items-center space-x-2">
-              <span className="text-2xl font-bold text-white">Horizons+</span>
+              <span className="text-2xl font-bold text-white">
+                Horizons+
+              </span>
             </Link>
 
-            {/* Desktop Navigation */}
+            {/* Navigation desktop */}
             <nav className="flex items-center space-x-8">
               <Link
                 to="/Search"
@@ -102,12 +139,14 @@ export default function Header() {
               >
                 Search
               </Link>
+
               <Link
                 to="/voyager"
                 className="text-white hover:text-primary transition-colors tracking-wide"
               >
                 Voyager
               </Link>
+
               <Link
                 to="/contact"
                 className="text-white hover:text-primary transition-colors tracking-wide"
@@ -116,12 +155,10 @@ export default function Header() {
               </Link>
             </nav>
 
-            {/* User Profile */}
+            {/* Profil desktop (avatar + infos) */}
             <div className="flex items-center space-x-3 text-white">
-              <div className="w-10 h-10 bg-secondary rounded-full overflow-hidden flex items-center justify-center text-sm font-semibold bg-[#2C474B] text-[#98EAF3]">
-                {user
-                  ? (displayName[0] || "?").toUpperCase()
-                  : "?"}
+              <div className="w-10 h-10 bg-[#2C474B] rounded-full overflow-hidden flex items-center justify-center text-sm font-semibold text-[#98EAF3]">
+                {user ? (displayName[0] || "?").toUpperCase() : "?"}
               </div>
 
               <div className="hidden md:flex flex-col text-right text-sm leading-tight">
@@ -158,43 +195,53 @@ export default function Header() {
         </div>
       </header>
 
-      {/* Overlay */}
+      {/* Overlay fond sombre quand le ménu est ouvert (mobile) */}
       {isMenuOpen && (
         <div
           className="fixed inset-0 z-40 lg:hidden transition-opacity duration-300"
-          style={{ backgroundColor: 'rgba(16, 48, 53, 0.8)' }}
+          style={{ backgroundColor: "rgba(16, 48, 53, 0.8)" }}
           onClick={() => setIsMenuOpen(false)}
         />
       )}
 
-      {/* Offcanvas Menu (depuis la droite) */}
+      {/* Panneau burger (mobile) */}
       <div
         className={`fixed top-0 right-0 h-full w-50 bg-dark shadow-2xl z-50 transform transition-transform duration-300 ease-in-out lg:hidden ${
-          isMenuOpen ? 'translate-x-0' : 'translate-x-full'
+          isMenuOpen ? "translate-x-0" : "translate-x-full"
         }`}
-        style={{ backgroundColor: '#2C474B' }}
+        style={{ backgroundColor: "#2C474B" }}
       >
-        {/* Header du menu */}
+        {/* barre du haut dans le menu burger */}
         <div className="flex items-center justify-end p-4 border-b border-secondary">
           <button
             onClick={() => setIsMenuOpen(false)}
             className="p-2 text-white hover:text-primary transition-colors"
             aria-label="Fermer"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
 
-        {/* Logo centré dans le menu */}
+        {/* Logo dans le menu */}
         <img
           src={logoNavBar}
           className="mx-auto w-[15vw] -mt-6"
           alt="Horizon+ logo"
         />
 
-        {/* Zone utilisateur en haut du menu burger */}
+        {/* Bloc user en haut du menu burger */}
         <div className="text-center text-white mt-6 mb-4">
           {loadingUser ? (
             <div className="text-sm opacity-60">...</div>
@@ -219,7 +266,7 @@ export default function Header() {
           )}
         </div>
 
-        {/* Navigation */}
+        {/* Liens de navigation dans le menu burger */}
         <nav className="space-y-4 p-6 flex flex-col items-center justify-center w-full mb-15 mt-4">
           <div className="flex items-center justify-center w-40">
             <Link
@@ -238,7 +285,11 @@ export default function Header() {
               onClick={() => setIsMenuOpen(false)}
               className="w-50 py-3 px-5 text-white bg-[#103035] rounded-3xl flex items-center gap-3 font-semibold"
             >
-              <img src={Destination_Svg} alt="Search Logo" className="w-4 h-4" />
+              <img
+                src={Destination_Svg}
+                alt="Search Logo"
+                className="w-4 h-4"
+              />
               <span>Destinations</span>
             </Link>
           </div>
@@ -249,7 +300,11 @@ export default function Header() {
               onClick={() => setIsMenuOpen(false)}
               className="w-50 py-3 px-5 text-white bg-[#103035] rounded-3xl flex items-center gap-3 font-semibold"
             >
-              <img src={Promotions_Svg} alt="Search Logo" className="w-4 h-4" />
+              <img
+                src={Promotions_Svg}
+                alt="Search Logo"
+                className="w-4 h-4"
+              />
               <span>Promotions</span>
             </Link>
           </div>
@@ -266,32 +321,27 @@ export default function Header() {
           </div>
         </nav>
 
-        {/* Zone actions en bas du menu burger */}
+        {/* Boutons du bas du menu burger */}
         <div className="flex flex-col items-center gap-4 p-6 justify-center pb-16">
           {loadingUser ? (
             <div className="text-white text-sm opacity-60">...</div>
           ) : user ? (
             <>
-              {/* Bouton "Mon compte" */}
               <button className="w-40 py-3 text-white bg-[#98EAF3] rounded-3xl text-lg font-semibold">
                 <span className="text-[#115E66] font-semibold">
                   Mon compte
                 </span>
               </button>
 
-              {/* Bouton "Se déconnecter" (pas encore branché backend) */}
               <button
                 className="w-40 py-3 text-white bg-[#FF6B6B] rounded-3xl text-lg font-semibold"
-                onClick={() => {
-                  console.log("TODO: déconnexion backend");
-                }}
+                onClick={handleLogout}
               >
                 Se déconnecter
               </button>
             </>
           ) : (
             <>
-              {/* User Actions si pas connecté */}
               <button className="w-40 py-3 text-white bg-[#98EAF3] rounded-3xl text-lg font-semibold">
                 <Link
                   to="/login"
