@@ -10,10 +10,7 @@ export const auth = betterAuth({
         enabled: true,
     },
     socialProviders:{
-        github: {
-            clientId: "",
-            clientSecret: "",
-        },
+        
         google: {
             clientId: "",
             clientSecret: "",
