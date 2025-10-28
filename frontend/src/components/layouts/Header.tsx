@@ -71,16 +71,19 @@ export default function Header() {
 
   return (
     <>
-      {/* Header principal */}
-      <header className="bg-[#103035] sticky top-0 z-40">
-        <div className="px-4">
-          {/* Mobile header */}
-          <div className="flex items-center justify-between h-16 lg:hidden ">
-            {/* Panier (mobile) */}
-            <div className="relative w-[27px] h-[33px] flex items-center justify-center">
+      <header className="bg-[#103035] sticky top-0 z-40 w-97 -ml-4">
+        <div className="   px-4">
+          {/* Mobile Header */}
+          <div className="flex items-center justify-between h-16 lg:hidden  ">
+            
+            {/* Basket Icon with Notification Dot */}
+            <Link to="/panier" >
+            <div className="relative w-[27px] h-[33px] flex items-center justify-center ml-7">
               <img src={Panier_Ico} alt="Panier" className="w-full h-full" />
+              
               <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full border border-white" />
             </div>
+            </Link>
 
             {/* Logo centré */}
             <Link
@@ -93,8 +96,8 @@ export default function Header() {
 
             {/* Bouton burger */}
             <button
-              onClick={() => setIsMenuOpen((prev) => !prev)}
-              className="p-2 text-white"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="p-2 text-white mr-7 "
               aria-label="Menu"
             >
               <svg

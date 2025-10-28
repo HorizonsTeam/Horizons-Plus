@@ -105,7 +105,8 @@ export default function HomePage() {
             </div>
 
             <button className="btn-primary w-full text-lg mt-6">
-              Rechercher
+              <Link to="/Recherche">Rechercher</Link>
+              
             </button>
           </div>
         </div>
@@ -132,7 +133,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          <button className="btn-primary w-full lg:w-auto">
+          <button className="btn-primary  w-80">
             Rechercher un vol
           </button>
         </div>
