@@ -1,15 +1,26 @@
-import trainlogo from '../../../assets/train_ico2.svg'
 import Mobigo from '../../../assets/mobigo_ico.svg';
 import ClockIco from '../../../assets/clock.svg';
+import planelogo from '../../../assets/plane_ico2.svg';
+import airFrance from '../../../assets/Air_France_ico.png';
+import train_not_active from '../../../assets/train_not_active.svg';
+import { Link } from 'react-router-dom';
 
 
-export default function ProductCard() {
+type Props = 
+{
+    airPlane : boolean ; 
+}
+export default function ProductCard({ airPlane }: Props) {
     
+
     return (
-        <div className="w-90 bg-[#103035] rounded-3xl mt-6 border-4 border-[#2C474B]"> 
+        <div className="w-full bg-[#103035] rounded-3xl mt-6 border-4 border-[#2C474B]">
+            <Link to="/Recap"> 
             <div className="flex items-center m-2 mb-5 gap-5">
-                <img src={trainlogo} alt="" />
-                <img src={Mobigo} alt="" />
+                {/* Logo transport */}
+            <img src={airPlane ? planelogo : train_not_active} alt="" />
+                {/* Logo opérateur */}
+            <img src={airPlane ? airFrance : Mobigo} alt="" />
                 <div className='bg-[#98EAF3]  rounded-md w-20 ml-5'>
                     <span className='text-[#103035] font-bold text-xs '>Direct</span>
                 </div>
@@ -38,12 +49,13 @@ export default function ProductCard() {
                 </div>
                 <div className='grid grid-col gap-9 w-10 mt-5 h-10'>
                     <span className='text-2xl font-extrabold w-28 -mb-5 mr-10'>10,50 €</span>
-                    <div className="bg-[#FFB856] rounded-bl-xl rounded-tl-xl rounded-br-3xl w-30 px-4 py-2 text-[#133A40] font-semibold text-xs -ml-2">
+                    <div className="bg-[#FFB856] rounded-bl-xl rounded-tl-xl rounded-br-3xl w-30 px-4 py-2 text-white font-semibold text-xs -ml-2">
                         Il reste 5 places
                     </div>
 
                 </div>
             </div>
+            </Link>
         </div>
     );
   }

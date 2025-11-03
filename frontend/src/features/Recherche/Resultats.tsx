@@ -6,10 +6,21 @@ import Left_ico from '../../assets/Left_Ico.svg'
 import Train_Ico from '../../assets/train_ico2.svg';
 import Plane_Ico from '../../assets/plane_ico2.svg';
 import Productcard from './ProductCard/ProductCard.tsx';
+import { useState } from 'react';
+import BestPrice from './ProductCard/bestPrice.tsx';
+import Date_String from './Date.tsx';
+
 
 
 export default function Resultats ()
 {
+    const [planSearch, setPlanSearch] = useState(false);
+    const [all, setAllSearch] = useState(true);
+    const [train, setTrainSearch] = useState(false);
+    const [date, setDate] = useState(new Date());
+
+
+
     return (
         <>
         
@@ -21,34 +32,56 @@ export default function Resultats ()
             </div>
         </div>
         <div className="flex items-center justify-center space-x-4 bg-dark p-4">
-            <button className="border-4 border-[#98EAF3] rounded-xl p-2  w-13 ">
+            <button className="border-4 border-[#98EAF3] rounded-xl p-2  w-13 " 
+            onClick={() => {  
+                const nextDay = new Date(date);  
+                nextDay.setDate(nextDay.getDate() - 1);  
+                setDate(nextDay);
+                }
+                }>
                 <img src={Left_ico} alt="" className='ml-2' />
             </button>
 
-            <button className="rounded-xl px-4 py-2 text-[#103035] bg-[#98EAF3] font-medium">
-                Jeu 18 Sept
-            </button>
+            <Date_String date={date} />
 
-            <button className="border-4 border-[#98EAF3] rounded-xl p-2  w-13 ">
+
+            <button className="border-4 border-[#98EAF3] rounded-xl p-2  w-13 " 
+            onClick={() => {  
+                const nextDay = new Date(date);  
+                nextDay.setDate(nextDay.getDate() + 1);  
+                setDate(nextDay);
+                }
+                }>
 
                 <img src={Right_ico} alt="" className='ml-2'/>
             </button>
         </div>
         <div className="flex items-center justify-between w-100 -ml-4 m-10 ">
-            <button className="bg-[#133A40] w-2/3 h-17 flex justify-center items-center p-2 rounded-tr-3xl border-b-[#98EAF3] border-b-4">
+            <button onClick={() => {setPlanSearch(false)
+                setTrainSearch(true);
+                setAllSearch(false);
+            }
+            
+            } className={`w-2/3 h-[68px] flex justify-center items-center border-b-4 border-b-white rounded-tr-3xl transition-colors duration-300 ${planSearch ? 'bg-transparent' : 'bg-[#133A40]'  } ${all && 'bg-transparent'  } ${train && 'bg-[#133A40]'}`}>
                 <div >
-                <img src={Train_Ico} alt="Train" className="" />
-                <span className='text-[#98EAF3] -ml-1'> 10,50 €</span>
+                <img src={Train_Ico} alt="Train" className=""  />
+                {train ? <BestPrice /> : null}
                 </div>
             </button>
-
-            <button className="w-2/3 h-17 flex justify-center items-center border-b-white rounded-tl-3xl border-b-4 ">
+ 
+            <button className={`w-2/3 h-[68px] grid grid-col justify-center items-center border-b-4 border-b-white rounded-tl-3xl transition-colors duration-300 ${planSearch ? 'bg-[#133A40]' : 'bg-transparent' } ${all && 'bg-transparent'  }`} 
+            onClick={() => {  
+                setPlanSearch(true);
+                setAllSearch(false);
+                setTrainSearch(false);
+            }}>
                 <img src={Plane_Ico} alt="Avion" className="" />
+                {planSearch ? <BestPrice /> : null}
             </button>
 
 
         </div>
-        <div className="bg-[#133A40] px-4 pt-5 -mt-10 w-98 h-300 -ml-4 ">
+        <div className="bg-[#133A40] px-4 pt-5 -mt-10 w-[calc(109%)]  h-300 -ml-4 ">
             <div className="flex  gap-2  -ml-3">
                 <button className="flex items-center gap-1 border-[#98EAF3] border-2 px-4 py-2 rounded-full text-[#98EAF3]  rounded-full text-sm w-24">
                 <span className='-ml-1'>Horaires </span>
@@ -71,12 +104,12 @@ export default function Resultats ()
                 <span className="text-[#133A40]">▼</span>
                 </button>
             </div>
-            <Productcard/>
-            <Productcard/>
-            <Productcard/>
-            <Productcard/>
-            <Productcard/>
-            <Productcard/>
+            <Productcard airPlane={planSearch}/>    
+            <Productcard airPlane={planSearch}/>
+            <Productcard airPlane={planSearch}/>
+            <Productcard airPlane={planSearch}/>
+            <Productcard airPlane={planSearch}/>
+            <Productcard airPlane={planSearch}/>
         
         </div>
 
