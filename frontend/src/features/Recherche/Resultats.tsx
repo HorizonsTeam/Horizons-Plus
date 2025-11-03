@@ -104,7 +104,7 @@ export default function Resultats ()
                 <span className="text-[#133A40]">▼</span>
                 </button>
             </div>
-            <Productcard airPlane={planSearch}/>
+            <Productcard airPlane={planSearch}/>    
             <Productcard airPlane={planSearch}/>
             <Productcard airPlane={planSearch}/>
             <Productcard airPlane={planSearch}/>
