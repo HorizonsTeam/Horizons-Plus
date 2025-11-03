@@ -33,16 +33,6 @@ Ouvrez le fichier .env et configurez DATABASE_URL selon votre installation MySQL
 Option A - Utilisateur root (simple, pour développement uniquement) :
 envDATABASE_URL="mysql://root:@localhost:3306/horizons_auth"
 
-Option B - Utilisateur dédié (recommandé) :
-
-Créez la base et l'utilisateur MySQL :
-
-sqlCREATE DATABASE IF NOT EXISTS horizons_auth DEFAULT CHARACTER SET utf8mb4;
-
-CREATE USER IF NOT EXISTS 'horizons'@'localhost' IDENTIFIED BY 'motdepassefort';
-GRANT ALL PRIVILEGES ON horizons_auth.* TO 'horizons'@'localhost';
-FLUSH PRIVILEGES;
-
 Configurez dans .env :
 
 envDATABASE_URL="mysql://horizons:motdepassefort@localhost:3306/horizons_auth"
