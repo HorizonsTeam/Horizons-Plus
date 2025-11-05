@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "tsc",
     "dev": "npm run build && node --watch server.js",
     "start": "node server.js",
     "prisma:generate": "prisma generate",
