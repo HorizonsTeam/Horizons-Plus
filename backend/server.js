@@ -6,7 +6,7 @@ import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import cookieParser from "cookie-parser";
 import { toNodeHandler, fromNodeHeaders } from "better-auth/node";
-import auth from "./auth.js"; 
+import auth from "./dist/auth.js";
 
 const app = express();
 const PORT = Number(process.env.PORT || 3005);
