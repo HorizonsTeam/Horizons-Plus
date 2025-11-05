@@ -142,8 +142,8 @@ export default function Singin() {
                     </div>
                 </form>
             </div>
- 
+
         </PageTransition>
- 
+
     );
 }
