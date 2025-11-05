@@ -47,7 +47,6 @@ export default function HeaderMobile({
                                 <img src={Panier_Ico} alt="Panier" className="w-full h-full -ml-5" />
                             </div>
                         </Link>
-
                         {/* Logo */}
                         <Link
                             to="/"
@@ -85,7 +84,8 @@ export default function HeaderMobile({
                 aria-modal="true"
             >
                 {/* barre du haut */}
-                <div className="flex items-center justify-end p-4 border-b border-secondary">
+                <div className="flex items-center justify-between  p-4 border-b border-b-3 border-[#4A6367]">
+                    <span className="text-4xl font-bold text-[#98EAF3] ml-25 ">Horizons+</span>
                     <button
                         onClick={() => setIsMenuOpen(false)}
                         className="p-2 text-white hover:text-primary transition-colors"
@@ -114,9 +114,12 @@ export default function HeaderMobile({
                             </>
                         ) : (
                             <>
-                                <div className="text-lg font-semibold text-[#98EAF3]">Invité</div>
-                                <div className="text-xs text-gray-300 px-6">Vous n&apos;êtes pas connecté</div>
-                            </>
+                            <div className="bg-[#98EAF3] w-10 h-10 rounded-full flex items-center justify-center text-center">
+                                <div className="text-lg font-semibold text-white">PD</div>
+                                
+                            </div>
+                            <div className="text-xs text-gray-300 px-6">Vous n&apos;êtes pas connecté</div>
+                             </>
                         )}
                     </div>
 
@@ -127,7 +130,7 @@ export default function HeaderMobile({
                         
                     </nav>
                     <nav>
-                        <div className="flex display-flex border-b-3 border-[#4A6367] w-80 ml-10  mt-10">
+                        <div className="flex display-flex border-b-3 border-[#4A6367] w-80 ml-10  mt-5">
                             <div className="grid grid-cols gap-8  mb-5  mt-2 w-10">
                                 <img src={Destinations_Ico} alt="" />
                                 <img src={Promotions_Ico} alt="" />
@@ -147,7 +150,7 @@ export default function HeaderMobile({
                         </div>
                     </nav>
                     <nav>
-                        <div className="flex display-flex border-b-3 border-[#4A6367] w-80 ml-10  mt-10">
+                        <div className="flex display-flex  w-80 ml-10  mt-5">
                             <div className="grid grid-cols gap-8  mb-5  mt-2 w-10">
 
                                 <img src={Parametres_Ico} alt="" />
