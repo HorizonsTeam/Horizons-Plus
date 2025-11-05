@@ -1,5 +1,5 @@
 // import { Router } from "express";
-import { auth } from "../auth";
+// import { auth } from "../auth";
 // export const router = Router();
 
 // 1) Envoi du lien de reset (email -> lien ?token=...)
