@@ -1,0 +1,29 @@
+import nodemailer from "nodemailer";
+
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST,                // ex: smtp.mailgun.org
+  port: Number(process.env.SMTP_PORT ?? 587), // 465 si secure=true
+  secure: process.env.SMTP_SECURE === "true", // "true" pour 465
+  auth: {
+    user: process.env.SMTP_USER!,             // ex: postmaster@...
+    pass: process.env.SMTP_PASS!,
+  },
+});
+
+export async function sendMail(opts: { to: string; subject: string; html: string }) {
+  // adresse d’expéditeur
+  const from = process.env.SMTP_FROM || "No-Reply <no-reply@exemple.com>";
+
+  const info = await transporter.sendMail({
+    from,
+    to: opts.to,
+    subject: opts.subject,
+    html: opts.html,
+  });
+
+  // utile en dev
+  if (process.env.NODE_ENV !== "production") {
+    console.log("[mailer] messageId:", info.messageId);
+  }
+  return info;
+}
