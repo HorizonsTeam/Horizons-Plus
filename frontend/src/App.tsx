@@ -10,6 +10,7 @@ import MdpOublie from './features/connexion/MdpOublie/mdpoublie.tsx';
 import Ville from './features/Villes/ville.tsx';
 import Panier from './features/panier/panier.tsx';
 import Resultats from './features/Recherche/Resultats.tsx';
+import Recap from './features/Products/recap.tsx';
 
 
 
@@ -27,6 +28,7 @@ function App() {
           <Route path="Recherche" element={<Resultats />} />
           <Route path='mdpoublie' element={<MdpOublie />} />
    
+          <Route path="Recap" element={<Recap />} />
 
 
         </Route>
