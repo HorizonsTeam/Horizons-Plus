@@ -30,10 +30,19 @@ export default function HeaderMobile({
 {
     useEffect(() => {
         document.body.style.overflow = isMenuOpen ? "hidden" : "";
-        return () => {
+        return () => {  
             document.body.style.overflow = "";
         };
     }, [isMenuOpen]);
+
+    const initials = displayName
+        ? displayName
+            .split(' ')
+            .map(word => word[0]?.toUpperCase())
+            .join('')
+            .slice(0, 2)
+        : '';
+   
 
 
     return (
@@ -72,19 +81,19 @@ export default function HeaderMobile({
                         </button>
                     </div>
                 </div>
-            </header>
+            </header>   
 
             
             {/* Menu plein écran */}
             <div
                 className={`fixed inset-0 z-50 lg:hidden transition-transform duration-300 ease-in-out
               ${isMenuOpen ? "translate-x-0" : "translate-x-full"}`}
-                style={{ backgroundColor: "#2C474B" }}
+                style={{ backgroundColor: "#103035" }}
                 role="dialog"
                 aria-modal="true"
             >
                 {/* barre du haut */}
-                <div className="flex items-center justify-between  p-4 border-b border-b-3 border-[#4A6367]">
+                <div className="flex items-center justify-between  p-4 border-b border-b-1 border-[#4A6367]">
                     <span className="text-4xl font-bold text-[#98EAF3] ml-25 ">Horizons+</span>
                     <button
                         onClick={() => setIsMenuOpen(false)}
@@ -98,46 +107,48 @@ export default function HeaderMobile({
                 </div>
 
                 {/* contenu scrollable si besoin */}
-                <div className="h-[calc(100vh-56px)] overflow-y-auto items-left">
+                <div className=" items-left">
                     
                     {/* Logo */}
                     
 
                     {/* User block */}
-                    <div className="text-center text-white mt-6 mb-4">
+                    <div className="text-center text-white mt-5">
                         {loadingUser ? (
                             <div className="text-sm opacity-60">...</div>
                         ) : user ? (
-                            <>
-                                <div className="text-lg font-semibold text-[#98EAF3]">{displayName}</div>
-                                <div className="text-xs text-gray-300 break-all px-6">{user.email}</div>
-                            </>
+                            <div className="grid grid-cols  ml-7  w-70">
+                                <div className="bg-[#98EAF3] w-10 h-10 mb-3 rounded-full flex items-center justify-center text-center  ">
+                                    <div className="text-lg font-semibold text-white text-left">{initials}</div>
+
+                                </div>
+                                <div className="text-2xl font-bold  text-left">{displayName}</div>
+                                <div className=" text-gray-300 break-all  text-left">{user.email}</div>
+                            </div>
                         ) : (
                             <>
-                            <div className="bg-[#98EAF3] w-10 h-10 rounded-full flex items-center justify-center text-center">
-                                <div className="text-lg font-semibold text-white">PD</div>
-                                
-                            </div>
-                            <div className="text-xs text-gray-300 px-6">Vous n&apos;êtes pas connecté</div>
+                            
+                            <div className="text-xs text-gray-300 px-6"></div>
                              </>
                         )}
                     </div>
 
                     {/* Links */}
                     <nav className="grid grid-cols ">
+                        { user &&
                         <Menu_items_Connecter/>
-                        
+                        }
                         
                     </nav>
                     <nav>
-                        <div className="flex display-flex border-b-3 border-[#4A6367] w-80 ml-10  mt-5">
-                            <div className="grid grid-cols gap-8  mb-5  mt-2 w-10">
+                        <div className="flex display-flex border-b-3 border-[#4A6367] w-85 ml-7  mt-5">
+                            <div className="grid grid-cols gap-5  mb-5  mt-2 w-10">
                                 <img src={Destinations_Ico} alt="" />
                                 <img src={Promotions_Ico} alt="" />
                                 <img src={Evenements_Ico} alt="" />
 
                             </div>
-                            <div className="grid grid-cols gap-8  w-full items-left mb-5">
+                            <div className="grid grid-cols gap-5  w-full items-left mb-5">
                                 <Link to="/" className="text-left font-bold text-xl"> <span>Destinations</span> </Link>
                                 <Link to="/" className="text-left text-xl font-bold"> Promotions</Link>
                                 <Link to="/" className="text-left font-bold text-xl ">Évènements</Link>
@@ -148,10 +159,27 @@ export default function HeaderMobile({
 
 
                         </div>
+                        {!user &&
+                        <div className="flex display-flex  w-85 ml-7  mt-5">
+                            <div className="grid grid-cols gap-8  mb-5  mt-1 w-10">
+                                <img src={Panier_Ico} alt="" />
+                                
+
+                            </div>
+                            <div className="grid grid-cols gap-8  w-full items-left mb-5">
+                                <Link to="/Panier" className="text-left font-bold text-xl "> <span>Panier </span> </Link>
+                                
+                            </div>
+                        
+                        </div>
+                        }
                     </nav>
+                    {user && 
+
                     <nav>
-                        <div className="flex display-flex  w-80 ml-10  mt-5">
-                            <div className="grid grid-cols gap-8  mb-5  mt-2 w-10">
+
+                        <div className="flex display-flex  w-85 ml-7  mt-4">
+                            <div className="grid grid-cols gap-8    mt-2 w-10">
 
                                 <img src={Parametres_Ico} alt="" />
 
@@ -163,19 +191,16 @@ export default function HeaderMobile({
                         </div>
 
                     </nav>
-
+                    }
                     {/* Bottom buttons */}
-                    <div className="flex flex-col items-center gap-4 p-6 justify-center pb-16">
+                    <div className="flex flex-col items-center gap-4 p-6 justify-center -mt-4 pb-16">
                         {loadingUser ? (
                             <div className="text-white text-sm opacity-60">...</div>
                         ) : user ? (
                             <>
-                                <button className="w-40 py-3 text-white bg-[#98EAF3] rounded-3xl text-lg font-semibold">
-                                    <span className="text-[#115E66] font-semibold">Mon compte</span>
-                                </button>
 
                                 <button
-                                    className="w-40 py-3 text-white bg-[#FF6B6B] rounded-3xl text-lg font-semibold"
+                                        className=" py-3 text-[#115E66] bg-[#FFB856] rounded-xl text-lg font-bold w-full"
                                     onClick={onLogout}
                                 >
                                     Se déconnecter
@@ -183,13 +208,13 @@ export default function HeaderMobile({
                             </>
                         ) : (
                             <>
-                                <button className="w-40 py-3 text-white bg-[#98EAF3] rounded-3xl text-lg font-semibold">
-                                    <Link to="/login" onClick={() => setIsMenuOpen(false)} className="text-[#115E66] font-semibold">
+                                        <button className="py-3 text-[#115E66] bg-[#98EAF3] rounded-xl text-lg  w-full">
+                                    <Link to="/login" onClick={() => setIsMenuOpen(false)} className="text-[#115E66] font-bold">
                                         Se connecter
                                     </Link>
                                 </button>
 
-                                <button className="w-40 py-3 text-white bg-[#FFB856] rounded-3xl text-lg font-semibold">
+                                        <button className="py-3 text-[#115E66] bg-[#FFB856] rounded-xl text-lg font-bold w-full">
                                     <Link to="/singin" onClick={() => setIsMenuOpen(false)} className="text-[#115E66]">
                                         S’inscrire
                                     </Link>
