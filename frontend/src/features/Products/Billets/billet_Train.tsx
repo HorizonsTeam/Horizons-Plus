@@ -10,11 +10,19 @@ import climatisation_Ico from '../../../assets/climatisation.svg'
 import Serinita_card from './components/serenita_card.tsx';
 import AjouterPanierBtn from './components/AjouterPanierBtn.tsx';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+
+
 
 
 
 export default function Billet_Train_recap ()
 {
+    const navigate = useNavigate();
+    const handleretour = () =>
+    {
+        navigate(-1);
+    };
     
     const [selectedClass, setSelectedClass] = useState('Économie');
     const classes = [
@@ -39,7 +47,7 @@ export default function Billet_Train_recap ()
     return (
         <div>
             <div className='relative mt-4'>
-                <img src={ReturnBtn} alt="Return Button" className='absolute left-4 mt-5 transform -translate-y-1/2' />
+                <button onClick={handleretour}><img src={ReturnBtn} alt="Return Button" className='absolute left-4 mt-5 transform -translate-y-1/2'  /></button>
                 < h1 className='text-3xl text-[#98EAF3] font-medium text-center'>Récapitulatif</h1>
             </div>
             <div className='w-full items-center h-70 bg-[#133A40] rounded-2xl border-2 border-[#2C474B] mt-10'>
