@@ -1,11 +1,11 @@
 import nodemailer from "nodemailer";
 
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,                // ex: smtp.mailgun.org
-  port: Number(process.env.SMTP_PORT ?? 587), // 465 si secure=true
-  secure: process.env.SMTP_SECURE === "true", // "true" pour 465
+  host: process.env.SMTP_HOST,                
+  port: Number(process.env.SMTP_PORT ?? 587), 
+  secure: process.env.SMTP_SECURE === "true", 
   auth: {
-    user: process.env.SMTP_USER!,             // ex: postmaster@...
+    user: process.env.SMTP_USER!,            
     pass: process.env.SMTP_PASS!,
   },
 });

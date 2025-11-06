@@ -11,7 +11,7 @@ import Ville from './features/Villes/ville.tsx';
 import Panier from './features/panier/panier.tsx';
 import Resultats from './features/Recherche/Resultats.tsx';
 import Recap from './features/Products/recap.tsx';
-
+import ResetPassword from './features/connexion/ResetPassword/resetpassword.tsx';
 
 
 function App() {
@@ -27,7 +27,7 @@ function App() {
           <Route path="panier" element={<Panier />} />
           <Route path="Recherche" element={<Resultats />} />
           <Route path='mdpoublie' element={<MdpOublie />} />
-   
+          <Route path='reset-password' element={<ResetPassword />} />
           <Route path="Recap" element={<Recap />} />
 
 

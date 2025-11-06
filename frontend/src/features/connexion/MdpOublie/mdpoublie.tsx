@@ -18,11 +18,16 @@ export default function MdpOublie() {
         if (!email) {
             setErrorMsg("Veuillez entrer votre e-mail.");
             return;
-        }
+      no  }
 
         setIsLoading(true);
         try {
-            const redirectTo = `${window.location.origin}/resetpassword`;
+            const redirectTo = `${window.location.origin}/reset-password`;
+            await fetch(`${import.meta.env.VITE_AUTH_URL ?? "http://localhost:3005/api/auth"}/request-password-reset`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, redirectTo }),
+            });
 
             const anyClient = authClient as any;
 
