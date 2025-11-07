@@ -4,8 +4,12 @@ import PageTransition from "../pageTransitions";
 
 export default function ResetPassword() {
   const navigate = useNavigate();
-  const token = new URLSearchParams(useLocation().search).get("token") || "";
-
+  const search = new URLSearchParams(useLocation().search);
+  const token =
+    search.get("token") ||
+    search.get("code") ||
+    search.get("oobCode") ||
+    "";
   const [pwd1, setPwd1] = useState("");
   const [pwd2, setPwd2] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -17,27 +21,57 @@ export default function ResetPassword() {
     setErrorMsg(null);
     setSuccessMsg(null);
 
-    if (!token) return setErrorMsg("Lien invalide ou expiré.");
+    // le token peut être vide en "cookie flow"
     if (pwd1.length < 8) return setErrorMsg("Minimum 8 caractères.");
     if (pwd1 !== pwd2) return setErrorMsg("Les mots de passe ne correspondent pas.");
 
     setIsLoading(true);
     try {
       const base = import.meta.env.VITE_AUTH_URL ?? "http://localhost:3005/api/auth";
-      const r = await fetch(`${base}/reset-password`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        // ⬇️ ta version attend 'password'
-        body: JSON.stringify({ token, password: pwd1 }),
-        credentials: "include",
-      });
-      if (!r.ok) throw new Error("reset failed");
+
+      async function tryReset(body: any) {
+        const r = await fetch(`${base}/reset-password`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+          credentials: "include",
+        });
+        let data: any = null;
+        try { data = await r.json(); } catch { }
+        return { ok: r.ok, status: r.status, data };
+      }
+
+      // version “classique” : token + password
+      let resp = token ? await tryReset({ token, password: pwd1 }) : { ok: false, status: 0, data: null };
+
+      // certaines variantes utilisent 'code' au lieu de 'token'
+      if (!resp.ok && token) {
+        resp = await tryReset({ code: token, password: pwd1 });
+      }
+
+      // cookie flow : le token est en cookie HttpOnly, on envoie seulement { password }
+      if (!resp.ok) {
+        resp = await tryReset({ password: pwd1 });
+      }
+
+      // très rares variantes : 'newPassword'
+      if (!resp.ok && token) {
+        resp = await tryReset({ token, newPassword: pwd1 });
+      }
+      if (!resp.ok) {
+        resp = await tryReset({ newPassword: pwd1 });
+      }
+
+      if (!resp.ok) {
+        console.warn("reset-password failed:", resp.status, resp.data);
+        throw new Error(resp?.data?.error || "Lien invalide ou expiré.");
+      }
 
       setSuccessMsg("Mot de passe modifié. Redirection…");
       setTimeout(() => navigate("/login"), 1200);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      setErrorMsg("Lien invalide ou expiré.");
+      setErrorMsg(err?.message || "Lien invalide ou expiré.");
     } finally {
       setIsLoading(false);
     }
@@ -58,6 +92,7 @@ export default function ResetPassword() {
             className="w-full max-w-md bg-[#2C474B] text-white rounded-lg p-3 focus:ring-2 focus:ring-[#98EAF3]"
             value={pwd1}
             onChange={(e) => setPwd1(e.target.value)}
+            autoComplete="new-password"
             required
           />
           <input
@@ -66,6 +101,7 @@ export default function ResetPassword() {
             className="w-full max-w-md bg-[#2C474B] text-white rounded-lg p-3 focus:ring-2 focus:ring-[#98EAF3]"
             value={pwd2}
             onChange={(e) => setPwd2(e.target.value)}
+            autoComplete="new-password"
             required
           />
 

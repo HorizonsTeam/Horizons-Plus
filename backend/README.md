@@ -16,8 +16,9 @@ API Node.js + Express pour Horizons+ :
 ---
 
 ## SOMMAIRE 
-- Installation - ligne 22
-- Changement de branche et problèmes courants - ligne 145
+- Installation - ligne 23
+- Changement de branche et problèmes courants - ligne 146
+- Mot de passe oublié - ligne 
 
 ## 2 Installation
 
@@ -175,3 +176,51 @@ Puis redémarrez le serveur :
                     npm run dev
 
 Cela garantit que toutes les dépendances correspondantes à la nouvelle branche sont bien installées.
+
+
+## 4 Mot de passe oublié : 
+
+- 1. Créer un compte Mailtrap (GRATUIT)
+
+Allez sur mailtrap.io
+Créez un compte gratuit
+Confirmez votre email
+
+- 2. Récupérer vos identifiants SMTP
+
+Connectez-vous à Mailtrap
+Allez dans "Email Testing" > "My Sandbox"
+Cliquez sur l'onglet "SMTP Settings"
+Notez vos identifiants :
+
+Host : sandbox.smtp.mailtrap.io
+Port : 587 (ou 2525, 465, 25)
+Username : (ex: 8759cf80cc1de2)
+Password : cliquez sur les **** pour voir le mot de passe complet
+
+- 3. Configurer le fichier .env
+
+voir fichier env.example et remplacer VOTRE_USERNAME_MAILTRAP et VOTRE_PASSWORD_MAILTRAP par vos vraies valeurs
+
+- Étape 1 : Lancer le Projet
+
+Terminal 1 - Backend : npm run dev
+Terminal 2 - Frontend : npm run dev
+
+- Étape 2 : Tester "Mot de passe oublié"
+
+- Étape 3 : Vérifier l'email dans Mailtrap
+
+ALler dans My Sandbox et trouver le dernier mail.
+Cliquez dessus pour voir :
+
+Le contenu de l'email
+Le lien de réinitialisation
+
+- Étape 4 : Réinitialiser le mot de passe
+
+Après avoir cliquez saissisez votre nouveau mot de passe et encore une fois pour la confirmation.
+
+- Étape 5 : Se connecter avec le nouveau mot de passe
+
+Connectez-vous avec votre email et le nouveau mot de passe
