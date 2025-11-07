@@ -41,10 +41,10 @@ app.use((req, _res, next) => { console.log(req.method, req.path); next(); });
 // rate limit sur l'auth
 app.use("/api/auth", rateLimit({ windowMs: 60_000, limit: 60 }));
 
-// ⛳️ Monte Better Auth ici (base path) — IMPORTANT: avant express.json()
+// Monte Better Auth ici (base path) — IMPORTANT: avant express.json()
 app.use("/api/auth", toNodeHandler(auth));
 
-// (optionnel) introspection simple
+// introspection simple
 app.get("/api/auth/_routes", (_req, res) => {
   const api = auth?.api ?? {};
   const list = Object.entries(api).map(([k, v]) => [k, !!v?.handleRequest]);
