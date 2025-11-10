@@ -6,44 +6,52 @@ import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import cookieParser from "cookie-parser";
 import { toNodeHandler, fromNodeHeaders } from "better-auth/node";
-import auth from "./auth.js"; 
+import auth from "./dist/auth.js"; // export default depuis ton build
 
 const app = express();
 const PORT = Number(process.env.PORT || 3005);
 
 // CORS strict avec cookies
 const ALLOWED = [
-  process.env.FRONT_ORIGIN || "http://localhost:3000",
-  "http://127.0.0.1:3000",
-  "http://localhost:5173",     
+  process.env.FRONT_URL || "http://localhost:5173",
   "http://127.0.0.1:5173",
+  "http://localhost:3000",
+  "http://127.0.0.1:3000",
 ];
 
 const corsOptions = {
   origin(origin, cb) {
-    if (!origin) return cb(null, true);          // Postman/cURL
+    if (!origin) return cb(null, true); // Postman/cURL
     if (ALLOWED.includes(origin)) return cb(null, true);
     return cb(new Error(`Origin not allowed: ${origin}`));
   },
   credentials: true,
-  methods: ["GET","POST","PUT","PATCH","DELETE","OPTIONS"],
-  allowedHeaders: ["Content-Type","Authorization"],
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
 };
 
-// Ordre des middlewares (important)
+// Ordre des middlewares
 app.use(helmet());
 app.use(cors(corsOptions));
+app.use(cookieParser());
+
+// logger dev
+app.use((req, _res, next) => { console.log(req.method, req.path); next(); });
 
 // rate limit sur l'auth
 app.use("/api/auth", rateLimit({ windowMs: 60_000, limit: 60 }));
 
-// Monte Better Auth → expose /api/auth/*
+// Monte Better Auth ici (base path) — IMPORTANT: avant express.json()
 app.use("/api/auth", toNodeHandler(auth));
 
-app.use(cookieParser());
+// introspection simple
+app.get("/api/auth/_routes", (_req, res) => {
+  const api = auth?.api ?? {};
+  const list = Object.entries(api).map(([k, v]) => [k, !!v?.handleRequest]);
+  res.json({ topLevel: list });
+});
+
 app.use(express.json());
-
-
 
 // Exemple de route protégée
 app.get("/api/me", async (req, res) => {
