@@ -1,7 +1,7 @@
 import ReturnBtn from '../../../assets/ReturnBtn.svg';
 import clockIco from '../../../assets/clock.svg';
 import checkMarck from '../../../assets/checkMarck.svg';
-import ClassCard from '../Billets/components/classcard.tsx';
+import ClassCard from '../Billets/components/Classcard.tsx';
 import { useState } from 'react';
 import Inclus  from './components/Inclus.tsx';
 import icoWifi from '../../../assets/wifi.svg'
@@ -9,11 +9,20 @@ import priseIco from'../../../assets/Prises.svg'
 import climatisation_Ico from '../../../assets/climatisation.svg'   
 import Serinita_card from './components/serenita_card.tsx';
 import AjouterPanierBtn from './components/AjouterPanierBtn.tsx';
+import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+
+
 
 
 
 export default function Billet_Train_recap ()
 {
+    const navigate = useNavigate();
+    const handleretour = () =>
+    {
+        navigate(-1);
+    };
     
     const [selectedClass, setSelectedClass] = useState('Économie');
     const classes = [
@@ -38,7 +47,7 @@ export default function Billet_Train_recap ()
     return (
         <div>
             <div className='relative mt-4'>
-                <img src={ReturnBtn} alt="Return Button" className='absolute left-4 mt-5 transform -translate-y-1/2' />
+                <button onClick={handleretour}><img src={ReturnBtn} alt="Return Button" className='absolute left-4 mt-5 transform -translate-y-1/2'  /></button>
                 < h1 className='text-3xl text-[#98EAF3] font-medium text-center'>Récapitulatif</h1>
             </div>
             <div className='w-full items-center h-70 bg-[#133A40] rounded-2xl border-2 border-[#2C474B] mt-10'>
@@ -118,10 +127,11 @@ export default function Billet_Train_recap ()
 
             </div>
             <AjouterPanierBtn/>
-            <button className="w-80  h-15 bg-[#98EAF3] rounded-xl mt-4">
-                <span className="text-[#115E66] font-bold text-xl">Continuer</span>
-            </button>
-
+            <Link to="/PaymentPage">    
+                <button className="w-80  h-15 bg-[#98EAF3] rounded-xl mt-4">
+                    <span className="text-[#115E66] font-bold text-xl">Continuer</span>
+                </button>
+            </Link>
                 
 
         </div>

@@ -9,11 +9,17 @@ import Productcard from './ProductCard/ProductCard.tsx';
 import { useState } from 'react';
 import BestPrice from './ProductCard/bestPrice.tsx';
 import Date_String from './Date.tsx';
+import { useNavigate } from 'react-router-dom';
 
 
 
 export default function Resultats ()
 {
+    const navigate = useNavigate();
+    const handleretour = () =>
+    {
+        navigate(-1);
+    }
     const [planSearch, setPlanSearch] = useState(false);
     const [all, setAllSearch] = useState(true);
     const [train, setTrainSearch] = useState(false);
@@ -25,7 +31,7 @@ export default function Resultats ()
         <>
         
         <div className=" flex items-center justify-center mt-6">
-            <img src={ReturnBtn} alt="Return Button" className='absolute left-4 mt-10 transform -translate-y-1/2' />
+                <button onClick={handleretour}><img src={ReturnBtn} alt="Return Button" className='absolute left-4 mt-10 transform -translate-y-1/2' /></button>
             <div>
                 <h3 className='font-bold text-[#98EAF3] text-xl'> Nevers - Moulin.... </h3>
                 <h4 className='text-[#98EAF3]'>1 passagers </h4>
