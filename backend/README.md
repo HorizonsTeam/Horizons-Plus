@@ -15,6 +15,11 @@ API Node.js + Express pour Horizons+ :
 
 ---
 
+## SOMMAIRE 
+- Installation - ligne 23
+- Changement de branche et problèmes courants - ligne 146
+- Mot de passe oublié - ligne 
+
 ## 2 Installation
 
 ```bash
@@ -27,21 +32,12 @@ Configuration
 Un fichier .env.example est fourni comme modèle.
 Copier le fichier d'exemple
 bash cp .env.example .env
+
 Configurer la base de données
 Ouvrez le fichier .env et configurez DATABASE_URL selon votre installation MySQL :
 
 Option A - Utilisateur root (simple, pour développement uniquement) :
 envDATABASE_URL="mysql://root:@localhost:3306/horizons_auth"
-
-Option B - Utilisateur dédié (recommandé) :
-
-Créez la base et l'utilisateur MySQL :
-
-sqlCREATE DATABASE IF NOT EXISTS horizons_auth DEFAULT CHARACTER SET utf8mb4;
-
-CREATE USER IF NOT EXISTS 'horizons'@'localhost' IDENTIFIED BY 'motdepassefort';
-GRANT ALL PRIVILEGES ON horizons_auth.* TO 'horizons'@'localhost';
-FLUSH PRIVILEGES;
 
 Configurez dans .env :
 
@@ -54,19 +50,19 @@ BETTER_AUTH_SECRET="dev-secret-change-me"  aller dans ce site là https://www.be
 BETTER_AUTH_URL="http://localhost:3005"
 FRONT_ORIGIN="http://localhost:5173"
 
-⚠️ Important : En production, modifiez BETTER_AUTH_SECRET avec une valeur aléatoire sécurisée.
+IMPORTANT : En production, modifiez BETTER_AUTH_SECRET avec une valeur aléatoire sécurisée.
 
 Initialisation de la base de données
 
 4. Préparer la base AUTH avec Prisma
-Première utilisation obligatoire :
+Première utilisation OBLIGATOIRE :
 npx prisma migrate dev
 Cette commande :
 
 Lit le schéma défini dans prisma/schema.prisma
 Crée automatiquement les tables : user, session, account, verification
 
-Optionnel - Visualiser les données avec Prisma Studio :
+Si vous voulez visualiser les données avec Prisma Studio :
 npx prisma studio
 
 Démarrage des serveurs
@@ -146,3 +142,85 @@ Bouton "Se déconnecter" disponible
 │   ├── src/                 # Code source frontend
 │   └── package.json
 └── README.md
+
+## 3 Changement de branche et problèmes courants
+
+- Erreur possible : TypeScript non reconnu
+Lors du premier lancement avec la commande :
+
+                npm run dev
+
+il est possible d’obtenir l’erreur suivante :
+
+text
+'tsc' n’est pas reconnu en tant que commande interne ou externe,
+un programme exécutable ou un fichier de commandes.
+
+Solution
+Installez TypeScript manuellement dans le projet :
+
+            npm install typescript
+
+Puis exécutez la compilation TypeScript :
+
+                    npx tsc
+
+- À faire lors d’un changement de branche
+
+Quand vous basculez sur une autre branche (par exemple avec Git), relancez toujours l’installation des dépendances pour éviter les problèmes de versions :
+
+                    npm install
+
+Puis redémarrez le serveur :
+
+                    npm run dev
+
+Cela garantit que toutes les dépendances correspondantes à la nouvelle branche sont bien installées.
+
+
+## 4 Mot de passe oublié : 
+
+- 1. Créer un compte Mailtrap (GRATUIT)
+
+Allez sur mailtrap.io
+Créez un compte gratuit
+Confirmez votre email
+
+- 2. Récupérer vos identifiants SMTP
+
+Connectez-vous à Mailtrap
+Allez dans "Email Testing" > "My Sandbox"
+Cliquez sur l'onglet "SMTP Settings"
+Notez vos identifiants :
+
+Host : sandbox.smtp.mailtrap.io
+Port : 587 (ou 2525, 465, 25)
+Username : (ex: 8759cf80cc1de2)
+Password : cliquez sur les **** pour voir le mot de passe complet
+
+- 3. Configurer le fichier .env
+
+voir fichier env.example et remplacer VOTRE_USERNAME_MAILTRAP et VOTRE_PASSWORD_MAILTRAP par vos vraies valeurs
+
+- Étape 1 : Lancer le Projet
+
+Terminal 1 - Backend : npm run dev
+Terminal 2 - Frontend : npm run dev
+
+- Étape 2 : Tester "Mot de passe oublié"
+
+- Étape 3 : Vérifier l'email dans Mailtrap
+
+ALler dans My Sandbox et trouver le dernier mail.
+Cliquez dessus pour voir :
+
+Le contenu de l'email
+Le lien de réinitialisation
+
+- Étape 4 : Réinitialiser le mot de passe
+
+Après avoir cliquez saissisez votre nouveau mot de passe et encore une fois pour la confirmation.
+
+- Étape 5 : Se connecter avec le nouveau mot de passe
+
+Connectez-vous avec votre email et le nouveau mot de passe

@@ -94,7 +94,7 @@ export default function Login() {
 
           {/* A faire cette fonctionnalité de la partie Authentification */}
           <div className="w-full max-w-md text-right">
-            <a href="#" className="text-sm text-[#98EAF3] hover:underline">
+            <a href="/mdpoublie" className="text-sm text-[#98EAF3] hover:underline">
               Mot de passe oublié ?
             </a>
           </div>
