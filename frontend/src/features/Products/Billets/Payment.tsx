@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import ReturnBtn from '../../../assets/ReturnBtn.svg';
-import ModeDePaiementCard from './components/paiement/ModeDePaiementCard.tsx';
+import ModeDePaiementCard from './components/paiement/ModeDePaiementCard';
 import { useNavigate } from 'react-router-dom';
 import assurance_Ico from '../../../assets/assurance.svg'
 
