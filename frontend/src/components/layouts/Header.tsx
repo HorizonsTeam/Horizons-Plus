@@ -17,9 +17,11 @@ export default function Header() {
 
   const navigate = useNavigate();
 
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3005";
+
   // --- session /api/me ---
   useEffect(() => {
-    fetch("http://localhost:3005/api/me", { credentials: "include" })
+    fetch(`${API_URL}/api/me`, { credentials: "include" })
       .then((res) => (res.status === 401 ? null : res.json()))
       .then((data) => setUser(data?.user ?? null))
       .catch((err) => {

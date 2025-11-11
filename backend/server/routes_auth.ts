@@ -2,7 +2,7 @@
 // import { auth } from "../auth";
 // export const router = Router();
 
-// 1) Envoi du lien de reset (email -> lien ?token=...)
+// // 1) Envoi du lien de reset (email -> lien ?token=...)
 // router.post("/auth/forgot-password", async (req, res) => {
 //   try {
 //     req.body.redirectTo ??= `${process.env.FRONT_URL}/reset-password`;
@@ -15,7 +15,7 @@
 //   }
 // });
 
-// // 2) Finaliser le reset (token + newPassword)
+// // // 2) Finaliser le reset (token + newPassword)
 // router.post("/auth/reset-password", async (req, res) => {
 //   try {
 //     await auth.api.resetPassword.handleRequest(req, res);
