@@ -31,6 +31,7 @@ const corsOptions = {
 };
 
 // Ordre des middlewares
+app.set('trust proxy', true);
 app.use(helmet());
 app.use(cors(corsOptions));
 app.use(cookieParser());
