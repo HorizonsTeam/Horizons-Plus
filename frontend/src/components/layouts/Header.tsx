@@ -21,15 +21,35 @@ export default function Header() {
   
   // --- session /api/me ---
   useEffect(() => {
-    fetch(`${API_URL}/api/me`, { credentials: "include" })
-      .then((res) => (res.status === 401 ? null : res.json()))
-      .then((data) => setUser(data?.user ?? null))
-      .catch((err) => {
-        console.error("Erreur /api/me:", err);
-        setUser(null);
-      })
-      .finally(() => setLoadingUser(false));
-  }, []);
+    const token = localStorage.getItem("auth_token");
+  if (!token) {
+    setLoadingUser(false);
+    return;
+  }
+
+  fetch(`${API_URL}/api/me`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then((res) => (res.status === 401 ? null : res.json()))
+    .then((data) => setUser(data?.user ?? null))
+    .catch((err) => {
+      console.error("Erreur /api/me:", err);
+      setUser(null);
+    })
+    .finally(() => setLoadingUser(false));
+}, []);
+
+  //   fetch(`${API_URL}/api/me`, { credentials: "include" })
+  //     .then((res) => (res.status === 401 ? null : res.json()))
+  //     .then((data) => setUser(data?.user ?? null))
+  //     .catch((err) => {
+  //       console.error("Erreur /api/me:", err);
+  //       setUser(null);
+  //     })
+  //     .finally(() => setLoadingUser(false));
+  // }, []);
 
   // --- displayName ---
   const displayName = useMemo(() => {
@@ -46,6 +66,7 @@ export default function Header() {
       setUser(null);
       setIsMenuOpen(false);
       navigate("/login");
+      localStorage.removeItem("auth_token");
     } catch (err) {
       console.error("Erreur déconnexion:", err);
     }

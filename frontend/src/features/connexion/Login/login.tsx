@@ -1,12 +1,14 @@
 import { Link, useNavigate } from 'react-router-dom';
 import PageTransition from '../pageTransitions';
 import { useState } from 'react';
-import { authClient } from '../../../lib/auth-clients';
+// import { authClient } from '../../../lib/auth-clients';
 import type React from 'react';
 
 export default function Login() {
 
   const navigate = useNavigate();
+
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3005";
 
   // états des champs
   const [email, setEmail] = useState("");
@@ -30,15 +32,24 @@ export default function Login() {
 
     setIsLoading(true);
     try {
-
+      // Décommenter quand on rentre en production pour utiliser les cookies
       // Appel de Better AUth
       // rememberMe pour se souvenir de nous lors de la connexion
-      await authClient.signIn.email({
-        email,
-        password,
-        rememberMe: true,
-        callbackURL: "/", // Après connexion on se dirige à l"accueil
+      // await authClient.signIn.email({
+      //   email,
+      //   password,
+      //   rememberMe: true,
+      //   callbackURL: "/", // Après connexion on se dirige à l"accueil
+      // });
+
+      const res = await fetch(`${API_URL}/api/auth/sign-in/email`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
       });
+
+      const data = await res.json();
+      if (data.token) localStorage.setItem("auth_token", data.token);
 
       navigate("/")
     } catch (err: any) {
