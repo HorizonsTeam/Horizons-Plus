@@ -9,19 +9,15 @@ export const auth = betterAuth({
     database: prismaAdapter(prisma, { provider: "mysql" }),
 
     baseURL: "https://horizons-plus-production.up.railway.app/api/auth",
-    cookies: {
-        name: "better-auth-session",
-        sameSite: "none",
-        secure: true,
-        path: "/",
-        domain: "horizons-plus-production.up.railway.app"
-    },
 
-    trustedOrigins: [
-        process.env.FRONT_URL || "http://localhost:5173",
-        "http://127.0.0.1:5173",
-
-    ],
+  // 🔹 nouvelle structure depuis better-auth@1.x
+ sessionCookies: {
+    name: "better-auth-session",
+    sameSite: "none",
+    secure: true,
+    path: "/",
+    domain: "horizons-plus-production.up.railway.app",
+  },
 
 
     emailAndPassword: {
