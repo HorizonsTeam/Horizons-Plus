@@ -56,9 +56,37 @@ app.use(express.json());
 
 // Exemple de route protégée
 app.get("/api/me", async (req, res) => {
-  const session = await auth.api.getSession({ headers: fromNodeHeaders(req.headers) });
-  if (!session) return res.status(401).json({ error: "Unauthenticated" });
-  res.json({ user: session.user });
+  try {
+    // 🔹 Étape 1 : si un header Authorization existe, on teste le token JWT
+    const authHeader = req.headers.authorization;
+    const token = authHeader?.split(" ")[1];
+
+    if (token) {
+      try {
+        const session = await auth.api.verifyJWT({ token });
+        if (session?.user) {
+          return res.json({ user: session.user });
+        }
+      } catch (err) {
+        console.warn("⚠️ JWT invalide ou expiré:", err?.message);
+        // on continue pour tester le cookie ensuite
+      }
+    }
+
+    const session = await auth.api.getSession({
+      headers: fromNodeHeaders(req.headers),
+    });
+
+
+    if (!session) {
+      return res.status(401).json({ error: "Unauthenticated" });
+    }
+
+    res.json({ user: session.user });
+  } catch (err) {
+    console.error("Erreur /api/me:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 // Health
