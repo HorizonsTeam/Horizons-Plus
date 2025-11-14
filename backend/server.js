@@ -42,7 +42,7 @@ app.use((req, _res, next) => { console.log(req.method, req.path); next(); });
 // rate limit sur l'auth
 app.use("/api/auth", rateLimit({ windowMs: 60_000, limit: 60 }));
 
-// Monte Better Auth ici (base path) — IMPORTANT: avant express.json()
+// Monter Better Auth ici 
 app.use("/api/auth", toNodeHandler(auth));
 
 // introspection simple
@@ -54,37 +54,30 @@ app.get("/api/auth/_routes", (_req, res) => {
 
 app.use(express.json());
 
-// Exemple de route protégée
+// Exemple de route protégée - décommenter quand back & front sont déployé
+// app.get("/api/me", async (req, res) => {
+//   const session = await auth.api.getSession({ headers: fromNodeHeaders(req.headers) });
+//   if (!session) return res.status(401).json({ error: "Unauthenticated" });
+//   res.json({ user: session.user });
+// });
 app.get("/api/me", async (req, res) => {
   try {
-    // 🔹 Étape 1 : si un header Authorization existe, on teste le token JWT
     const authHeader = req.headers.authorization;
     const token = authHeader?.split(" ")[1];
 
     if (token) {
       try {
         const session = await auth.api.verifyJWT({ token });
-        if (session?.user) {
-          return res.json({ user: session.user });
-        }
-      } catch (err) {
-        console.warn("⚠️ JWT invalide ou expiré:", err?.message);
-        // on continue pour tester le cookie ensuite
-      }
+        if (session?.user) return res.json({ user: session.user });
+      } catch {}
     }
 
     const session = await auth.api.getSession({
       headers: fromNodeHeaders(req.headers),
     });
-
-
-    if (!session) {
-      return res.status(401).json({ error: "Unauthenticated" });
-    }
-
+    if (!session) return res.status(401).json({ error: "Unauthenticated" });
     res.json({ user: session.user });
   } catch (err) {
-    console.error("Erreur /api/me:", err);
     res.status(500).json({ error: "Internal server error" });
   }
 });

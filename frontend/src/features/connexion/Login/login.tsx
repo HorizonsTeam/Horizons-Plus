@@ -1,13 +1,14 @@
 import { Link, useNavigate } from 'react-router-dom';
 import PageTransition from '../pageTransitions';
 import { useState } from 'react';
-// import { authClient } from '../../../lib/auth-clients';
+import { authClient } from '../../../lib/auth-clients';
 import type React from 'react';
 
 export default function Login() {
 
   const navigate = useNavigate();
 
+  
   const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3005";
 
   // états des champs
@@ -17,6 +18,8 @@ export default function Login() {
   // états des UI
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+   const USE_JWT_MODE = import.meta.env.MODE === "development";
 
   // Soumission du formulaire
   const handleSubmit = async (e: React.FormEvent) => {
@@ -32,33 +35,40 @@ export default function Login() {
 
     setIsLoading(true);
     try {
-      // Décommenter quand on rentre en production pour utiliser les cookies
-      // Appel de Better AUth
-      // rememberMe pour se souvenir de nous lors de la connexion
-      // await authClient.signIn.email({
-      //   email,
-      //   password,
-      //   rememberMe: true,
-      //   callbackURL: "/", // Après connexion on se dirige à l"accueil
-      // });
+      if (USE_JWT_MODE) {
+        // 🧩 Mode DEV : on utilise fetch + token JWT
+        const res = await fetch(`${API_URL}/api/auth/sign-in/email`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        });
 
-      const res = await fetch(`${API_URL}/api/auth/sign-in/email`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || "Erreur d'authentification");
 
-      const data = await res.json();
-      if (data.token) localStorage.setItem("auth_token", data.token);
-
-      navigate("/")
+        if (data.token) {
+          localStorage.setItem("auth_token", data.token);
+          console.log("✅ Token stocké:", data.token);
+          navigate("/");
+        } else {
+          throw new Error("Token manquant dans la réponse");
+        }
+      } else {
+        // 🧩 Mode PROD : Better Auth avec cookies sécurisés
+        await authClient.signIn.email({
+          email,
+          password,
+          rememberMe: true,
+          callbackURL: "/",
+        });
+        navigate("/");
+      }
     } catch (err: any) {
       console.error("signin error", err);
       setErrorMsg(err?.message || "Identifiants invalides.");
     } finally {
       setIsLoading(false);
     }
-
   };
 
   const signInWithGoogle = async () => {

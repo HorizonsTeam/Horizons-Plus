@@ -18,29 +18,23 @@ export default function Header() {
   const navigate = useNavigate();
 
   const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3005";
-  
+
   // --- session /api/me ---
   useEffect(() => {
     const token = localStorage.getItem("auth_token");
-  if (!token) {
-    setLoadingUser(false);
-    return;
-  }
+    if (!token) {
+      setLoadingUser(false);
+      return;
+    }
 
-  fetch(`${API_URL}/api/me`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  })
-    .then((res) => (res.status === 401 ? null : res.json()))
-    .then((data) => setUser(data?.user ?? null))
-    .catch((err) => {
-      console.error("Erreur /api/me:", err);
-      setUser(null);
+    fetch(`${API_URL}/api/me`, {
+      headers: { Authorization: `Bearer ${token}` },
     })
-    .finally(() => setLoadingUser(false));
-}, []);
-
+      .then((res) => (res.status === 401 ? null : res.json()))
+      .then((data) => setUser(data?.user ?? null))
+      .finally(() => setLoadingUser(false));
+  }, []);
+  // phase test - à décommenter
   //   fetch(`${API_URL}/api/me`, { credentials: "include" })
   //     .then((res) => (res.status === 401 ? null : res.json()))
   //     .then((data) => setUser(data?.user ?? null))
@@ -66,7 +60,6 @@ export default function Header() {
       setUser(null);
       setIsMenuOpen(false);
       navigate("/login");
-      localStorage.removeItem("auth_token");
     } catch (err) {
       console.error("Erreur déconnexion:", err);
     }
