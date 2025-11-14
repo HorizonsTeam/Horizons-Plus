@@ -1,68 +1,15 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@100..800&display=swap');
+
+.sora {
+  font-family: "Sora", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 10;
+  font-style: normal;
+}
+
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
-}
-
-
-/* 🌊 Scrollbar élégante bleu Horizon+ */
-.suggestions::-webkit-scrollbar {
-  width: 6px;
-}
-
-.suggestions::-webkit-scrollbar-track {
-  background: transparent; /* pas de fond visible */
-}
-
-.suggestions::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #45c1d6, #007b8a);
-  border-radius: 10px;
-  transition: background 0.3s ease;
-}
-
-.suggestions::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #62d6e8, #00a4b6);
-}
-
-/* Pour Firefox */
-.suggestions {
-  scrollbar-width: thin;
-  scrollbar-color: #45c1d6 transparent;
-}
+  margin: 0;
+  padding: 0;
+  background: #103035;
+  font-family: sora;
+} 

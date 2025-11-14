@@ -21,6 +21,9 @@ const ALLOWED = [
   "http://127.0.0.1:5173",
   "http://localhost:3000",
   "http://127.0.0.1:3000",
+  "https://horizons-plus-production.up.railway.app",
+  "https://horizons-plus.vercel.app",
+  
   "https://vshmz3b1-5173.uks1.devtunnels.ms",
 ];
 
@@ -36,6 +39,7 @@ const corsOptions = {
 };
 
 // Ordre des middlewares
+app.set('trust proxy', 1);
 app.use(helmet());
 app.use(cors(corsOptions));
 app.use(cookieParser());
@@ -46,7 +50,7 @@ app.use((req, _res, next) => { console.log(req.method, req.path); next(); });
 // rate limit sur l'auth
 app.use("/api/auth", rateLimit({ windowMs: 60_000, limit: 60 }));
 
-// Monte Better Auth ici (base path) — IMPORTANT: avant express.json()
+// Monter Better Auth ici 
 app.use("/api/auth", toNodeHandler(auth));
 
 // introspection simple
@@ -58,7 +62,7 @@ app.get("/api/auth/_routes", (_req, res) => {
 
 app.use(express.json());
 
-// Exemple de route protégée
+// Exemple de route protégée - décommenter quand back & front sont déployé
 app.get("/api/me", async (req, res) => {
   const session = await auth.api.getSession({ headers: fromNodeHeaders(req.headers) });
   if (!session) return res.status(401).json({ error: "Unauthenticated" });
