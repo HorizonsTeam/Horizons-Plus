@@ -7,6 +7,7 @@ import rateLimit from "express-rate-limit";
 import cookieParser from "cookie-parser";
 import { toNodeHandler, fromNodeHeaders } from "better-auth/node";
 import auth from "./dist/auth.js"; // export default depuis ton build
+import { toNodeHandler, fromNodeHeaders, verifyJWT } from "better-auth/node";
 
 const app = express();
 const PORT = Number(process.env.PORT || 3005);
@@ -62,24 +63,23 @@ app.use(express.json());
 // });
 app.get("/api/me", async (req, res) => {
   try {
-    // Récupérer le header Authorization
     const authHeader = req.headers.authorization;
     const token = authHeader?.startsWith("Bearer ") ? authHeader.split(" ")[1] : null;
 
-    // Si on a un token, on tente la vérification JWT (mode front local) - test
+    // Si un token est présent → on le vérifie avec verifyJWT()
     if (token) {
       try {
-        const session = await auth.api.verifyJWT({ token });
-        if (session?.user) {
-          console.log("✅ JWT validé pour:", session.user.email);
-          return res.json({ user: session.user });
+        const decoded = await verifyJWT({ token }); // ICI la bonne fonction
+        if (decoded?.user) {
+          console.log("JWT validé pour:", decoded.user.email);
+          return res.json({ user: decoded.user });
         }
-      } catch (e) {
-        console.warn("JWT invalide:", e.message);
+      } catch (err) {
+        console.warn("JWT invalide:", err.message);
       }
     }
 
-    // Sinon on vérifie la session par cookie (mode prod)
+    // Sinon on tente via les cookies (Better Auth normal)
     const session = await auth.api.getSession({
       headers: fromNodeHeaders(req.headers),
     });
@@ -92,6 +92,7 @@ app.get("/api/me", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
 // Health
 app.get("/api/health", (_req, res) => res.json({ ok: true }));
 
