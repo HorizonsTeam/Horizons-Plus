@@ -1,16 +1,17 @@
 import { ArrowDownUp, Minus } from 'lucide-react';
 import { useState } from 'react';
+import AutocompleteInput from '../../../components/autocomplete/AutocompleteInput.tsx';
 
 export default function SearchForm() {
   // Etat des villes 
   const [depart, setDepart] = useState<string>("");
-  const [arrival, setArrival] = useState<string>("");
+  const [arrivee, setArrivee] = useState<string>("");
   const [rotation, setRotation] = useState<number>(0);
 
   //Fonction swap
   const handleSwap = () => {
-    setDepart(arrival);
-    setArrival(depart);
+    setDepart(arrivee);
+    setArrivee(depart);
     setRotation((prev)=>prev + 180);
   }
   return (
@@ -27,23 +28,23 @@ export default function SearchForm() {
           <div className="relative mb-4">
             {/* Ville départ */}
             <div className="mb-3">
-              <input
-                type="text"
-                placeholder="Ville départ"
+              <AutocompleteInput 
+                label=""
                 value={depart}
-                onChange={(e) => setDepart(e.target.value)}
-                className="w-full bg-[#2C474B] text-white placeholder-slate-400 rounded-xl px-4 py-3.5 text-sm outline-none border-none focus:ring-2 focus:ring-cyan-400/30"
+                placeholder="Ville départ"
+                onChange={setDepart}
+                className="search-input w-full bg-[#2C474B] text-white placeholder-slate-400 rounded-xl px-4 py-3.5 text-sm outline-none border-none focus:ring-2 focus:ring-cyan-400/30"
               />
             </div>
 
             {/* Ville arrivée */}
             <div>
-              <input
-                type="text"
+              <AutocompleteInput 
+                label=""
+                value={arrivee}
                 placeholder="Ville arrivée"
-                value={arrival}
-                onChange={(e)=> setArrival(e.target.value)}
-                className="w-full bg-[#2C474B] text-white placeholder-slate-400 rounded-xl px-4 py-3.5 text-sm outline-none border-none focus:ring-2 focus:ring-cyan-400/30"
+                onChange={setArrivee}
+                className="search-input w-full bg-[#2C474B] text-white placeholder-slate-400 rounded-xl px-4 py-3.5 text-sm outline-none border-none focus:ring-2 focus:ring-cyan-400/30"
               />
             </div>
 
@@ -104,19 +105,21 @@ export default function SearchForm() {
           {/* Villes départ et arrivée */}
           <div className="grid grid-cols-2 gap-4 mb-6">
             <div>
-              <label className="block text-sm text-slate-400 mb-2">Ville départ</label>
-              <input
-                type="text"
+              <AutocompleteInput 
+                label="Ville départ"
+                value={depart}
                 placeholder="D'où partez-vous ?"
-                className="w-full bg-slate-600/50 text-white placeholder-slate-400 rounded-xl px-4 py-3.5 outline-none border-none focus:ring-2 focus:ring-cyan-400/30"
+                onChange={setDepart}
+                className="search-input w-full bg-slate-600/50 text-white placeholder-slate-400 rounded-xl px-4 py-3.5 outline-none border-none focus:ring-2 focus:ring-cyan-400/30"
               />
             </div>
             <div>
-              <label className="block text-sm text-slate-400 mb-2">Ville arrivée</label>
-              <input
-                type="text"
+              <AutocompleteInput 
+                label="Ville arrivée"
+                value={arrivee}
                 placeholder="Où allez-vous ?"
-                className="w-full bg-slate-600/50 text-white placeholder-slate-400 rounded-xl px-4 py-3.5 outline-none border-none focus:ring-2 focus:ring-cyan-400/30"
+                onChange={setArrivee}
+                className="search-input w-full bg-slate-600/50 text-white placeholder-slate-400 rounded-xl px-4 py-3.5 outline-none border-none focus:ring-2 focus:ring-cyan-400/30"
               />
             </div>
           </div>
