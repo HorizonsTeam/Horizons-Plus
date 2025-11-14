@@ -30,7 +30,6 @@ export default function Login() {
 
     setIsLoading(true);
     try {
-
       // Appel de Better AUth
       // rememberMe pour se souvenir de nous lors de la connexion
       await authClient.signIn.email({
