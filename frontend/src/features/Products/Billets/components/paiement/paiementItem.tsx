@@ -1,5 +1,3 @@
-import type React from "react";
-
 type Props = {
     IsSelected: boolean;
     cardName: string;
