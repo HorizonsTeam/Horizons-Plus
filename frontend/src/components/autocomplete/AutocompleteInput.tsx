@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import type { AutocompleteInputProps, Suggestion } from './types';
 import AutocompleteList from './AutocompleteList';
 
-function AutocompleteInput({ label, value, placeholder, onChange }: AutocompleteInputProps) {
+function AutocompleteInput({ label, value, placeholder, onChange, className }: AutocompleteInputProps) {
     const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
     const [isFocused, setIsFocused] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -44,17 +44,17 @@ function AutocompleteInput({ label, value, placeholder, onChange }: Autocomplete
         {
         !label || label.length === 0 
         ? null 
-        : <label className="block text-sm text-gray-400 mb-2">{label}</label>
+        : <label className="block text-sm text-slate-400 mb-2">{label}</label>
         }
         
         <input
-        type="text"
-        className="search-input w-full"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        autoComplete="off"
-        placeholder={placeholder}
-        onFocus={() => setIsFocused(true)}
+            type="text"
+            className={className}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            autoComplete="off"
+            placeholder={placeholder}
+            onFocus={() => setIsFocused(true)}
         />
 
         {isFocused && suggestions.length > 0 && (

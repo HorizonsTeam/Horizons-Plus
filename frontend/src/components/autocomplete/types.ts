@@ -4,7 +4,7 @@ export type Suggestion = {
   id: string;
   name: string;
   type: SuggestionType;
-  regionOrCity?: string;
+  region: string;
 }
 
 export type AutocompleteInputProps = {
@@ -12,6 +12,7 @@ export type AutocompleteInputProps = {
     value: string;
     placeholder?: string;
     onChange: (newValue: string) => void;
+    className?: string;
 }
 
 export type AutocompleteListProps = {
