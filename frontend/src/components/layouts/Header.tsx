@@ -274,6 +274,7 @@ export default function Header() {
   // --- session /api/me ---
   // Récupération session
   useEffect(() => {
+    console.log("API URL:", import.meta.env.VITE_API_URL);
     fetch(`${API_URL}/api/me`, { credentials: "include" })
       .then((res) => (res.status === 401 ? null : res.json()))
       .then((data) => setUser(data?.user ?? null))
