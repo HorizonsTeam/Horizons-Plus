@@ -10,6 +10,12 @@ export const auth = betterAuth({
 
     baseURL: "https://horizons-plus-production.up.railway.app/api/auth",
 
+    trustedOrigins: [
+        process.env.FRONT_URL || "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "https://horizons-plus-production.up.railway.app", 
+    ],
+
     sessionCookies: {
         enabled: true,
         name: "better-auth-session",
