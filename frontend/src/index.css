@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+
 @theme {
   --color-primary: #98EAF3;
   --color-dark: #103035;
@@ -10,6 +11,7 @@
   --color-gray-600: #4b5563;
   --color-yellow-400: #fbbf24;
 }
+
 
 @layer base {
   body {
