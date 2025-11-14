@@ -48,7 +48,7 @@ export default function Login() {
 
         if (data.token) {
           localStorage.setItem("auth_token", data.token);
-          console.log("✅ Token stocké:", data.token);
+          console.log("Token stocké:", data.token);
           navigate("/");
         } else {
           throw new Error("Token manquant dans la réponse");

@@ -62,26 +62,36 @@ app.use(express.json());
 // });
 app.get("/api/me", async (req, res) => {
   try {
+    // Récupérer le header Authorization
     const authHeader = req.headers.authorization;
-    const token = authHeader?.split(" ")[1];
+    const token = authHeader?.startsWith("Bearer ") ? authHeader.split(" ")[1] : null;
 
+    // Si on a un token, on tente la vérification JWT (mode front local) - test
     if (token) {
       try {
         const session = await auth.api.verifyJWT({ token });
-        if (session?.user) return res.json({ user: session.user });
-      } catch {}
+        if (session?.user) {
+          console.log("✅ JWT validé pour:", session.user.email);
+          return res.json({ user: session.user });
+        }
+      } catch (e) {
+        console.warn("JWT invalide:", e.message);
+      }
     }
 
+    // Sinon on vérifie la session par cookie (mode prod)
     const session = await auth.api.getSession({
       headers: fromNodeHeaders(req.headers),
     });
+
     if (!session) return res.status(401).json({ error: "Unauthenticated" });
-    res.json({ user: session.user });
+    return res.json({ user: session.user });
+
   } catch (err) {
+    console.error("Erreur /api/me:", err);
     res.status(500).json({ error: "Internal server error" });
   }
 });
-
 // Health
 app.get("/api/health", (_req, res) => res.json({ ok: true }));
 
