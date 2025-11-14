@@ -108,6 +108,7 @@
 
 
 import { ArrowDownUp, Minus } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export default function SearchForm() {
   return (
@@ -183,9 +184,12 @@ export default function SearchForm() {
           </div>
 
           {/* Bouton Rechercher */}
-          <button className="w-full bg-[#98EAF3] text-[#115E66] font-bold rounded-2xl py-3.5 cursor-pointer ">
+          <Link to="/Recherche">
+            <button className="w-full bg-[#98EAF3] text-[#115E66] font-bold rounded-2xl py-3.5 cursor-pointer " >
+     
             Rechercher
-          </button>
+            </button>
+          </Link>
         </div>
 
         {/* Formulaire Desktop */}
