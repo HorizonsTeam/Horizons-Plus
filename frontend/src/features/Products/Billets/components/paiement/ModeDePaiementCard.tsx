@@ -3,7 +3,7 @@ import { useState } from 'react';
 import PaiementForm from './paymentForm';
 import creditCard_ico from '../../../../../assets/credit-card.svg'
 import Paypal_ico from '../../../../../assets/paypal_ico.svg'
-import ApplePay_ico from '../../../../../assets/ApplePay.svg'
+import ApplePay_ico from '../../../../../assets/applePay.svg'
 
 
 
