@@ -18,32 +18,18 @@ export default function Header() {
   const navigate = useNavigate();
 
   const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3005";
-
+  
   // --- session /api/me ---
   useEffect(() => {
-    const token = localStorage.getItem("auth_token");
-    if (!token) {
-      setLoadingUser(false);
-      return;
-    }
-
-    fetch(`${API_URL}/api/me`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    fetch(`${API_URL}/api/me`, { credentials: "include" })
       .then((res) => (res.status === 401 ? null : res.json()))
       .then((data) => setUser(data?.user ?? null))
+      .catch((err) => {
+        console.error("Erreur /api/me:", err);
+        setUser(null);
+      })
       .finally(() => setLoadingUser(false));
   }, []);
-  // phase test - à décommenter
-  //   fetch(`${API_URL}/api/me`, { credentials: "include" })
-  //     .then((res) => (res.status === 401 ? null : res.json()))
-  //     .then((data) => setUser(data?.user ?? null))
-  //     .catch((err) => {
-  //       console.error("Erreur /api/me:", err);
-  //       setUser(null);
-  //     })
-  //     .finally(() => setLoadingUser(false));
-  // }, []);
 
   // --- displayName ---
   const displayName = useMemo(() => {

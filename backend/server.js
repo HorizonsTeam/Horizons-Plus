@@ -7,7 +7,6 @@ import rateLimit from "express-rate-limit";
 import cookieParser from "cookie-parser";
 import { toNodeHandler, fromNodeHeaders } from "better-auth/node";
 import auth from "./dist/auth.js"; // export default depuis ton build
-import { toNodeHandler, fromNodeHeaders, verifyJWT } from "better-auth/node";
 
 const app = express();
 const PORT = Number(process.env.PORT || 3005);
@@ -56,42 +55,12 @@ app.get("/api/auth/_routes", (_req, res) => {
 app.use(express.json());
 
 // Exemple de route protégée - décommenter quand back & front sont déployé
-// app.get("/api/me", async (req, res) => {
-//   const session = await auth.api.getSession({ headers: fromNodeHeaders(req.headers) });
-//   if (!session) return res.status(401).json({ error: "Unauthenticated" });
-//   res.json({ user: session.user });
-// });
 app.get("/api/me", async (req, res) => {
-  try {
-    const authHeader = req.headers.authorization;
-    const token = authHeader?.startsWith("Bearer ") ? authHeader.split(" ")[1] : null;
-
-    // Si un token est présent → on le vérifie avec verifyJWT()
-    if (token) {
-      try {
-        const decoded = await verifyJWT({ token }); // ICI la bonne fonction
-        if (decoded?.user) {
-          console.log("JWT validé pour:", decoded.user.email);
-          return res.json({ user: decoded.user });
-        }
-      } catch (err) {
-        console.warn("JWT invalide:", err.message);
-      }
-    }
-
-    // Sinon on tente via les cookies (Better Auth normal)
-    const session = await auth.api.getSession({
-      headers: fromNodeHeaders(req.headers),
-    });
-
-    if (!session) return res.status(401).json({ error: "Unauthenticated" });
-    return res.json({ user: session.user });
-
-  } catch (err) {
-    console.error("Erreur /api/me:", err);
-    res.status(500).json({ error: "Internal server error" });
-  }
+  const session = await auth.api.getSession({ headers: fromNodeHeaders(req.headers) });
+  if (!session) return res.status(401).json({ error: "Unauthenticated" });
+  res.json({ user: session.user });
 });
+
 
 // Health
 app.get("/api/health", (_req, res) => res.json({ ok: true }));

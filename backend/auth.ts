@@ -10,14 +10,14 @@ export const auth = betterAuth({
 
     baseURL: "https://horizons-plus-production.up.railway.app/api/auth",
 
- sessionCookies: {
-    enabled: true,
-    name: "better-auth-session",
-    sameSite: "none",
-    secure: true,
-    path: "/",
-    domain: "horizons-plus-production.up.railway.app",
-  },
+    sessionCookies: {
+        enabled: true,
+        name: "better-auth-session",
+        sameSite: "none",
+        secure: true,
+        path: "/",
+        domain: "horizons-plus-production.up.railway.app",
+    },
 
 
     emailAndPassword: {
