@@ -20,7 +20,7 @@ export default function MdpOublie() {
 
     setIsLoading(true);
     try {
-      const base = import.meta.env.VITE_AUTH_URL ?? "http://localhost:3005/api/auth";
+      const base = import.meta.env.VITE_API_URL ?? "http://localhost:3005/api/auth";
 
       const redirectTo = `${window.location.origin}/reset-password`;
 
