@@ -1,8 +1,11 @@
 import { useState } from 'react'; 
 import PlaneImage from '../../assets/avion-deco.png';
 import { Link } from 'react-router-dom';
+import AutocompleteInput from '../../components/autocomplete/AutocompleteInput';
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState<'depart' | 'arrivee'>('depart');
+  const [depart, setDepart] = useState('');
+  const [arrivee, setArrivee] = useState('');
 
   return (
     <div className="min-h-screen ">
@@ -46,36 +49,34 @@ export default function HomePage() {
 
             {/* Mobile Input Fields */}
             <div className="space-y-4 lg:hidden">
-              <input
-                type="text"
-                placeholder="Où"
-                className="search-input w-full"
+              <AutocompleteInput
+                label=""
+                value={depart}
+                onChange={setDepart}
+                placeholder="D'où partez-vous ?"
               />
-              <input
-                type="text"
-                placeholder="Quand"
-                className="search-input w-full"
+              <AutocompleteInput
+                label=""
+                value={arrivee}
+                onChange={setArrivee}
+                placeholder="Où allez-vous ?"
               />
             </div>
 
             {/* Desktop Inputs */}
             <div className="hidden lg:grid lg:grid-cols-2 gap-4 mb-6">
-              <div>
-                <label className="block text-sm text-gray-400 mb-2">Départ</label>
-                <input
-                  type="text"
-                  placeholder="D'où partez-vous ?"
-                  className="search-input w-full"
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-400 mb-2">Arrivée</label>
-                <input
-                  type="text"
-                  placeholder="Où allez-vous ?"
-                  className="search-input w-full"
-                />
-              </div>
+              <AutocompleteInput
+                label="Départ"
+                value={depart}
+                onChange={setDepart}
+                placeholder="D'où partez-vous ?"
+              />
+              <AutocompleteInput
+                label="Arrivée"
+                value={arrivee}
+                onChange={setArrivee}
+                placeholder="Où allez-vous ?"
+              />
             </div>
 
             <div className="hidden lg:grid lg:grid-cols-3 gap-4 mb-6">
