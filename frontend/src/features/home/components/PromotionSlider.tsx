@@ -112,7 +112,7 @@ export default function PromotionSlider() {
 
         {/* Bouton CTA */}
         <div className="text-center mt-8">
-          <button className="bg-amber-400 hover:bg-amber-500 text-teal-900 font-bold text-lg px-12 py-4 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
+          <button className="btn-primary w-full lg:w-auto lg:mx-auto lg:block bg-amber-400 hover:bg-amber-500 text-[#115E66] font-semibold px-12 py-4 rounded-xl transition-colors duration-200 text-base shadow-lg cursor-pointer">
             Découvrir nos promotions
           </button>
         </div>
