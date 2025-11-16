@@ -362,7 +362,7 @@ export default function Header() {
               to={item.path}
               className="flex items-center space-x-2 hover:text-[#98EAF3] transition-colors"
             >
-              <img src={item.icon} alt="" className="w-5 h-5" />
+              {/* <img src={item.icon} alt="" className="w-5 h-5" /> */}
               <span className="font-semibold">{item.label}</span>
             </Link>
           ))}
