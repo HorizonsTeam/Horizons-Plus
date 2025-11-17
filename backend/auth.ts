@@ -13,7 +13,6 @@ export const auth = betterAuth({
     trustedOrigins: [
         process.env.FRONT_URL || "http://localhost:5173",
         "http://127.0.0.1:5173",
-        "https://horizons-plus-production.up.railway.app",
         "https://horizons-plus.vercel.app",
     ],
 
