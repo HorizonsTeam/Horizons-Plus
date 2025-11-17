@@ -1,13 +1,16 @@
 import fs from "fs";
 import csv from "csv-parser";
 import path from "path";
+import { fileURLToPath } from "url";
 
-const __dirname = path.resolve();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const communes = [];
 const regions = new Map();
 
-const regionsPath = path.join(__dirname, "../backend/src/csv/regions-france.csv");
-const communesPath = path.join(__dirname, "../backend/src/csv/communes.csv");
+const regionsPath = path.join(__dirname, "../csv/regions-france.csv");
+const communesPath = path.join(__dirname, "../csv/communes.csv");
 
 function loadRegions() {
   return new Promise((resolve, reject) => {
