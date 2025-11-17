@@ -7,6 +7,8 @@ function AutocompleteInput({ label, value, placeholder, onChange, className }: A
     const [isFocused, setIsFocused] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
 
+    const base = `${import.meta.env.VITE_API_URL || "http://localhost:3005"}`;
+
     useEffect(() => {
         if (!value) {
             setSuggestions([]);
@@ -14,7 +16,8 @@ function AutocompleteInput({ label, value, placeholder, onChange, className }: A
         }
 
         const timeout = setTimeout(() => {
-            fetch(`http://localhost:3005/api/search/stations?q=${value}`)
+            // fetch(`http://localhost:3005/api/search/stations?q=${value}`) 
+            fetch(`${base}/api/search/stations?q=${value}`)
             .then(res => res.json())
             .then(data => setSuggestions(data))
             .catch(() => setSuggestions([]));
