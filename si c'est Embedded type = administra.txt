@@ -1,0 +1,6 @@
+si c'est Embedded type = administrative_region
+	on prend s.administrative_region.name puis on rajouteras en faisant un lien avec le code insee la région en gris
+si c'est Embedded type = stop_area
+	on prend s.stop_area.name puis après on rajoute en gris pas la région mais l'administrative region auquelle elle est associé : s.stop_area.administrative_regions.name
+	exception Marseille en beauvaisis sncf connect écrit la region haut de France certainement que comme ca vient pas d'un quartier de Marseille, donc faut essayer de gérer ca, voir si la commune fait pas partie d'une grosse agglo, faut capter la logique. 
+sinon si c un ville random faut mettre la région, si c quartier banlieue faut mettre la ville associé.

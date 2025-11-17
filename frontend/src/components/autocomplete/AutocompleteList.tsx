@@ -1,0 +1,54 @@
+import type { AutocompleteListProps } from './types';
+import trainIcon from '../../assets/train-station (blue).png';
+import cityIcon from '../../assets/house-building (blue).png';
+
+
+function AutocompleteList({ suggestions, onSelect }: AutocompleteListProps) {
+    if (!suggestions || suggestions.length === 0) return null;
+    
+    return (
+        <ul className="absolute autocomplete-suggestions left-0 right-0 z-50 mt-2 rounded-xl bg-[#0f2628] border border-[#1b3a3d] shadow-xl 
+                backdrop-blur-md max-h-72 overflow-y-auto text-left divide-y divide-[#1e3c3f] overflow-x-hidden">
+            {suggestions.map((s) => (
+                <li
+                    key={s.id}
+                    onClick={() => onSelect(s)}
+                    className="flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-150 
+                                hover:bg-[#1b3a3d] hover:scale-[1.02] active:scale-[0.99]"
+                    >
+                    <img
+                        className="w-5 h-5 opacity-80 flex-shrink-0"
+                        src={s.type === 'stop_area' ? trainIcon : cityIcon}
+                        alt=""
+                    />
+
+                    <div className="overflow-hidden">
+                        <div className="text-[0.7rem] font-medium text-gray-400 uppercase tracking-wide mb-0.5">
+                        {s.type === 'stop_area' ? 'Gare' : 'Ville'}
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                        <span
+                            className="text-sm font-medium text-white truncate max-w-[220px]"
+                            title={s.name}
+                        >
+                            {s.name}
+                        </span>
+                        {s.region && (
+                            <span
+                            className="text-sm font-medium text-primary truncate max-w-[200px]"
+                            title={s.region}
+                            >
+                            ({s.region})
+                            </span>
+                        )}
+                        </div>
+                    </div>
+                    </li>
+
+            ))}
+        </ul>
+    )
+}
+
+export default AutocompleteList;

@@ -7,9 +7,13 @@ import rateLimit from "express-rate-limit";
 import cookieParser from "cookie-parser";
 import { toNodeHandler, fromNodeHeaders } from "better-auth/node";
 import auth from "./dist/auth.js"; // export default depuis ton build
+import searchRoutes from "./src/routes/search.js";
+import { loadGeoData } from "./src/utils/geoData.js";
 
 const app = express();
 const PORT = Number(process.env.PORT || 3005);
+
+await loadGeoData();
 
 // CORS strict avec cookies
 const ALLOWED = [
@@ -18,7 +22,9 @@ const ALLOWED = [
   "http://localhost:3000",
   "http://127.0.0.1:3000",
   "https://horizons-plus-production.up.railway.app",
-  "https://horizons-plus.vercel.app", 
+  "https://horizons-plus.vercel.app",
+  
+  "https://vshmz3b1-5173.uks1.devtunnels.ms",
 ];
 
 const corsOptions = {
@@ -63,8 +69,10 @@ app.get("/api/me", async (req, res) => {
   res.json({ user: session.user });
 });
 
+app.use("/api/search", searchRoutes);
 
 // Health
 app.get("/api/health", (_req, res) => res.json({ ok: true }));
 
 app.listen(PORT, () => console.log(`API ready → http://localhost:${PORT}`));
+

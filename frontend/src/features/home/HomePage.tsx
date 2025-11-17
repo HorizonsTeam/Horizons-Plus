@@ -17,10 +17,10 @@ export default function HomePage() {
           {/* Version Mobile */}
           <div className="lg:hidden">
             <div className="px-6 py-8">
-              <h2 className="text-[32px] font-bold mb-4 text-[#98EAF3] leading-tight">
+              <h2 className="text-[32px] font-bold mb-4 text-primary leading-tight">
                 Voyagez<br />en avion
               </h2>
-              <p className="text-[#98EAF3]/90 mb-2 text-[15px] leading-relaxed">
+              <p className="text-primary/90 mb-2 text-[15px] leading-relaxed">
                 Trouvez le vol idéal pour<br />votre prochaine<br />destination.
               </p>
             </div>
@@ -32,12 +32,12 @@ export default function HomePage() {
               />
             </div>
 
-            <p className="text-sm text-center text-[#98EAF3] font-medium mb-6 px-4">
+            <p className="text-sm text-center text-primary font-medium mb-6 px-4">
               Paris → New York à partir de 299€
             </p>
 
             <div className="px-4 pb-8">
-              <button className="w-full bg-[#7dd3c0] hover:bg-[#6bc4b1] text-[#1a3d3d] font-semibold py-4 px-6 rounded-xl transition-colors duration-200 text-base shadow-lg">
+              <button className="w-full bg-primary active:bg-cyan-300 text-[#115E66] font-semibold py-4 px-6 rounded-xl transition-colors duration-200 text-base shadow-lg">
                 Rechercher un vol
               </button>
             </div>
@@ -48,19 +48,19 @@ export default function HomePage() {
             {/* Colonne gauche - Texte et CTA */}
             <div className="flex flex-col justify-center space-y-8">
               <div>
-                <h2 className="text-5xl xl:text-6xl font-bold mb-6 text-[#98EAF3] leading-tight">
+                <h2 className="text-5xl xl:text-6xl font-bold mb-6 text-primary leading-tight">
                   Voyagez en avion
                 </h2>
-                <p className="text-[#98EAF3]/90 text-xl leading-relaxed max-w-md">
+                <p className="text-primary/90 text-xl leading-relaxed max-w-md">
                   Trouvez le vol idéal pour votre prochaine destination.
                 </p>
               </div>
 
               <div className="space-y-4">
-                <p className="text-lg text-[#98EAF3] font-medium">
+                <p className="text-lg text-primary font-medium">
                   Paris → New York à partir de 299€
                 </p>
-                <button className="bg-[#7dd3c0] hover:bg-[#6bc4b1] text-[#1a3d3d] font-semibold py-4 px-10 rounded-xl transition-all duration-200 text-lg shadow-lg hover:shadow-xl hover:scale-105">
+                <button className="w-full bg-primary hover:bg-cyan-300 text-[#115E66] font-semibold py-4 px-6 rounded-xl transition-colors duration-200 text-base shadow-lg cursor-pointer">
                   Rechercher un vol
                 </button>
               </div>
@@ -84,10 +84,10 @@ export default function HomePage() {
           {/* Version Mobile */}
           <div className="lg:hidden">
             <div className="px-6 py-8">
-              <h2 className="text-[32px] font-bold mb-4 text-[#98EAF3] leading-tight">
+              <h2 className="text-[32px] font-bold mb-4 text-primary leading-tight">
                 Voyagez<br />en train
               </h2>
-              <p className="text-[#98EAF3]/90 mb-2 text-[15px] leading-relaxed">
+              <p className="text-primary/90 mb-2 text-[15px] leading-relaxed">
                 Trouvez votre trajet en train, simplement et rapidement.
               </p>
             </div>
@@ -99,13 +99,13 @@ export default function HomePage() {
               />
             </div>
 
-            <p className="text-sm text-center text-[#98EAF3] font-medium mb-6 px-4">
-              Paris → New York à partir de 299€
+            <p className="text-sm text-center text-primary font-medium mb-6 px-4">
+              Paris → Lyon à partir de 25€
             </p>
 
             <div className="px-4 pb-8">
-              <button className="w-full bg-[#7dd3c0] hover:bg-[#6bc4b1] text-[#1a3d3d] font-semibold py-4 px-6 rounded-xl transition-colors duration-200 text-base shadow-lg">
-                Rechercher un vol
+              <button className="w-full bg-primary active:bg-cyan-300 text-[#115E66] font-semibold py-4 px-6 rounded-xl transition-colors duration-200 text-base shadow-lg">
+                Rechercher un trajet
               </button>
             </div>
           </div>
@@ -124,20 +124,20 @@ export default function HomePage() {
             {/* Colonne droite - Texte et CTA */}
             <div className="flex flex-col justify-center space-y-8 lg:order-last">
               <div>
-                <h2 className="text-5xl xl:text-6xl font-bold mb-6 text-[#98EAF3] leading-tight">
+                <h2 className="text-5xl xl:text-6xl font-bold mb-6 text-primary leading-tight">
                   Voyagez en train
                 </h2>
-                <p className="text-[#98EAF3]/90 text-xl leading-relaxed max-w-md">
+                <p className="text-primary/90 text-xl leading-relaxed max-w-md">
                   Trouvez votre trajet en train, simplement et rapidement.
                 </p>
               </div>
 
               <div className="space-y-4">
-                <p className="text-lg text-[#98EAF3] font-medium">
-                  Paris → New York à partir de 299€
+                <p className="text-lg text-primary font-medium">
+                  Paris → Lyon à partir de 25€
                 </p>
-                <button className="bg-[#7dd3c0] hover:bg-[#6bc4b1] text-[#1a3d3d] font-semibold py-4 px-10 rounded-xl transition-all duration-200 text-lg shadow-lg hover:shadow-xl hover:scale-105">
-                  Rechercher un train
+                <button className="w-full bg-primary hover:bg-cyan-300 text-[#115E66] font-semibold py-4 px-6 rounded-xl transition-colors duration-200 text-base shadow-lg cursor-pointer">
+                  Rechercher un trajet
                 </button>
               </div>
             </div>
@@ -156,7 +156,7 @@ export default function HomePage() {
           
           <div className="space-y-4 lg:grid lg:grid-cols-3 lg:gap-6 lg:space-y-0 mb-8">
             {/* Rome */}
-            <Link to="/Ville" className="text-[#98EAF3]">
+            <Link to="/Ville" className="text-primary">
               <div className="destination-card">
                 <div className="relative h-48 lg:h-56">
                   <img
@@ -215,7 +215,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          <button className="btn-primary w-full lg:w-auto lg:mx-auto lg:block">
+          <button className="btn-primary w-full lg:w-auto lg:mx-auto lg:block hover:bg-cyan-300 text-[#115E66] font-semibold px-12 py-4 rounded-xl shadow-lg cursor-pointer">
             Voir toutes les destinations
           </button>
         </div>
@@ -228,7 +228,7 @@ export default function HomePage() {
       <section className="px-4 py-12 lg:py-16 bg-dark">
         <div className="max-w-md mx-auto lg:max-w-7xl">
           <h2 className="text-2xl lg:text-3xl font-bold mb-6 lg:mb-8 text-center">
-            réservez votre porchain événement
+            Réservez votre prochain évènement           
           </h2>
           
           <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-6 lg:space-y-0">
