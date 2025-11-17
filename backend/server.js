@@ -19,12 +19,7 @@ await loadGeoData();
 const ALLOWED = [
   process.env.FRONT_URL || "http://localhost:5173",
   "http://127.0.0.1:5173",
-  "http://localhost:3000",
-  "http://127.0.0.1:3000",
-  "https://horizons-plus-production.up.railway.app",
   "https://horizons-plus.vercel.app",
-  
-  "https://vshmz3b1-5173.uks1.devtunnels.ms",
 ];
 
 const corsOptions = {
