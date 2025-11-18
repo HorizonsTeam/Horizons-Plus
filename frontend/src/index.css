@@ -97,7 +97,7 @@
     .input-date-white::-moz-calendar-picker-indicator {
       filter: brightness(0) invert(1);
     }
-}
+
   
   .autocomplete-suggestions {
     scrollbar-width: medium;

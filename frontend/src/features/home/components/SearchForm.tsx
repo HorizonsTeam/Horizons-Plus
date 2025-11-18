@@ -1,6 +1,7 @@
 import { ArrowDownUp, Minus } from 'lucide-react';
 import { useState } from 'react';
 import AutocompleteInput from '../../../components/autocomplete/AutocompleteInput.tsx';
+import { Link } from 'react-router-dom';
 
 
 export default function SearchForm() {
@@ -95,10 +96,14 @@ export default function SearchForm() {
           </div>
 
           {/* Bouton Rechercher */}
-          <button className="w-full bg-primary active:bg-cyan-300 text-[#115E66] font-semibold py-4 px-6 rounded-xl transition-colors duration-200 text-base shadow-lg">
+          <Link to="/Recherche" className="w-full bg-primary active:bg-cyan-300 text-[#115E66] font-semibold py-4 px-6 rounded-xl transition-colors duration-200 text-base shadow-lg">
+
+
             Rechercher
-            </button>
+          </Link>
+
           
+       
         </div>
 
         {/* Formulaire Desktop */}
