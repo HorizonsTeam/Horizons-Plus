@@ -12,72 +12,7 @@ export default function HomePage() {
     <div className="min-h-screen ">
       <SearchForm />
       
-      {/* Flight Section */}
-      <section className="lg:py-20 mt-16">
-        <div className="max-w-7xl mx-auto">
-          {/* Version Mobile */}
-          <div className="lg:hidden">
-            <div className="px-6 py-8">
-              <h2 className="text-[32px] font-bold mb-4 text-primary leading-tight">
-                Voyagez<br />en avion
-              </h2>
-              <p className="text-primary/90 mb-2 text-[15px] leading-relaxed">
-                Trouvez le vol idéal pour<br />votre prochaine<br />destination.
-              </p>
-            </div>
-
-            {/* Mobile Input Fields */}
-            <div className="space-y-4 lg:hidden">
-              <input
-                type="text"
-                placeholder="Où"
-                className="search-input w-full"
-              />
-              <input
-                type="text"
-                placeholder="Quand"
-                className="search-input w-full"
-              />
-            </div>
-
-            <p className="text-sm text-center text-primary font-medium mb-6 px-4">
-              Paris → New York à partir de 299€
-            </p>
-
-            <div className="px-4 pb-8">
-              <button className="w-full bg-primary active:bg-cyan-300 text-[#115E66] font-semibold py-4 px-6 rounded-xl transition-colors duration-200 text-base shadow-lg">
-                Rechercher un vol
-              </button>
-            </div>
-
-            <div className="hidden lg:grid lg:grid-cols-3 gap-4 mb-6">
-              <div>
-                <h2 className="text-5xl xl:text-6xl font-bold mb-6 text-primary leading-tight">
-                  Voyagez en avion
-                </h2>
-                <p className="text-primary/90 text-xl leading-relaxed max-w-md">
-                  Trouvez le vol idéal pour votre prochaine destination.
-                </p>
-              </div>
-
-              <div className="space-y-4">
-                <p className="text-lg text-primary font-medium">
-                  Paris → New York à partir de 299€
-                </p>
-                <button className="w-full bg-primary hover:bg-cyan-300 text-[#115E66] font-semibold py-4 px-6 rounded-xl transition-colors duration-200 text-base shadow-lg cursor-pointer">
-                  Rechercher un vol
-                </button>
-              </div>
-            </div>
-            <Link to="/Recherche" className="btn-primary w-full text-lg mt-6">
-              
-                Rechercher
-                
-              
-            </Link>
-          </div>
-        </div>
-      </section>
+     
 
       {/* Flight Section */}
       <section className="px-0 py-12 lg:py-16 w-screen h-screen -ml-5 bg-dark">
