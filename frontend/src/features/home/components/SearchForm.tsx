@@ -3,6 +3,7 @@ import { useState } from 'react';
 import AutocompleteInput from '../../../components/autocomplete/AutocompleteInput.tsx';
 import { Link } from 'react-router-dom';
 
+
 export default function SearchForm() {
   // Etat des villes 
   const [depart, setDepart] = useState<string>("");
