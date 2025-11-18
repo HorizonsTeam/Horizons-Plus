@@ -1,6 +1,16 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@100..800&display=swap');
+
+.sora {
+  font-family: "Sora", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 10;
+  font-style: normal;
+}
+
 #root {
   margin: 0;
   padding: 0;
   background: #103035;
+  font-family: sora;
 } 
 

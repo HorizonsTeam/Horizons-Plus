@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+
 @theme {
   --color-primary: #98EAF3;
   --color-dark: #103035;
@@ -10,6 +11,7 @@
   --color-gray-600: #4b5563;
   --color-yellow-400: #fbbf24;
 }
+
 
 @layer base {
   body {
@@ -96,3 +98,27 @@
       filter: brightness(0) invert(1);
     }
 }
+  
+  .autocomplete-suggestions {
+    scrollbar-width: medium;
+    scrollbar-color: #45c1d6 transparent;
+  }
+
+  .autocomplete-suggestions::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .autocomplete-suggestions::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .autocomplete-suggestions::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #45c1d6, #007b8a);
+    border-radius: 10px;
+  }
+
+  .autocomplete-suggestions::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #62d6e8, #00a4b6);
+  }
+}
+

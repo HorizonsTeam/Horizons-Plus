@@ -1,47 +1,29 @@
 import { useState } from 'react'; 
 import PlaneImage from '../../assets/avion-deco.png';
+import PlaneImageDesktop from '../../assets/flight.png';
+import TrainImage from '../../assets/train.png';
 import { Link } from 'react-router-dom';
+import SearchForm from './components/SearchForm';
+import PromotionSlider from './components/PromotionSlider';
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState<'depart' | 'arrivee'>('depart');
 
   return (
     <div className="min-h-screen ">
-      {/* Hero Section - Mobile First Search */}
-      <section className="bg-dark px-4 py-8 lg:py-16 mb-30">
-        <div className="max-w-md mx-auto lg:max-w-4xl">
-          <h1 className="text-3xl lg:text-5xl font-bold text-center mb-8 lg:mb-12">
-            Envie de voyager ?
-          </h1>
-
-          {/* Mobile Search Form */}
-          <div className="bg-secondary/50 backdrop-blur-sm rounded-2xl p-6 lg:p-8">
-            {/* Tabs - Mobile: Depart/Arrivee */}
-            <div className="flex gap-2 mb-6 lg:hidden">
-              <button
-                onClick={() => setActiveTab('depart')}
-                className={`flex-1 py-3 px-4 rounded-lg font-medium transition-colors ${
-                  activeTab === 'depart' 
-                    ? 'bg-primary text-dark' 
-                    : 'bg-dark/50 text-white'
-                }`}
-              >
-                Départ
-              </button>
-              <button
-                onClick={() => setActiveTab('arrivee')}
-                className={`flex-1 py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
-                  activeTab === 'arrivee' 
-                    ? 'bg-primary text-dark' 
-                    : 'bg-dark/50 text-white'
-                }`}
-              >
-                <span>Arrivée</span>
-                {activeTab === 'arrivee' && (
-                  <span className="bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
-                    2
-                  </span>
-                )}
-              </button>
+      <SearchForm />
+      
+      {/* Flight Section */}
+      <section className="lg:py-20 mt-16">
+        <div className="max-w-7xl mx-auto">
+          {/* Version Mobile */}
+          <div className="lg:hidden">
+            <div className="px-6 py-8">
+              <h2 className="text-[32px] font-bold mb-4 text-primary leading-tight">
+                Voyagez<br />en avion
+              </h2>
+              <p className="text-primary/90 mb-2 text-[15px] leading-relaxed">
+                Trouvez le vol idéal pour<br />votre prochaine<br />destination.
+              </p>
             </div>
 
             {/* Mobile Input Fields */}
@@ -58,49 +40,33 @@ export default function HomePage() {
               />
             </div>
 
-            {/* Desktop Inputs */}
-            <div className="hidden lg:grid lg:grid-cols-2 gap-4 mb-6">
-              <div>
-                <label className="block text-sm text-gray-400 mb-2">Départ</label>
-                <input
-                  type="text"
-                  placeholder="D'où partez-vous ?"
-                  className="search-input w-full"
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-400 mb-2">Arrivée</label>
-                <input
-                  type="text"
-                  placeholder="Où allez-vous ?"
-                  className="search-input w-full"
-                />
-              </div>
+            <p className="text-sm text-center text-primary font-medium mb-6 px-4">
+              Paris → New York à partir de 299€
+            </p>
+
+            <div className="px-4 pb-8">
+              <button className="w-full bg-primary active:bg-cyan-300 text-[#115E66] font-semibold py-4 px-6 rounded-xl transition-colors duration-200 text-base shadow-lg">
+                Rechercher un vol
+              </button>
             </div>
 
             <div className="hidden lg:grid lg:grid-cols-3 gap-4 mb-6">
               <div>
-                <label className="block text-sm text-gray-400 mb-2">Date de départ</label>
-                <input
-                  type="date"
-                  className="search-input w-full"
-                />
+                <h2 className="text-5xl xl:text-6xl font-bold mb-6 text-primary leading-tight">
+                  Voyagez en avion
+                </h2>
+                <p className="text-primary/90 text-xl leading-relaxed max-w-md">
+                  Trouvez le vol idéal pour votre prochaine destination.
+                </p>
               </div>
-              <div>
-                <label className="block text-sm text-gray-400 mb-2">Date de retour</label>
-                <input
-                  type="date"
-                  className="search-input w-full"
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-400 mb-2">Passagers</label>
-                <select className="search-input w-full">
-                  <option>1 passager</option>
-                  <option>2 passagers</option>
-                  <option>3 passagers</option>
-                  <option>4+ passagers</option>
-                </select>
+
+              <div className="space-y-4">
+                <p className="text-lg text-primary font-medium">
+                  Paris → New York à partir de 299€
+                </p>
+                <button className="w-full bg-primary hover:bg-cyan-300 text-[#115E66] font-semibold py-4 px-6 rounded-xl transition-colors duration-200 text-base shadow-lg cursor-pointer">
+                  Rechercher un vol
+                </button>
               </div>
             </div>
             <Link to="/Recherche" className="btn-primary w-full text-lg mt-6">
@@ -141,30 +107,72 @@ export default function HomePage() {
       </section>
 
       {/* Train Section */}
-      <section className="px-4 py-12 lg:py-16 bg-secondary/10">
-        <div className="max-w-md mx-auto lg:max-w-7xl">
-          <h2 className="text-2xl lg:text-3xl font-bold mb-3">Voyagez en train</h2>
-          <p className="text-gray-400 mb-6 lg:mb-8 text-sm lg:text-base">
-            Trouvez votre trajet en train, simplement et rapidement.
-          </p>
-          
-          <div className="relative rounded-2xl overflow-hidden h-56 lg:h-96 mb-6">
-            <img
-              src="https://images.unsplash.com/photo-1474487548417-781cb71495f3?w=1200&h=600&fit=crop"
-              alt="Train moderne"
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-dark/90 to-transparent"></div>
-            <div className="absolute bottom-4 left-4">
-              <p className="text-sm text-primary">Paris → Lyon à partir de 25€</p>
+      <section className="lg:py-20 mt-16">
+        <div className="max-w-7xl mx-auto">
+          {/* Version Mobile */}
+          <div className="lg:hidden">
+            <div className="px-6 py-8">
+              <h2 className="text-[32px] font-bold mb-4 text-primary leading-tight">
+                Voyagez<br />en train
+              </h2>
+              <p className="text-primary/90 mb-2 text-[15px] leading-relaxed">
+                Trouvez votre trajet en train, simplement et rapidement.
+              </p>
+            </div>
+            <div className="relative overflow-hidden mb-6 w-full h-[472px]">
+              <img 
+                src={TrainImage} 
+                alt="Avion dans les nuages"
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+            </div>
+
+            <p className="text-sm text-center text-primary font-medium mb-6 px-4">
+              Paris → Lyon à partir de 25€
+            </p>
+
+            <div className="px-4 pb-8">
+              <button className="w-full bg-primary active:bg-cyan-300 text-[#115E66] font-semibold py-4 px-6 rounded-xl transition-colors duration-200 text-base shadow-lg">
+                Rechercher un trajet
+              </button>
             </div>
           </div>
 
-          <button className="btn-primary w-full lg:w-auto">
-            Rechercher un trajet
-          </button>
+          {/* Version Desktop */}
+          <div className="hidden lg:grid lg:grid-cols-2 lg:gap-16 lg:items-center lg:px-12">
+            {/* Colonne gauche - Image */}
+            <div className="relative overflow-hidden h-[600px] lg:order-first">
+              <img 
+                src={TrainImage} 
+                alt="Train dans les nuages"
+                className="absolute inset-0 w-full h-full object-contain object-center"
+              />
+            </div>
+
+            {/* Colonne droite - Texte et CTA */}
+            <div className="flex flex-col justify-center space-y-8 lg:order-last">
+              <div>
+                <h2 className="text-5xl xl:text-6xl font-bold mb-6 text-primary leading-tight">
+                  Voyagez en train
+                </h2>
+                <p className="text-primary/90 text-xl leading-relaxed max-w-md">
+                  Trouvez votre trajet en train, simplement et rapidement.
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <p className="text-lg text-primary font-medium">
+                  Paris → Lyon à partir de 25€
+                </p>
+                <button className="w-full bg-primary hover:bg-cyan-300 text-[#115E66] font-semibold py-4 px-6 rounded-xl transition-colors duration-200 text-base shadow-lg cursor-pointer">
+                  Rechercher un trajet
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
+     
 
       {/* Destinations Section */}
       <section className="px-4 py-12 lg:py-16 bg-dark">
@@ -176,7 +184,7 @@ export default function HomePage() {
           
           <div className="space-y-4 lg:grid lg:grid-cols-3 lg:gap-6 lg:space-y-0 mb-8">
             {/* Rome */}
-            <Link to="/Ville" className="text-[#98EAF3]">
+            <Link to="/Ville" className="text-primary">
               <div className="destination-card">
                 <div className="relative h-48 lg:h-56">
                   <img
@@ -235,85 +243,20 @@ export default function HomePage() {
             </div>
           </div>
 
-          <button className="btn-primary w-full lg:w-auto lg:mx-auto lg:block">
+          <button className="btn-primary w-full lg:w-auto lg:mx-auto lg:block hover:bg-cyan-300 text-[#115E66] font-semibold px-12 py-4 rounded-xl shadow-lg cursor-pointer">
             Voir toutes les destinations
           </button>
         </div>
       </section>
 
       {/* Promotions Section */}
-      <section className="px-4 py-12 lg:py-16 bg-secondary/10">
-        <div className="max-w-md mx-auto lg:max-w-7xl">
-          <h2 className="text-2xl lg:text-3xl font-bold mb-3">
-            Passez pas à côté de nos promotions
-          </h2>
-          <p className="text-gray-400 mb-6 lg:mb-8 text-sm lg:text-base">
-            Réservez les meilleurs voyages au meilleurs prix
-          </p>
-          
-          <div className="space-y-6 lg:grid lg:grid-cols-2 lg:gap-6 lg:space-y-0">
-            {/* Pack American Dream */}
-            <div className="bg-secondary rounded-xl overflow-hidden">
-              <img
-                src="https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=800&h=400&fit=crop"
-                alt="Plage tropicale"
-                className="w-full h-48 object-cover"
-              />
-              <div className="p-5">
-                <h3 className="text-xl font-bold mb-3">Pack American Dream</h3>
-                <ul className="text-sm text-gray-300 space-y-1 mb-4">
-                  <li>• Hôtel avec piscine, bar, mini-golf</li>
-                  <li>• Tout-terrain en MIAMI ⭐</li>
-                  <li>• Activités, petits-cadeaux print...</li>
-                </ul>
-                <p className="text-primary font-bold text-2xl mb-4">À partir de 1999€</p>
-                <button className="btn-primary w-full">Voir Plus →</button>
-              </div>
-            </div>
-
-            {/* Events Grid */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-secondary rounded-xl p-4 flex flex-col items-center justify-center text-center min-h-[140px]">
-                <div className="w-14 h-14 bg-primary/20 rounded-full flex items-center justify-center mb-2">
-                  <span className="text-2xl">🎪</span>
-                </div>
-                <h4 className="font-semibold text-sm mb-1">Spectacles</h4>
-                <p className="text-xs text-gray-400">Concerts & Shows</p>
-              </div>
-
-              <div className="bg-secondary rounded-xl p-4 flex flex-col items-center justify-center text-center min-h-[140px]">
-                <div className="w-14 h-14 bg-primary/20 rounded-full flex items-center justify-center mb-2">
-                  <span className="text-2xl">⚽</span>
-                </div>
-                <h4 className="font-semibold text-sm mb-1">FIFA World Cup</h4>
-                <p className="text-xs text-gray-400">Sports</p>
-              </div>
-
-              <div className="bg-secondary rounded-xl p-4 flex flex-col items-center justify-center text-center min-h-[140px]">
-                <div className="w-14 h-14 bg-primary/20 rounded-full flex items-center justify-center mb-2">
-                  <span className="text-2xl">🏎️</span>
-                </div>
-                <h4 className="font-semibold text-sm mb-1">Racing</h4>
-                <p className="text-xs text-gray-400">Compétitions</p>
-              </div>
-
-              <div className="bg-secondary rounded-xl p-4 flex flex-col items-center justify-center text-center min-h-[140px]">
-                <div className="w-14 h-14 bg-primary/20 rounded-full flex items-center justify-center mb-2">
-                  <span className="text-2xl">🏛️</span>
-                </div>
-                <h4 className="font-semibold text-sm mb-1">Notre-Dame</h4>
-                <p className="text-xs text-gray-400">Culture</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <PromotionSlider />
 
       {/* Events Section */}
       <section className="px-4 py-12 lg:py-16 bg-dark">
         <div className="max-w-md mx-auto lg:max-w-7xl">
           <h2 className="text-2xl lg:text-3xl font-bold mb-6 lg:mb-8 text-center">
-            réservez votre porchain événement
+            Réservez votre prochain évènement           
           </h2>
           
           <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-6 lg:space-y-0">
