@@ -30,12 +30,12 @@ const corsOptions = {
   },
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
+  allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
   exposedHeaders: ["Set-Cookie"], // Permet au navigateur de lire les cookies dans la réponse
 };
 
 // Trust proxy pour production (Vercel/Railway)
-app.set('trust proxy', true); 
+app.set('trust proxy', true);
 
 app.use(helmet());
 app.use(cors(corsOptions));
@@ -53,7 +53,7 @@ app.use((req, _res, next) => { console.log(req.method, req.path); next(); });
 app.use("/api/auth", rateLimit({ windowMs: 60_000, limit: 60 }));
 
 // Pattern correct pour Better Auth
-app.use("/api/auth/*", toNodeHandler(auth)); 
+app.use("/api/auth/*", toNodeHandler(auth));
 
 // introspection simple
 app.get("/api/auth/_routes", (_req, res) => {
