@@ -8,7 +8,7 @@ import ApplePay_ico from '../../../../../assets/applePay.svg'
 
 
 export default function ModeDePaiementCard() {
-    const [selectedMode, setSelectedMode] = useState<string>("Carte bancaire"); // 👈 état pour le mode sélectionné
+    const [selectedMode, setSelectedMode] = useState<string>("Carte bancaire"); 
     
     return (
         <div className="w-full p-6 bg-[#133A40] rounded-2xl border-2 border-[#2C474B] mt-10 text-white">

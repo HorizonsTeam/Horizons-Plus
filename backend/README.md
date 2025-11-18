@@ -52,6 +52,9 @@ FRONT_ORIGIN="http://localhost:5173"
 
 IMPORTANT : En production, modifiez BETTER_AUTH_SECRET avec une valeur aléatoire sécurisée.
 
+Il faut aussi remplir NAVITIA_API_KEY avec une clé générée avec ce lien : https://numerique.sncf.com/startup/api/
+Sinon, si vous avez accès à notre clé, veuillez la renseigner dans NAVITIA_API_KEY.
+
 Initialisation de la base de données
 
 4. Préparer la base AUTH avec Prisma

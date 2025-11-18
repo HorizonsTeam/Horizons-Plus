@@ -1,3 +1,5 @@
+
+
 type Props = {
     IsSelected: boolean;
     cardName: string;
@@ -10,7 +12,7 @@ export default function ModeDePaiementItem({ IsSelected, cardName, cardDescripti
     return (
         <button
             onClick={onClick}
-            className={`w-80 h-20 rounded-xl p-4 text-left transition  border-3
+            className={`w-80 h-20 rounded-xl p-4 text-left transition -ml-2 mb-2 border-3
         ${IsSelected ? "border-[#98EAF3] text-[#98EAF3]" : "border-[#2C474B] text-white"}
          hover:border-[#98EAF3]`}
         >
