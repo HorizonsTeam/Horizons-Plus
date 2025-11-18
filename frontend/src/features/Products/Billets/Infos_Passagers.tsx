@@ -62,7 +62,7 @@ export default function Infos_Passagers() {
                         <div className='flex justify-between'>
                             <p className="font-bold mt-1">Autre passager</p>
                             <div className='h-8 w-8 bg-white rounded-2xl flex justify-center items-center '>
-                                <h1 className='text-[#133A40]  text-4xl font-bold -mt-2'>+</h1>
+                                <h1 className='text-[#133A40]  text-4xl font-bold '>+</h1>
 
                             </div>
                         </div>

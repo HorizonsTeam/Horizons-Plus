@@ -28,7 +28,7 @@ export default function Inclus(props: Props) {
     return (
         <div className='w-full items-center   bg-[#133A40] rounded-2xl border-2 border-[#2C474B] mt-5 '>
                 <div className='border-b-3 border-[#2C474B] '>
-                    <p className='m-4 font-semibold '>Inclus</p>
+                <p className='m-4 font-semibold  text-center -ml-0.5'>Inclus</p>
                 </div>
                 <div className="grid grid-cols-2 gap-4 p-5">
                     {avantages.map((item, index) => (
