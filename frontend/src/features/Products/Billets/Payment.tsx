@@ -21,13 +21,14 @@ export default function PaymentPage  ()
 
     return (
         <>
-            <div>
-                <div className='relative mt-4'>
+            <div className='flex-wrap'>
+            <div className='m-2 p-3 -mt-3 '>
+                <div className='relative mt-4 display flex justify-center items-center '>
 
                     <button onClick={handleretour}><img src={ReturnBtn} alt="Return Button" className='absolute left-4 mt-5 transform -translate-y-1/2' /></button>
                     < h1 className='text-3xl text-[#98EAF3] font-medium text-center'>Paiement</h1>
                 </div>
-                <div className='w-full items-center h-70 bg-[#133A40] rounded-2xl border-2 border-[#2C474B] mt-10 gap-2'>
+                <div className='w-full items-center h-70 bg-[#133A40] rounded-2xl border-2 border-[#2C474B] mt-15 gap-2'>
                     <p className='font-bold m-3 '>Récapitulatif de votre réservation</p>
                     <div className=' w-full h-70  mt-6 border-t-[#2C474B] border-b-[#2C474B] border-t-2 border-b-2 grid grid-cols  '>
                         <ul className='space-y-7 text-left m-2 font-bold'>
@@ -47,7 +48,7 @@ export default function PaymentPage  ()
                 </div>
                 <ModeDePaiementCard />
             </div>
-            <div className='w-full items-center h-70 bg-[#133A40] rounded-2xl border-2 border-[#2C474B] mt-10 gap-2'>
+            <div className=' items-center h-70 bg-[#133A40] rounded-2xl border-2 border-[#2C474B] mt-10 m-4 space-y-3 '>
                 <p className='font-bold m-3 '>Options supplémentaires</p>
                 
                 <div className=' w-full h-70  mt-6 border-t-[#2C474B]  border-t-2  grid grid-cols p-5 '>
@@ -76,16 +77,16 @@ export default function PaymentPage  ()
                 </div>
                 
             </div>
-            <div className='flex justify-between m-5 '>
+            <div className='flex justify-between m-7 '>
                 <p className='text-2xl font-bold '>Total : </p>
                 <p className='text-2xl font-bold '>59,00 €</p>
             </div>
             
-            <button className="w-80  h-15 bg-[#98EAF3] rounded-xl mt-4">
+            <button className="w-80  h-15 bg-[#98EAF3] rounded-xl mt-4 ml-8 mb-10">
                     <span className="text-[#115E66] font-bold text-3xl">Payer</span>
             </button>
             
-
+            </div>
         </>
 
     );

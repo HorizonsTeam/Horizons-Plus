@@ -96,7 +96,8 @@ export default function SearchForm() {
           {/* Bouton Rechercher */}
           <button className="w-full bg-primary active:bg-cyan-300 text-[#115E66] font-semibold py-4 px-6 rounded-xl transition-colors duration-200 text-base shadow-lg">
             Rechercher
-          </button>
+            </button>
+          </Link>
         </div>
 
         {/* Formulaire Desktop */}
