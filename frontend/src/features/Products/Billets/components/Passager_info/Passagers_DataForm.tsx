@@ -1,5 +1,7 @@
 import Gender_Selection from './Gender';
 import { useState } from 'react';
+import CarteReduction from './Carte_De_Reduction'
+import closeSvg from '../../../../../assets/CloseSVG.svg'
 
 type Props = {
     passagerIndex?: number;
@@ -8,9 +10,15 @@ type Props = {
 
 export default function Passagers_Data_From({ passagerIndex, suprimer_Passager }: Props)
 {      
+    const [Abonement_Reduction, setAbonement_reduc] = useState(false);
+    const fermer = () =>
+    {
+        setAbonement_reduc(false);
+    }
+
     const titre = passagerIndex === 1
         ? "Vos informations"
-        : `Informations du passager ${passagerIndex}`;
+        : ` Informations du passager  ${passagerIndex}`;
 
         const [selectedGender, setSelectedGender] = useState("Homme");
         
@@ -18,11 +26,11 @@ export default function Passagers_Data_From({ passagerIndex, suprimer_Passager }
 
         <>
             <div className="w-full items-center bg-[#133A40] rounded-2xl border-2 border-[#2C474B] mt-10 p-4">
-                <div className='w-full flex justify-between'>
-                    <p className="font-bold mt-4 ">{titre}</p>
+                <div className='w-full flex justify-between mb-5'>
+                    <p className={`font-bold mt-4 ${passagerIndex === 1 && 'w-full text-center  '  }`}>{titre}</p>
                     {passagerIndex !== 1 && (
-                        <button className="font-bold text-xl " onClick={suprimer_Passager}>
-                            X
+                        <button className="font-bold text-xl text-red" onClick={suprimer_Passager}>
+                            <img src={closeSvg} alt="" className='w-6 h-6 mt-4'/>
                         </button>
                     )}
                 </div>
@@ -58,14 +66,38 @@ export default function Passagers_Data_From({ passagerIndex, suprimer_Passager }
                 <div className='grid grid-cols gap-10 '>
                     <input type="text" className="h-13  rounded-md px-3 border-3 border-[#2C474B] bg-[#103035] focus:border-[#98EAF3] focus:outline-none w-full" />
                     <input type="text" className="h-13  rounded-md px-3 border-3 border-[#2C474B] bg-[#103035] focus:border-[#98EAF3] focus:outline-none w-full" />
-                    <input type="date" className="h-13  rounded-md px-3 border-3 border-[#2C474B] bg-[#103035] focus:border-[#98EAF3] focus:outline-none w-full" />
+                            <input
+                                type="date"
+                                className="h-13 rounded-md px-3 border-3 border-[#2C474B] bg-[#103035] focus:border-[#98EAF3] focus:outline-none w-full input-date-white"
+                            />
                     <input type="email" className="h-13  rounded-md px-3 border-3 border-[#2C474B] bg-[#103035] focus:border-[#98EAF3] focus:outline-none w-full" />
                     <input type="tel" className="h-13  rounded-md px-3 border-3 border-[#2C474B] bg-[#103035] focus:border-[#98EAF3] focus:outline-none w-full" />
 
                 </div>
                 </div>
 
-            </div>
+            
+                </div>
+                { !Abonement_Reduction ?(
+                <div className="w-full items-center bg-[#103035] rounded-2xl border-2 border-[#2C474B] mt-5  p-4">
+                        <button className='w-full' onClick={() => setAbonement_reduc(!Abonement_Reduction)}
+ >
+                        <div className='flex justify-between'>
+                            <p className="font-bold mt-1 text-xs ">Carte de réduction / abonnement</p>
+                            <div className='h-8 w-8 bg-white rounded-2xl flex justify-center items-center '>
+                                <h1 className='text-[#133A40]  text-4xl font-bold -mt-2'>+</h1>
+
+                            </div>
+                        </div>
+                    </button>
+
+                    </div>)
+                : (
+                <div className="w-full items-center bg-[#103035] rounded-2xl border-2 border-[#2C474B] mt-5  p-4">
+                     <CarteReduction  fermer={fermer}/>                    
+                </div>
+                    )
+                }
             </div>
 
 

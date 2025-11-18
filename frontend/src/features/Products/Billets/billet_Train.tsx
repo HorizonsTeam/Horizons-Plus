@@ -128,11 +128,12 @@ export default function Billet_Train_recap ()
             </div>
             <div className='grid grid-cols gap-2 m-4'>
             <AjouterPanierBtn/>
-                <Link to="/Infos_Passagers">    
-                <button className="w-80  h-15 bg-[#98EAF3] rounded-xl mt-4">
-                    <span className="text-[#115E66] font-bold text-xl">Continuer</span>
-                </button>
+                <Link to="/Infos_Passagers">
+                    <button className="w-80  h-15 bg-[#98EAF3] rounded-xl mt-4">
+                        <span className="text-[#115E66] font-bold text-xl">Continuer</span>
+                    </button>
             </Link>
+                
             </div>
                 
 
