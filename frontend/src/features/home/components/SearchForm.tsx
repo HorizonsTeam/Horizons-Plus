@@ -1,14 +1,14 @@
 import { ArrowDownUp, Minus } from 'lucide-react';
-import { useState } from 'react';
+import {  useState } from 'react';
 import AutocompleteInput from '../../../components/autocomplete/AutocompleteInput.tsx';
-import { Link } from 'react-router-dom';
-
+import { useNavigate } from 'react-router-dom';
 
 export default function SearchForm() {
   // Etat des villes 
   const [depart, setDepart] = useState<string>("");
   const [arrivee, setArrivee] = useState<string>("");
   const [rotation, setRotation] = useState<number>(0);
+  const navigate = useNavigate();
 
   //Fonction swap
   const handleSwap = () => {
@@ -96,11 +96,12 @@ export default function SearchForm() {
           </div>
 
           {/* Bouton Rechercher */}
-          <Link to="/Recherche" className="w-full bg-primary active:bg-cyan-300 text-[#115E66] font-semibold py-4 px-6 rounded-xl transition-colors duration-200 text-base shadow-lg">
 
+          <button onClick={() => navigate("/Recherche")}
+           className="w-full bg-primary active:bg-cyan-300 text-[#115E66] font-semibold py-4 px-6 rounded-xl transition-colors duration-200 text-base shadow-lg" >
 
             Rechercher
-          </Link>
+            </button>
 
           
        
