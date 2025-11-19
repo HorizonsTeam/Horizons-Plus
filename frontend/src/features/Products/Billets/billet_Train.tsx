@@ -103,7 +103,7 @@ export default function Billet_Train_recap ()
                 <div className='border-b-3 border-[#2C474B] '>
                     <p className='m-4 font-semibold text-center -ml-0.5'>Classe</p>
                 </div>
-                <div className="grid grid-col gap-4 m-4">
+                <div className="flex flex-wrap w-full justify-center gap-4 m-4 max-w-190">
                     {classes.map((classe) => (
                         <div key={classe.name} onClick={() => setSelectedClass(classe.name)}>
                             <ClassCard
@@ -126,7 +126,7 @@ export default function Billet_Train_recap ()
                 <p className='font-bold text-3xl'>59,00 €</p>
 
             </div>
-            <div className='grid grid-cols gap-2 m-4'>
+            <div className='grid grid-cols gap-2 m-4 justify-center items-center '>
             <AjouterPanierBtn/>
                 <Link to="/Infos_Passagers">
                     <button className="w-80  h-15 bg-[#98EAF3] rounded-xl mt-4">
