@@ -20,7 +20,7 @@ export default function Resultats ()
     {
         navigate(-1);
     }
-    const [planSearch, setPlanSearch] = useState(false);
+    const [planeSearch, setPlanSearch] = useState(false);
     const [all, setAllSearch] = useState(true);
     const [train, setTrainSearch] = useState(false);
     const [date, setDate] = useState(new Date());
@@ -68,26 +68,26 @@ export default function Resultats ()
                 setAllSearch(false);
             }
             
-            } className={`w-2/3 h-[68px] flex justify-center items-center border-b-4 border-b-white rounded-tr-3xl transition-colors duration-300 ${planSearch ? 'bg-transparent' : 'bg-[#133A40]'  } ${all && 'bg-transparent'  } ${train && 'bg-[#133A40]'}`}>
+            } className={`w-2/3 h-[68px] flex justify-center items-center border-b-4 border-b-white rounded-tr-3xl transition-colors duration-300 ${planeSearch ? 'bg-transparent' : 'bg-[#133A40]'  } ${all && 'bg-transparent'  } ${train && 'bg-[#133A40]'}`}>
                 <div >
                 <img src={Train_Ico} alt="Train" className=""  />
                 {train ? <BestPrice /> : null}
                 </div>
             </button>
  
-            <button className={`w-2/3 h-[68px] grid grid-col justify-center items-center border-b-4 border-b-white rounded-tl-3xl transition-colors duration-300 ${planSearch ? 'bg-[#133A40]' : 'bg-transparent' } ${all && 'bg-transparent'  }`} 
+            <button className={`w-2/3 h-[68px] grid grid-col justify-center items-center border-b-4 border-b-white rounded-tl-3xl transition-colors duration-300 ${planeSearch ? 'bg-[#133A40]' : 'bg-transparent' } ${all && 'bg-transparent'  }`} 
             onClick={() => {  
                 setPlanSearch(true);
                 setAllSearch(false);
                 setTrainSearch(false);
             }}>
                 <img src={Plane_Ico} alt="Avion" className="" />
-                {planSearch ? <BestPrice /> : null}
+                {planeSearch ? <BestPrice /> : null}
             </button>
 
 
         </div>
-        <div className="bg-[#133A40] px-4 pt-5 -mt-10 w-[calc(109%)]  h-300 -ml-4 ">
+        <div className="bg-[#133A40] px-4 pt-5 -mt-10 w-full  h-300x  ">
             <div className="flex  gap-2  -ml-3">
                 <button className="flex items-center gap-1 border-[#98EAF3] border-2 px-4 py-2 rounded-full text-[#98EAF3]  rounded-full text-sm w-24">
                 <span className='-ml-1'>Horaires </span>
@@ -110,12 +110,12 @@ export default function Resultats ()
                 <span className="text-[#133A40]">▼</span>
                 </button>
             </div>
-            <Productcard airPlane={planSearch}/>    
-            <Productcard airPlane={planSearch}/>
-            <Productcard airPlane={planSearch}/>
-            <Productcard airPlane={planSearch}/>
-            <Productcard airPlane={planSearch}/>
-            <Productcard airPlane={planSearch}/>
+            <Productcard airPlane={planeSearch}/>    
+            <Productcard airPlane={planeSearch}/>
+            <Productcard airPlane={planeSearch}/>
+            <Productcard airPlane={planeSearch}/>
+            <Productcard airPlane={planeSearch}/>
+            <Productcard airPlane={planeSearch}/>
         
         </div>
 
