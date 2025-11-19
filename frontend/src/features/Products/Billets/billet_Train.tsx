@@ -45,13 +45,13 @@ export default function Billet_Train_recap ()
     ];
 
     return (
-        <div>
-            <div className='relative mt-4'>
-                <button onClick={handleretour}><img src={ReturnBtn} alt="Return Button" className='absolute left-4 mt-5 transform -translate-y-1/2'  /></button>
+        <div className='m-2 p-3 -mt-3'>
+            <div className='relative mt-4 display flex justify-center items-center '>
+                <button onClick={handleretour}><img src={ReturnBtn} alt="Return Button" className='absolute left-1 mt-5 transform -translate-y-1/2'  /></button>
                 < h1 className='text-3xl text-[#98EAF3] font-medium text-center'>Récapitulatif</h1>
             </div>
-            <div className='w-full items-center h-70 bg-[#133A40] rounded-2xl border-2 border-[#2C474B] mt-10'>
-                <p className='font-bold m-3 '>Jeudi 18 septembre 2025</p>
+            <div className='w-full items-center h-70 bg-[#133A40] rounded-2xl border-2 border-[#2C474B] mt-15 '>
+                <p className='font-bold h-auto w-full text-center mt-5'>Jeudi 18 septembre 2025</p>
                 <div className=' w-full h-40  mt-6 border-t-[#2C474B] border-b-[#2C474B] border-t-2 border-b-2 flex justify-between items-center'>
                     <div className='grid grid-cols gap-15 p-4'>
                         <span className='font-bold'>6h50</span>
@@ -83,7 +83,7 @@ export default function Billet_Train_recap ()
             </div>
             <div className='w-full items-center h-55 bg-[#133A40] rounded-2xl border-2 border-[#2C474B] mt-5'>
                 <div className='border-b-3 border-[#2C474B] '>
-                    <p className='m-4 font-semibold '>Informations </p>
+                    <p className='m-4 font-semibold text-center -ml-2'>Informations </p>
                 </div>
                 <div className='flex justify-between'>
                     <div className='grid grid-cols gap-7 p-6'>
@@ -101,7 +101,7 @@ export default function Billet_Train_recap ()
             </div>
             <div className='w-full items-center   bg-[#133A40] rounded-2xl border-2 border-[#2C474B] mt-5 '>
                 <div className='border-b-3 border-[#2C474B] '>
-                    <p className='m-4 font-semibold '>Classe</p>
+                    <p className='m-4 font-semibold text-center -ml-0.5'>Classe</p>
                 </div>
                 <div className="grid grid-col gap-4 m-4">
                     {classes.map((classe) => (
@@ -126,12 +126,15 @@ export default function Billet_Train_recap ()
                 <p className='font-bold text-3xl'>59,00 €</p>
 
             </div>
+            <div className='grid grid-cols gap-2 m-4'>
             <AjouterPanierBtn/>
-            <Link to="/PaymentPage">    
-                <button className="w-80  h-15 bg-[#98EAF3] rounded-xl mt-4">
-                    <span className="text-[#115E66] font-bold text-xl">Continuer</span>
-                </button>
+                <Link to="/Infos_Passagers">
+                    <button className="w-80  h-15 bg-[#98EAF3] rounded-xl mt-4">
+                        <span className="text-[#115E66] font-bold text-xl">Continuer</span>
+                    </button>
             </Link>
+                
+            </div>
                 
 
         </div>

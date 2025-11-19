@@ -1,0 +1,84 @@
+import ReturnBtn from '../../../assets/ReturnBtn.svg';
+import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import Passagers_Data_From from './components/Passager_info/Passagers_DataForm';
+import { useState } from 'react';
+export default function Infos_Passagers() {
+    const navigate = useNavigate();
+    const [passagers, setPassagers] = useState([1]); 
+
+    const Ajouter_Passager = () => {
+        setPassagers([...passagers, passagers.length + 1]);
+    };
+    const Suprimer_Passager = (index: number) => {
+
+        setPassagers(passagers.filter((num) => num !== index));
+        passanger_NumberUpdate(passagers.length - 1);
+    };
+    const passanger_NumberUpdate = (newLength: number) => {
+        setPassagers(() => {
+            const updatedPassagers = [];
+            for (let i = 1; i <= newLength; i++) {
+                updatedPassagers.push(i);
+            }
+            return updatedPassagers;
+        }
+        );
+    };
+
+
+    const handleretour = () => {
+        navigate(-1);
+    };
+
+    return (
+        <>
+            <div className="flex-wrap m-2 p-3 -mt-3 ">
+                <div className="m-2 p-3 -mt-3 ">
+                    <div className="relative mt-4 flex justify-center items-center">
+
+                        <button onClick={handleretour}>
+                            <img
+                                src={ReturnBtn}
+                                alt="Return Button"
+                                className="absolute left-0 -translate-x-1/2 mt-5 transform"
+                            />
+                        </button>
+
+                        <h1 className="text-3xl text-[#98EAF3] font-medium text-center">
+                            Informations voyageurs
+                        </h1>
+                    </div>
+                </div>
+
+                {passagers.map((num) => (
+                    <Passagers_Data_From key={num} passagerIndex={num} suprimer_Passager={() => Suprimer_Passager(num)} />
+                ))}
+
+                
+                
+                <div className="w-full items-center bg-[#133A40] rounded-2xl border-2 border-[#2C474B] mt-10 p-4 mb-8">
+                    <button className='w-full' onClick={Ajouter_Passager}  >
+                        <div className='flex justify-between'>
+                            <p className="font-bold mt-1">Autre passager</p>
+                            <div className='h-8 w-8 bg-white rounded-2xl flex justify-center items-center '>
+                                <h1 className='text-[#133A40]  text-4xl font-bold '>+</h1>
+
+                            </div>
+                        </div>
+                    </button>
+                
+                </div>
+                
+
+                <Link to="/PaymentPage">
+                    <button className="w-80  h-15 bg-[#98EAF3] rounded-xl mt-4 ml-3">
+                        <span className="text-[#115E66] font-bold text-xl">Continuer</span>
+                    </button>
+                </Link>
+
+            </div>
+
+        </>
+    );
+}
