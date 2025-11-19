@@ -10,6 +10,7 @@ import { useState } from 'react';
 import BestPrice from './ProductCard/bestPrice.tsx';
 import Date_String from './Date.tsx';
 import { useNavigate } from 'react-router-dom';
+import useIsMobile from '../../components/layouts/UseIsMobile.tsx';
 
 
 
@@ -62,7 +63,7 @@ export default function Resultats ()
                 <img src={Right_ico} alt="" className='ml-2'/>
             </button>
         </div>
-        <div className="flex items-center justify-between w-100 -ml-4 m-10 ">
+        <div className="flex items-center justify-between w-full -ml-0.25 m-10 ">
             <button onClick={() => {setPlanSearch(false)
                 setTrainSearch(true);
                 setAllSearch(false);
@@ -88,7 +89,8 @@ export default function Resultats ()
 
         </div>
         <div className="bg-[#133A40] px-4 pt-5 -mt-10 w-full  h-300x  ">
-            <div className="flex  gap-2  -ml-3">
+
+                <div className={`w-full flex justify-left  items-centre -ml-3 ${useIsMobile() ? " gap-2 " : " gap-7 " } `}>
                 <button className="flex items-center gap-1 border-[#98EAF3] border-2 px-4 py-2 rounded-full text-[#98EAF3]  rounded-full text-sm w-24">
                 <span className='-ml-1'>Horaires </span>
                 <span className="text-[#98EAF3]">▼</span>
@@ -110,12 +112,14 @@ export default function Resultats ()
                 <span className="text-[#133A40]">▼</span>
                 </button>
             </div>
+            <div className='w-full m-3'>
             <Productcard airPlane={planeSearch}/>    
             <Productcard airPlane={planeSearch}/>
             <Productcard airPlane={planeSearch}/>
             <Productcard airPlane={planeSearch}/>
             <Productcard airPlane={planeSearch}/>
             <Productcard airPlane={planeSearch}/>
+            </div>
         
         </div>
 
