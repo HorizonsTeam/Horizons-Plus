@@ -1,5 +1,5 @@
 import CarteSelect from "./MiniSelect";
-import closeSVG from "../../../../../assets/CloseSVG.svg";
+//import closeSVG from "../../../../../assets/CloseSVG.svg"
 
 type props = {
     fermer: () => void;
@@ -16,7 +16,7 @@ export default function CarteReduction({ fermer }: props) {
 
                 <button
                     className="text-white text-xl font-bold px-3 py-1  rounded-lg" onClick={fermer}>
-                    <img src={closeSVG} alt="Close" className="h-6 w-6" />
+                    {/*  <img src={closeSVG} alt="Close" className="h-6 w-6" />*/}
                 </button>
             </div>
 

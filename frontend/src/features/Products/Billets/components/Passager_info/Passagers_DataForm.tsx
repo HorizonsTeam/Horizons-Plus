@@ -1,7 +1,7 @@
 import Gender_Selection from './Gender';
 import { useState } from 'react';
 import CarteReduction from './Carte_De_Reduction'
-import closeSvg from '../../../../../assets/CloseSVG.svg'
+//import closeSvg from '../../../../../assets/CloseSVG.svg'
 
 type Props = {
     passagerIndex?: number;
@@ -30,7 +30,7 @@ export default function Passagers_Data_From({ passagerIndex, suprimer_Passager }
                     <p className={`font-bold mt-4 ${passagerIndex === 1 && 'w-full text-center  '  }`}>{titre}</p>
                     {passagerIndex !== 1 && (
                         <button className="font-bold text-xl text-red" onClick={suprimer_Passager}>
-                            <img src={closeSvg} alt="" className='w-6 h-6 mt-4'/>
+                            {/**<img src={closeSvg} alt="" className='w-6 h-6 mt-4' />**/}
                         </button>
                     )}
                 </div>
