@@ -1,4 +1,3 @@
-import { useState } from 'react'; 
 import PlaneImage from '../../assets/avion-deco.png';
 import PlaneImageDesktop from '../../assets/flight.png';
 import TrainImage from '../../assets/train.png';
@@ -6,7 +5,7 @@ import { Link } from 'react-router-dom';
 import SearchForm from './components/SearchForm';
 import PromotionSlider from './components/PromotionSlider';
 export default function HomePage() {
-  const [activeTab, setActiveTab] = useState<'depart' | 'arrivee'>('depart');
+  
 
   return (
     <div className="min-h-screen ">
@@ -25,18 +24,11 @@ export default function HomePage() {
                 Trouvez le vol idéal pour<br />votre prochaine<br />destination.
               </p>
             </div>
-
-            {/* Mobile Input Fields */}
-            <div className="space-y-4 lg:hidden">
-              <input
-                type="text"
-                placeholder="Où"
-                className="search-input w-full"
-              />
-              <input
-                type="text"
-                placeholder="Quand"
-                className="search-input w-full"
+            <div className="relative overflow-hidden mb-6 w-full h-[472px]">
+              <img 
+                src={PlaneImage} 
+                alt="Avion dans les nuages"
+                className="absolute inset-0 w-full h-full object-cover"
               />
             </div>
 
@@ -49,8 +41,12 @@ export default function HomePage() {
                 Rechercher un vol
               </button>
             </div>
+          </div>
 
-            <div className="hidden lg:grid lg:grid-cols-3 gap-4 mb-6">
+          {/* Version Desktop */}
+          <div className="hidden lg:grid lg:grid-cols-2 lg:gap-16 lg:items-center lg:px-12">
+            {/* Colonne gauche - Texte et CTA */}
+            <div className="flex flex-col justify-center space-y-8">
               <div>
                 <h2 className="text-5xl xl:text-6xl font-bold mb-6 text-primary leading-tight">
                   Voyagez en avion
@@ -69,40 +65,16 @@ export default function HomePage() {
                 </button>
               </div>
             </div>
-            <Link to="/Recherche" className="btn-primary w-full text-lg mt-6">
-              
-                Rechercher
-                
-              
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Flight Section */}
-      <section className="px-0 py-12 lg:py-16 w-screen h-screen -ml-5 bg-dark">
-        <div className="min-h-200 lg:max-w-7xl">
-          <h2 className="text-2xl lg:text-3xl font-bold mb-3">Voyagez en avion</h2>
-          <p className="text-gray-400 mb-6 lg:mb-8 text-sm lg:text-base">
-            Trouvez le vol idéal pour votre prochaine destination.
-          </p>
-          
-          <div className="relative rounded-2xl overflow-hidden h-56 lg:h-96 mb-6 w-full">
-            {/* Clouds behind and to the sides (adjust positions/sizes as needed) */}
-            <img src={PlaneImage} className='scale-125  min-w-110 '
-            />
-            
-
-            {/* Overlay gradient and caption */}
-            <div className="absolute inset-0 bg-gradient-to-t from-dark/90 to-transparent z-20"></div>
-            <div className="absolute bottom-4 left-4 z-30">
-              <p className="text-sm text-primary">Paris → New York à partir de 299€</p>
+            {/* Colonne droite - Image */}
+            <div className="relative overflow-hidden  h-[600px]">
+              <img 
+                src={PlaneImageDesktop} 
+                alt="Avion dans les nuages"
+                className="absolute inset-0 w-full h-full object-contain object-center"
+              />
             </div>
-          </div>
 
-          <button className="btn-primary  w-80">
-            Rechercher un vol
-          </button>
+          </div>
         </div>
       </section>
 
