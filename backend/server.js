@@ -17,10 +17,11 @@ await loadGeoData();
 
 // CORS strict avec cookies
 const ALLOWED = [
-  process.env.FRONT_URL || "http://localhost:5173",
+  "http://localhost:5173",
   "http://127.0.0.1:5173",
   "https://horizons-plus.vercel.app",
-];
+  process.env.FRONT_URL,
+].filter(Boolean);
 
 const corsOptions = {
   origin(origin, cb) {
@@ -34,10 +35,14 @@ const corsOptions = {
   exposedHeaders: ["Set-Cookie"], // Permet au navigateur de lire les cookies dans la réponse
 };
 
-// Trust proxy pour production (Vercel/Railway)
-app.set('trust proxy', true);
+if (process.env.NODE_ENV === "production") {
+  app.set("trust proxy", 1); // Railway / Vercel
+}
 
-app.use(helmet());
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+}));
+
 app.use(cors(corsOptions));
 
 // Parsers JSON AVANT Better Auth 
@@ -49,11 +54,14 @@ app.use(cookieParser());
 // logger dev
 app.use((req, _res, next) => { console.log(req.method, req.path); next(); });
 
-// rate limit sur l'auth
-app.use("/api/auth", rateLimit({ windowMs: 60_000, limit: 60 }));
+
+// rate limit SEULEMENT en production
+if (process.env.NODE_ENV === "production") {
+  app.use("/api/auth", rateLimit({ windowMs: 60_000, limit: 60 }));
+}
 
 // Pattern correct pour Better Auth
-app.use("/api/auth/*", toNodeHandler(auth));
+app.all("/api/auth/*", toNodeHandler(auth));
 
 // introspection simple
 app.get("/api/auth/_routes", (_req, res) => {
@@ -65,10 +73,32 @@ app.get("/api/auth/_routes", (_req, res) => {
 
 // Route protégée
 app.get("/api/me", async (req, res) => {
-  const session = await auth.api.getSession({ headers: fromNodeHeaders(req.headers) });
-  if (!session) return res.status(401).json({ error: "Unauthenticated" });
-  res.json({ user: session.user });
+  try {
+    console.log("🔍 /api/me - Vérification session");
+    
+    const session = await auth.api.getSession({ 
+      headers: fromNodeHeaders(req.headers) 
+    });
+    
+    if (!session) {
+      console.log("Pas de session valide");
+      return res.status(401).json({ 
+        error: "Unauthenticated",
+        debug: process.env.NODE_ENV !== "production" ? {
+          hasCookies: Object.keys(req.cookies || {}).length > 0,
+          cookieNames: Object.keys(req.cookies || {}),
+        } : undefined
+      });
+    }
+    
+    console.log("Session valide:", session.user.email);
+    res.json({ user: session.user });
+  } catch (error) {
+    console.error("Erreur /api/me:", error);
+    res.status(500).json({ error: error.message });
+  }
 });
+
 
 app.use("/api/search", searchRoutes);
 

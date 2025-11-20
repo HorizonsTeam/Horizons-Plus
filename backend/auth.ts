@@ -5,12 +5,22 @@ import { sendMail } from "./server/mailer.js";
 
 const prisma = new PrismaClient();
 
+const getBaseURL = () => {
+    if (process.env.BETTER_AUTH_URL) {
+        return process.env.BETTER_AUTH_URL;
+    }
+    // En dev, utilise localhost
+    return process.env.NODE_ENV === "production"
+        ? "https://horizons-plus-production.up.railway.app"
+        : "http://localhost:3005";
+};
+
+
 export const auth = betterAuth({
     database: prismaAdapter(prisma, { provider: "mysql" }),
 
     // BaseURL pointe vers la racine
-    baseURL: process.env.BETTER_AUTH_URL || "https://horizons-plus-production.up.railway.app",
-
+    baseURL: getBaseURL(),
     // Ajouter le secret (CRITIQUE pour la sécurité)
     secret: process.env.BETTER_AUTH_SECRET || "dev-secret-change-in-production",
 
@@ -20,6 +30,11 @@ export const auth = betterAuth({
         "https://horizons-plus.vercel.app",
     ],
 
+    session: {
+        expiresIn: 60 * 60 * 24 * 7, // 7 jours
+        updateAge: 60 * 60 * 24, // Mis à jour tous les jours
+    },
+    
     // Configuration cookies adaptée dev/prod
     advanced: {
         useSecureCookies: process.env.NODE_ENV === "production",
