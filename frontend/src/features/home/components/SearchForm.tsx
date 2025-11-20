@@ -3,12 +3,15 @@ import { useState } from 'react';
 import AutocompleteInput from '../../../components/autocomplete/AutocompleteInput.tsx';
 import { Link } from 'react-router-dom';
 
+import { useNavigate } from 'react-router-dom';
 
 export default function SearchForm() {
   // Etat des villes 
   const [depart, setDepart] = useState<string>("");
   const [arrivee, setArrivee] = useState<string>("");
   const [rotation, setRotation] = useState<number>(0);
+
+  const Navigate = useNavigate();
 
   //Fonction swap
   const handleSwap = () => {
@@ -99,7 +102,10 @@ export default function SearchForm() {
           <Link to="/Recherche" className="w-full bg-primary active:bg-cyan-300 text-[#115E66] font-semibold py-4 px-6 rounded-xl transition-colors duration-200 text-base shadow-lg">
 
 
+          <button className="w-full bg-primary active:bg-cyan-300 text-[#115E66] font-semibold py-4 px-6 rounded-xl transition-colors duration-200 text-base shadow-lg" 
+            onClick={() => Navigate('/Recherche')}>
             Rechercher
+          </button>
           </Link>
 
           
@@ -159,7 +165,8 @@ export default function SearchForm() {
           </div>
 
           {/* Bouton Rechercher */}
-          <button className="w-full bg-primary hover:bg-cyan-300 text-[#115E66] font-semibold py-4 px-6 rounded-xl transition-colors duration-200 text-base shadow-lg cursor-pointer">
+          <button className="w-full bg-primary hover:bg-cyan-300 text-[#115E66] font-semibold py-4 px-6 rounded-xl transition-colors duration-200 text-base shadow-lg cursor-pointer"
+            onClick={() => Navigate('/Recherche')}>
             Rechercher
           </button>
         </div>

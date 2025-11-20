@@ -30,7 +30,7 @@ export default function Passagers_Data_From({ passagerIndex, suprimer_Passager }
                     <p className={`font-bold mt-4 ${passagerIndex === 1 && 'w-full text-center  '  }`}>{titre}</p>
                     {passagerIndex !== 1 && (
                         <button className="font-bold text-xl text-red" onClick={suprimer_Passager}>
-                            <img src={closeSvg} alt="" className='w-6 h-6 mt-4'/>
+                            <img src={closeSvg} alt="" className='w-6 h-6 mt-4' />
                         </button>
                     )}
                 </div>
@@ -85,7 +85,7 @@ export default function Passagers_Data_From({ passagerIndex, suprimer_Passager }
                         <div className='flex justify-between'>
                             <p className="font-bold mt-1 text-xs ">Carte de réduction / abonnement</p>
                             <div className='h-8 w-8 bg-white rounded-2xl flex justify-center items-center '>
-                                <h1 className='text-[#133A40]  text-4xl font-bold -mt-2'>+</h1>
+                                <h1 className='text-[#133A40]  text-4xl font-bold '>+</h1>
 
                             </div>
                         </div>
