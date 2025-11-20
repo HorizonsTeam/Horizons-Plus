@@ -80,6 +80,24 @@
   .search-input::placeholder {
     color: var(--color-gray-400);
   }
+    /* Icône du calendrier en blanc pour input[type="date"] */
+    .input-date-white::-webkit-calendar-picker-indicator {
+      filter: brightness(0) invert(1);
+      /* transforme le noir en blanc */
+      opacity: 1;
+    }
+  
+    /* enlève le background gris par défaut */
+    .input-date-white::-webkit-inner-spin-button,
+    .input-date-white::-webkit-clear-button {
+      display: none;
+    }
+  
+    /* Firefox */
+    .input-date-white::-moz-calendar-picker-indicator {
+      filter: brightness(0) invert(1);
+    }
+
   
   .autocomplete-suggestions {
     scrollbar-width: medium;
