@@ -24,17 +24,15 @@ const ALLOWED = [
 ].filter(Boolean);
 
 const corsOptions = {
-  origin: ["https://horizons-plus.vercel.app"],
+  origin(origin, cb) {
+    if (!origin) return cb(null, true);
+    if (ALLOWED.includes(origin)) return cb(null, true);
+    return cb(new Error(`Origin not allowed: ${origin}`));
+  },
   credentials: true,
-  // origin(origin, cb) {
-  //   if (!origin) return cb(null, true);
-  //   if (ALLOWED.includes(origin)) return cb(null, true);
-  //   return cb(new Error(`Origin not allowed: ${origin}`));
-  // },
-  // credentials: true,
-  // methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  // allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
-  // exposedHeaders: ["Set-Cookie"], // Permet au navigateur de lire les cookies dans la réponse
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
+  exposedHeaders: ["Set-Cookie"], // Permet au navigateur de lire les cookies dans la réponse
 };
 
 if (process.env.NODE_ENV === "production") {
