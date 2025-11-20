@@ -74,7 +74,7 @@ app.get("/api/auth/_routes", (_req, res) => {
 // Route protégée
 app.get("/api/me", async (req, res) => {
   try {
-    console.log("🔍 /api/me - Vérification session");
+    console.log("/api/me - Vérification session");
     
     const session = await auth.api.getSession({ 
       headers: fromNodeHeaders(req.headers) 
