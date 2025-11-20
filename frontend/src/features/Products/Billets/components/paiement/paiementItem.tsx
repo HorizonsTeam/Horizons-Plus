@@ -17,9 +17,9 @@ export default function ModeDePaiementItem({ IsSelected, cardName, cardDescripti
             <div className="flex display-center">
                 <div className="flex w-full gap-5">
                     <img src={icone} alt="" className='h-10 w-10 ' />
-                    <div className="w-full">
+                    <div className="w-full grid grid-cols gap-2">
                         <p className="font-semibold">{cardName}</p>
-                        <p className="text-sm opacity-80">{cardDescription}</p>
+                        <p className="text-[10px] opacity-80">{cardDescription}</p>
                     </div>
                 </div>
                 <div className={` h-7 w-7 mt-2 rounded-3xl border-3 border-[#2C474B] ${IsSelected && 'bg-[#98EAF3]'}`}>
