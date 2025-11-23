@@ -4,14 +4,16 @@ import PaiementForm from './paymentForm';
 import creditCard_ico from '../../../../../assets/credit-card.svg'
 import Paypal_ico from '../../../../../assets/paypal_ico.svg'
 import ApplePay_ico from '../../../../../assets/applePay.svg'
+import useIsMobile from '../../../../../components/layouts/UseIsMobile';
 
 
 
 export default function ModeDePaiementCard() {
     const [selectedMode, setSelectedMode] = useState<string>("Carte bancaire"); 
+        const isMobile = useIsMobile();
     
     return (
-        <div className="w-full p-6 bg-[#133A40] rounded-2xl border-2 border-[#2C474B] mt-10 text-white">
+        <div className={` ${isMobile ? '' : 'm-20'} bg-[#133A40] border-2 border-[#2C474B] rounded-2xl p-5 mb-8 `}>
             <p className="font-bold mb-4">Mode de paiement</p>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-t-2 border-b-2 border-[#2C474B] py-4">
