@@ -13,7 +13,6 @@ import PaymentPage from './features/Products/Billets/Payment.tsx';
 
 import Infos_Passagers from './features/Products/Billets/Infos_Passagers.tsx';
 
-import ResetPassword from './features/connexion/ResetPassword/resetpassword.tsx';
 
 
 function App() {
