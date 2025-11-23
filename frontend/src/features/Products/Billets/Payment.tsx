@@ -88,7 +88,7 @@ export default function PaymentPage  ()
             </button>
             </div>
             
-            </div>
+          
         </>
 
     );
