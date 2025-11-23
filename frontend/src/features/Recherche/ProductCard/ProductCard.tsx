@@ -6,9 +6,6 @@ import train_not_active from '../../../assets/train_not_active.svg';
 import { Link } from 'react-router-dom';
 
 
-import useIsMobile from '../../../components/layouts/UseIsMobile';
-
-
 type Props =
     {
         airPlane: boolean;
