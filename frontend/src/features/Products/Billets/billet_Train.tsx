@@ -11,6 +11,7 @@ import Serinita_card from './components/serenita_card.tsx';
 import AjouterPanierBtn from './components/AjouterPanierBtn.tsx';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import useIsMobile from '../../../components/layouts/UseIsMobile.tsx';
 
 
 
@@ -23,6 +24,7 @@ export default function Billet_Train_recap ()
     {
         navigate(-1);
     };
+    let isMobile  : boolean= useIsMobile();
     
     const [selectedClass, setSelectedClass] = useState('Économie');
     const classes = [
@@ -99,17 +101,18 @@ export default function Billet_Train_recap ()
                     </div>
                 </div>
             </div>
-            <div className='w-full items-center   bg-[#133A40] rounded-2xl border-2 border-[#2C474B] mt-5 '>
+            <div className='w-full justify-center  bg-[#133A40] rounded-2xl border-2 border-[#2C474B] mt-5 '>
                 <div className='border-b-3 border-[#2C474B] '>
                     <p className='m-4 font-semibold text-center -ml-0.5'>Classe</p>
                 </div>
-                <div className="flex flex-wrap w-full justify-center gap-4 m-4 max-w-190">
+                <div className={`flex ${isMobile ? 'flex-wrap gap-5 ' : 'flex-wrap gap-8'} w-full   justify-center py-5 p-3`}>
                     {classes.map((classe) => (
                         <div key={classe.name} onClick={() => setSelectedClass(classe.name)}>
                             <ClassCard
                                 name={classe.name}
                                 description={classe.description}
-                                selected={selectedClass === classe.name}
+                                selected={selectedClass == classe.name}
+                                IsMobile={isMobile}
                             />
                         </div>
                     ))}
