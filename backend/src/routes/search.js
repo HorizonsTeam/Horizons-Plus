@@ -52,7 +52,6 @@ const searchRoutes = express.Router();
         console.log("Stations trouvées :", placesList);
 
     } catch (err) {
-        console.log("auto complete fonction");
 
         console.error(err);
         res.status(500).json([]);

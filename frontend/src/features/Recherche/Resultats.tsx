@@ -25,7 +25,7 @@ export default function Resultats ()
     const [all, setAllSearch] = useState(true);
     const [train, setTrainSearch] = useState(false);
     const [date, setDate] = useState(new Date());
-
+    const IsMobile = useIsMobile (); 
 
 
     return (
@@ -69,14 +69,14 @@ export default function Resultats ()
                 setAllSearch(false);
             }
             
-            } className={`w-2/3 h-[68px] flex justify-center items-center border-b-4 border-b-white rounded-tr-3xl transition-colors duration-300 ${planeSearch ? 'bg-transparent' : 'bg-[#133A40]'  } ${all && 'bg-transparent'  } ${train && 'bg-[#133A40]'}`}>
+                } className={`w-2/3 h-[68px] flex justify-center items-center border-b-4 border-b-white rounded-tr-3xl transition-colors duration-300 ${planeSearch ? 'bg-transparent' : 'bg-[#133A40] border-b-[#98EAF3]'  } ${all && 'bg-transparent'  } ${train && 'bg-[#133A40]'}`}>
                 <div >
                 <img src={Train_Ico} alt="Train" className=""  />
                 {train ? <BestPrice /> : null}
                 </div>
             </button>
  
-            <button className={`w-2/3 h-[68px] grid grid-col justify-center items-center border-b-4 border-b-white rounded-tl-3xl transition-colors duration-300 ${planeSearch ? 'bg-[#133A40]' : 'bg-transparent' } ${all && 'bg-transparent'  }`} 
+                <button className={`w-2/3 h-[68px] grid grid-col justify-center items-center border-b-4  rounded-tl-3xl transition-colors duration-300 ${planeSearch ? 'bg-[#133A40] border-b-[#98EAF3]' : 'bg-transparent' } ${all && 'bg-transparent'  }`} 
             onClick={() => {  
                 setPlanSearch(true);
                 setAllSearch(false);
@@ -90,7 +90,7 @@ export default function Resultats ()
         </div>
         <div className="bg-[#133A40] px-4 pt-5 -mt-10 w-full  h-300x  ">
 
-                <div className={`w-full flex justify-left  items-centre -ml-3 ${useIsMobile() ? " gap-2 " : " gap-7 " } `}>
+                <div className={`w-full flex justify-left  items-centre -ml-3 ${IsMobile ? " gap-2 " : " gap-7 " } `}>
                 <button className="flex items-center gap-1 border-[#98EAF3] border-2 px-4 py-2 rounded-full text-[#98EAF3]  rounded-full text-sm w-24">
                 <span className='-ml-1'>Horaires </span>
                 <span className="text-[#98EAF3]">▼</span>
@@ -112,7 +112,7 @@ export default function Resultats ()
                 <span className="text-[#133A40]">▼</span>
                 </button>
             </div>
-            <div className='w-full m-3'>
+                <div className={`w-full ${IsMobile ? 'm-3 ' : 'px-40'}`}>
             <Productcard airPlane={planeSearch}/>    
             <Productcard airPlane={planeSearch}/>
             <Productcard airPlane={planeSearch}/>
