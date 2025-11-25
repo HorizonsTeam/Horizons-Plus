@@ -2,21 +2,66 @@ import { ArrowDownUp, Minus } from 'lucide-react';
 import { useState } from 'react';
 import AutocompleteInput from '../../../components/autocomplete/AutocompleteInput.tsx';
 import { useNavigate } from 'react-router-dom';
+import type { Suggestion } from '../../../components/autocomplete/types.ts';
 
 export default function SearchForm() {
-  // Etat des villes 
-  const [depart, setDepart] = useState<string>("");
-  const [arrivee, setArrivee] = useState<string>("");
+  const [departure, setDeparture] = useState<Suggestion | null>(null); // Pour stocker l'objet complet de la ville de départ
+  const [arrival, setArrival] = useState<Suggestion | null>(null);   // Pour stocker l'objet complet de la ville d'arrivée
+  const today = new Date().toISOString().split("T")[0];
+  const [departureDate, setDepartureDate] = useState(today);
+  const [arrivalDate, setArrivalDate] = useState<string>("");
+
   const [rotation, setRotation] = useState<number>(0);
 
   const Navigate = useNavigate();
 
+  const isDisabled =
+  !departure?.id ||
+  !departure?.name ||
+  !arrival?.id ||
+  !arrival?.name ||
+  !departureDate;
+
   //Fonction swap
   const handleSwap = () => {
-    setDepart(arrivee);
-    setArrivee(depart);
-    setRotation((prev)=>prev + 180);
+    setDeparture(departure);
+    setArrival(arrival);
+    setRotation((prev) => prev + 180);
   }
+
+  const handleDateChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    isDeparture: boolean
+  ) => {
+    const value = e.target.value;
+
+    // Si la valeur n'est pas complète (moins de 10 caractères "YYYY-MM-DD"), on ne valide pas encore
+    if (value.length < 10) {
+      if (isDeparture) setDepartureDate(value);
+      else setArrivalDate(value);
+      return;
+    }
+
+    const selectedDate = new Date(value);
+    const todayDate = new Date(today); // today = "YYYY-MM-DD"
+
+    if (isDeparture) {
+      if (selectedDate < todayDate) {
+        alert("La date de départ ne peut pas être dans le passé.");
+        return;
+      }
+      setDepartureDate(value);
+    } else {
+      const departure = departureDate ? new Date(departureDate) : null;
+      if (departure && selectedDate < departure) {
+        alert("La date d'arrivée ne peut pas être avant la date de départ.");
+        return;
+      }
+      setArrivalDate(value);
+    }
+  };
+
+
   return (
     <section className="px-4 py-8 lg:py-16">
       <div className=" mx-auto lg:max-w-4xl">
@@ -33,9 +78,15 @@ export default function SearchForm() {
             <div className="mb-3">
               <AutocompleteInput 
                 label=""
-                value={depart}
+                value={departure?.name || ''}                // affiche le nom si dispo
                 placeholder="Ville départ"
-                onChange={setDepart}
+                onChange={(text) =>
+                            setDeparture(departure
+                              ? { ...departure, name: text }
+                              : { id: "", name: text }
+                            )
+                          }
+                onSelect={(obj) => setDeparture(obj)}        // obj = {id, name, type, region}
                 className="search-input w-full bg-[#2C474B] text-white placeholder-slate-400 rounded-xl px-4 py-3.5 text-sm outline-none border-none focus:ring-2 focus:ring-cyan-400/30"
               />
             </div>
@@ -44,9 +95,15 @@ export default function SearchForm() {
             <div>
               <AutocompleteInput 
                 label=""
-                value={arrivee}
+                value={arrival?.name || ''}                  // affiche le nom si dispo
                 placeholder="Ville arrivée"
-                onChange={setArrivee}
+                onChange={(text) =>
+                            setArrival(arrival
+                              ? { ...arrival, name: text }
+                              : { id: "", name: text }
+                            )
+                          }
+                onSelect={(obj) => setArrival(obj)}          // obj = {id, name, type, region}
                 className="search-input w-full bg-[#2C474B] text-white placeholder-slate-400 rounded-xl px-4 py-3.5 text-sm outline-none border-none focus:ring-2 focus:ring-cyan-400/30"
               />
             </div>
@@ -69,6 +126,8 @@ export default function SearchForm() {
               <input
                 type="date"
                 placeholder="Départ"
+                value={departureDate}
+                onChange={(e) => handleDateChange(e, true)}
                 className="w-full bg-[#2C474B] text-white placeholder-slate-400 rounded-xl px-4 py-3.5 text-sm outline-none border-none focus:ring-2 focus:ring-cyan-400/30 [color-scheme:dark]"
               />
             </div>
@@ -76,6 +135,8 @@ export default function SearchForm() {
               <input
                 type="date"
                 placeholder="Arrivée"
+                value={arrivalDate}
+                onChange={(e) => handleDateChange(e, false)}
                 className="w-full bg-[#2C474B] text-white placeholder-slate-400 rounded-xl px-4 py-3.5 text-sm outline-none border-none focus:ring-2 focus:ring-cyan-400/30 [color-scheme:dark]"
               />
                 <button
@@ -97,8 +158,17 @@ export default function SearchForm() {
           </div>
 
           {/* Bouton Rechercher */}
-          <button className="w-full bg-primary active:bg-cyan-300 text-[#115E66] font-semibold py-4 px-6 rounded-xl transition-colors duration-200 text-base shadow-lg" 
-            onClick={() => Navigate('/Recherche')}>
+          <button 
+            disabled={isDisabled}
+            className="w-full bg-primary active:bg-cyan-300 text-[#115E66] font-semibold py-4 px-6 rounded-xl transition-colors duration-200 text-base shadow-lg" 
+            onClick={() => {
+              if (isDisabled) return;
+
+              Navigate(
+                `/Recherche?fromId=${encodeURIComponent(departure.id)}&fromName=${encodeURIComponent(departure.name)}&toId=${encodeURIComponent(arrival.id)}&toName=${encodeURIComponent(arrival.name)}&departureDate=${encodeURIComponent(departureDate)}&arrivalDate=${encodeURIComponent(arrivalDate || "")}`
+              );
+            }}
+          >
             Rechercher
           </button>
         </div>
@@ -111,18 +181,30 @@ export default function SearchForm() {
             <div>
               <AutocompleteInput 
                 label="Ville départ"
-                value={depart}
+                value={departure?.name || ''}                  // affiche le nom si dispo
                 placeholder="D'où partez-vous ?"
-                onChange={setDepart}
+                onChange={(text) =>
+                            setDeparture(departure
+                              ? { ...departure, name: text }
+                              : { id: "", name: text }
+                            )
+                          }
+                onSelect={(obj) => setDeparture(obj)}          // obj = {id, name, type, region}
                 className="search-input w-full bg-slate-600/50 text-white placeholder-slate-400 rounded-xl px-4 py-3.5 outline-none border-none focus:ring-2 focus:ring-cyan-400/30"
               />
             </div>
             <div>
               <AutocompleteInput 
                 label="Ville arrivée"
-                value={arrivee}
+                value={arrival?.name || ''}                  // affiche le nom si dispo
                 placeholder="Où allez-vous ?"
-                onChange={setArrivee}
+                onChange={(text) =>
+                            setArrival(arrival
+                              ? { ...arrival, name: text }
+                              : { id: "", name: text }
+                            )
+                          }
+                onSelect={(obj) => setArrival(obj)}          // obj = {id, name, type, region}
                 className="search-input w-full bg-slate-600/50 text-white placeholder-slate-400 rounded-xl px-4 py-3.5 outline-none border-none focus:ring-2 focus:ring-cyan-400/30"
               />
             </div>
@@ -134,6 +216,8 @@ export default function SearchForm() {
               <label className="block text-sm text-slate-400 mb-2">Date de départ</label>
               <input
                 type="date"
+                value={departureDate}
+                onChange={(e) => handleDateChange(e, true)}
                 className="w-full bg-slate-600/50 text-white rounded-xl px-4 py-3.5 outline-none border-none focus:ring-2 focus:ring-cyan-400/30 [color-scheme:dark]"
               />
             </div>
@@ -141,6 +225,8 @@ export default function SearchForm() {
               <label className="block text-sm text-slate-400 mb-2">Date d'arrivée</label>
               <input
                 type="date"
+                value={arrivalDate}
+                onChange={(e) => handleDateChange(e, false)}
                 className="w-full bg-slate-600/50 text-white rounded-xl px-4 py-3.5 outline-none border-none focus:ring-2 focus:ring-cyan-400/30 [color-scheme:dark]"
               />
             </div>
@@ -156,8 +242,17 @@ export default function SearchForm() {
           </div>
 
           {/* Bouton Rechercher */}
-          <button className="w-full bg-primary hover:bg-cyan-300 text-[#115E66] font-semibold py-4 px-6 rounded-xl transition-colors duration-200 text-base shadow-lg cursor-pointer"
-            onClick={() => Navigate('/Recherche')}>
+          <button 
+            disabled={isDisabled}
+            className="w-full bg-primary hover:bg-cyan-300 text-[#115E66] font-semibold py-4 px-6 rounded-xl transition-colors duration-200 text-base shadow-lg cursor-pointer"
+            onClick={() => {
+              if (isDisabled) return;
+
+              Navigate(
+                `/Recherche?fromId=${encodeURIComponent(departure.id)}&fromName=${encodeURIComponent(departure.name)}&toId=${encodeURIComponent(arrival.id)}&toName=${encodeURIComponent(arrival.name)}&departureDate=${encodeURIComponent(departureDate)}&arrivalDate=${encodeURIComponent(arrivalDate || "")}`
+              );
+            }}
+          >
             Rechercher
           </button>
         </div>

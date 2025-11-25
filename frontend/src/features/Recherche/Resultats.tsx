@@ -1,132 +1,148 @@
 
-import ReturnBtn from '../../assets/ReturnBtn.svg';
-import Right_ico from '../../assets/Right_Ico.svg'
-import Left_ico from '../../assets/Left_Ico.svg'
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
+import ReturnBtn from '../../assets/ReturnBtn.svg';
+import Right_ico from '../../assets/Right_Ico.svg';
+import Left_ico from '../../assets/Left_Ico.svg';
 import Train_Ico from '../../assets/train_ico2.svg';
 import Plane_Ico from '../../assets/plane_ico2.svg';
+
 import Productcard from './ProductCard/ProductCard.tsx';
-import { useState } from 'react';
 import BestPrice from './ProductCard/bestPrice.tsx';
 import Date_String from './Date.tsx';
-import { useNavigate } from 'react-router-dom';
-import useIsMobile from '../../components/layouts/UseIsMobile.tsx';
+// import type { Suggestion } from '../../components/autocomplete/types.ts';
 
+// type ResultatsProps = {
+//     departure: Suggestion;
+//     arrival: Suggestion;
+//     datetime?: string;
+// }
 
+export default function Resultats() {
+    const base = `${import.meta.env.VITE_API_URL || "http://localhost:3005"}`;
 
-export default function Resultats ()
-{
     const navigate = useNavigate();
-    const handleretour = () =>
-    {
-        navigate(-1);
-    }
-    const [planeSearch, setPlanSearch] = useState(false);
-    const [all, setAllSearch] = useState(true);
-    const [train, setTrainSearch] = useState(false);
-    const [date, setDate] = useState(new Date());
 
+    const [transport, setTransport] = useState<'plane' | 'train'>('train');
+
+    const handleretour = () => navigate(-1);
+
+    const changeDate = (delta: number) => {
+        const newDate = new Date(date);
+        newDate.setDate(newDate.getDate() + delta);
+        setDate(newDate);
+    };
+
+    const [searchParams] = useSearchParams();
+    const fromId = searchParams.get('fromId') || '';
+    const fromName = searchParams.get('fromName') || '';
+    const toId = searchParams.get('toId') || '';
+    const toName = searchParams.get("toName") || '';
+    const departureDate = searchParams.get('departureDate') || '';
+    const arrivalDate = searchParams.get('arrivalDate') || '';
+
+    const [date, setDate] = useState<Date>(new Date(departureDate));
+
+    useEffect(() => {
+        if (!fromId || !toId || !departureDate) {
+            console.log('Resultats: pas de from/to, skip fetch');
+            return;
+        }
+
+        fetch(`${base}/api/search/journeys?from=${encodeURIComponent(fromId)}&to=${encodeURIComponent(toId)}&datetime=${encodeURIComponent(departureDate)}`)
+        .then(res => res.json())
+        .then(data => {
+            console.log('API journeys response:', data);
+        })
+        .catch(err => console.error('Fetch journeys error:', err));
+    }, [fromId, toId, departureDate, arrivalDate]);
 
 
     return (
         <>
-        
-        <div className=" flex items-center justify-center mt-6">
+            <div className=" flex items-center justify-center mt-6">
                 <button onClick={handleretour}><img src={ReturnBtn} alt="Return Button" className='absolute left-4 mt-10 transform -translate-y-1/2' /></button>
-            <div>
-                <h3 className='font-bold text-[#98EAF3] text-xl'> Nevers - Moulin.... </h3>
-                <h4 className='text-[#98EAF3]'>1 passagers </h4>
-            </div>
-        </div>
-        <div className="flex items-center justify-center space-x-4 bg-dark p-4">
-            <button className="border-4 border-[#98EAF3] rounded-xl p-2  w-13 " 
-            onClick={() => {  
-                const nextDay = new Date(date);  
-                nextDay.setDate(nextDay.getDate() - 1);  
-                setDate(nextDay);
-                }
-                }>
-                <img src={Left_ico} alt="" className='ml-2' />
-            </button>
-
-            <Date_String date={date} />
-
-
-            <button className="border-4 border-[#98EAF3] rounded-xl p-2  w-13 " 
-            onClick={() => {  
-                const nextDay = new Date(date);  
-                nextDay.setDate(nextDay.getDate() + 1);  
-                setDate(nextDay);
-                }
-                }>
-
-                <img src={Right_ico} alt="" className='ml-2'/>
-            </button>
-        </div>
-        <div className="flex items-center justify-between w-full -ml-0.25 m-10 ">
-            <button onClick={() => {setPlanSearch(false)
-                setTrainSearch(true);
-                setAllSearch(false);
-            }
-            
-            } className={`w-2/3 h-[68px] flex justify-center items-center border-b-4 border-b-white rounded-tr-3xl transition-colors duration-300 ${planeSearch ? 'bg-transparent' : 'bg-[#133A40]'  } ${all && 'bg-transparent'  } ${train && 'bg-[#133A40]'}`}>
-                <div >
-                <img src={Train_Ico} alt="Train" className=""  />
-                {train ? <BestPrice /> : null}
+                <div className="flex flex-col items-center">
+                    <h3 className='font-bold text-primary text-xl truncate max-w-[200px]'>{fromName} - {toName}</h3>
+                    <h4 className='text-primary'>1 passagers</h4>
                 </div>
-            </button>
- 
-            <button className={`w-2/3 h-[68px] grid grid-col justify-center items-center border-b-4 border-b-white rounded-tl-3xl transition-colors duration-300 ${planeSearch ? 'bg-[#133A40]' : 'bg-transparent' } ${all && 'bg-transparent'  }`} 
-            onClick={() => {  
-                setPlanSearch(true);
-                setAllSearch(false);
-                setTrainSearch(false);
-            }}>
-                <img src={Plane_Ico} alt="Avion" className="" />
-                {planeSearch ? <BestPrice /> : null}
-            </button>
+            </div>
 
-
-        </div>
-        <div className="bg-[#133A40] px-4 pt-5 -mt-10 w-full  h-300x  ">
-
-                <div className={`w-full flex justify-left  items-centre -ml-3 ${useIsMobile() ? " gap-2 " : " gap-7 " } `}>
-                <button className="flex items-center gap-1 border-[#98EAF3] border-2 px-4 py-2 rounded-full text-[#98EAF3]  rounded-full text-sm w-24">
-                <span className='-ml-1'>Horaires </span>
-                <span className="text-[#98EAF3]">▼</span>
+            <div className="flex items-center justify-center space-x-4 bg-dark p-4">
+                <button
+                className="border-4 border-primary rounded-xl p-2 w-13"
+                onClick={() => changeDate(-1)}
+                >
+                <img src={Left_ico} alt="Previous Day" className="ml-2" />
                 </button>
 
-               
-                <button className="flex items-left  gap-1 border-[#98EAF3] border-2 px-4 py-2 rounded-full text-[#98EAF3] px-4 py-2 rounded-full text-sm w-20">
-                <span className='-ml-1'>Gares </span>
-                <span className="text-[#98EAF3]">▼</span>
-                </button>
+                <Date_String date={date} />
 
-                <button className="flex items-center gap-1 border-[#98EAF3] border-2 px-4 py-2 rounded-full text-[#98EAF3] text-[#98EAF3] px-4 py-2 rounded-full text-sm w-24">
-                <span className='-ml-1'>Départs </span>
-                <span className="text-[#98EAF3]">▼</span>
-                </button>
-
-                <button className="flex items-center gap-2 text-[#133A40] bg-[#98EAF3] px-4 py-2 rounded-full text-sm w-20">
-                <span className='-ml-1'>Direct</span>
-                <span className="text-[#133A40]">▼</span>
+                <button
+                className="border-4 border-primary rounded-xl p-2 w-13"
+                onClick={() => changeDate(1)}
+                >
+                <img src={Right_ico} alt="Next Day" className="ml-2" />
                 </button>
             </div>
-            <div className='w-full m-3'>
-            <Productcard airPlane={planeSearch}/>    
-            <Productcard airPlane={planeSearch}/>
-            <Productcard airPlane={planeSearch}/>
-            <Productcard airPlane={planeSearch}/>
-            <Productcard airPlane={planeSearch}/>
-            <Productcard airPlane={planeSearch}/>
+
+            <div className="flex items-center justify-between w-full m-10 -ml-4">
+                <button
+                onClick={() => setTransport('train')}
+                className={`w-2/3 h-[68px] flex justify-center items-center border-b-4 border-b-white rounded-tr-3xl transition-colors duration-300 ${
+                    transport === 'train' ? 'bg-[#133A40]' : 'bg-transparent'
+                }`}
+                >
+                <div className="flex flex-col items-center">
+                    <img src={Train_Ico} alt="Train" />
+                    {transport === 'train' && <BestPrice />}
+                </div>
+                </button>
+
+                <button
+                onClick={() => setTransport('plane')}
+                className={`w-2/3 h-[68px] flex justify-center items-center border-b-4 border-b-white rounded-tl-3xl transition-colors duration-300 ${
+                    transport === 'plane' ? 'bg-[#133A40]' : 'bg-transparent'
+                }`}
+                >
+                <div className="flex flex-col items-center">
+                    <img src={Plane_Ico} alt="Avion" />
+                    {transport === 'plane' && <BestPrice />}
+                </div>
+                </button>
             </div>
-        
-        </div>
 
+            <div className="bg-[#133A40] px-4 pt-5 -mt-10 w-[calc(109%)]  h-300 -ml-4 ">
+                <div className="flex  gap-2  -ml-3">
+                    <button className="flex items-center gap-1 border-primary border-2 px-4 py-2 rounded-full text-primary  rounded-full text-sm w-24">
+                    <span className='-ml-1'>Horaires </span>
+                    <span className="text-primary">▼</span>
+                    </button>
 
-    
+                
+                    <button className="flex items-left  gap-1 border-primary border-2 px-4 py-2 rounded-full text-primary px-4 py-2 rounded-full text-sm w-20">
+                    <span className='-ml-1'>Gares </span>
+                    <span className="text-primary">▼</span>
+                    </button>
 
+                    <button className="flex items-center gap-1 border-primary border-2 px-4 py-2 rounded-full text-primary text-primary px-4 py-2 rounded-full text-sm w-24">
+                    <span className='-ml-1'>Départs </span>
+                    <span className="text-primary">▼</span>
+                    </button>
 
+                    <button className="flex items-center gap-2 text-[#133A40] bg-primary px-4 py-2 rounded-full text-sm w-20">
+                    <span className='-ml-1'>Direct</span>
+                    <span className="text-[#133A40]">▼</span>
+                    </button>
+                </div>
+                
+                {/* Product cards */}
+                {[...Array(6)].map((_, idx) => (
+                    <Productcard key={idx} airPlane={transport === 'plane'} />
+                ))}
+            
+            </div>
         </>
     )
 }
