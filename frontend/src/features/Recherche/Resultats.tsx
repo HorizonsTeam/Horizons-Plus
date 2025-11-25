@@ -69,14 +69,14 @@ export default function Resultats ()
                 setAllSearch(false);
             }
             
-            } className={`w-2/3 h-[68px] flex justify-center items-center border-b-4 border-b-white rounded-tr-3xl transition-colors duration-300 ${planeSearch ? 'bg-transparent' : 'bg-[#133A40]'  } ${all && 'bg-transparent'  } ${train && 'bg-[#133A40]'}`}>
+                } className={`w-2/3 h-[68px] flex justify-center items-center border-b-4 border-b-white rounded-tr-3xl transition-colors duration-300 ${planeSearch ? 'bg-transparent' : 'bg-[#133A40] border-b-[#98EAF3]'  } ${all && 'bg-transparent'  } ${train && 'bg-[#133A40]'}`}>
                 <div >
                 <img src={Train_Ico} alt="Train" className=""  />
                 {train ? <BestPrice /> : null}
                 </div>
             </button>
  
-            <button className={`w-2/3 h-[68px] grid grid-col justify-center items-center border-b-4 border-b-white rounded-tl-3xl transition-colors duration-300 ${planeSearch ? 'bg-[#133A40]' : 'bg-transparent' } ${all && 'bg-transparent'  }`} 
+                <button className={`w-2/3 h-[68px] grid grid-col justify-center items-center border-b-4  rounded-tl-3xl transition-colors duration-300 ${planeSearch ? 'bg-[#133A40] border-b-[#98EAF3]' : 'bg-transparent' } ${all && 'bg-transparent'  }`} 
             onClick={() => {  
                 setPlanSearch(true);
                 setAllSearch(false);
