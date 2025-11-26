@@ -22,28 +22,37 @@ export const auth = betterAuth({
     // BaseURL pointe vers la racine
     baseURL: getBaseURL(),
     // Ajouter le secret (CRITIQUE pour la sécurité)
-    secret: process.env.BETTER_AUTH_SECRET || "dev-secret-change-in-production",
+    secret: process.env.BETTER_AUTH_SECRET || "BETTER_AUTH_SECRET",
 
     trustedOrigins: [
-        process.env.FRONT_URL || "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "https://horizons-plus.vercel.app",
-    ],
+    "https://horizons-plus.vercel.app",
+  ],
 
     session: {
         expiresIn: 60 * 60 * 24 * 7, // 7 jours
         updateAge: 60 * 60 * 24, // Mis à jour tous les jours
     },
     
+    cookies: {
+    sessionToken: {
+      name: "__Secure-better-auth.session_token",
+      sameSite: "none",
+      secure: true,
+      httpOnly: true,
+      path: "/",
+      domain:
+        process.env.NODE_ENV === "production"
+          ? "horizons-plus-production.up.railway.app"
+          : "localhost",
+    },
+  },
+
     // Configuration cookies adaptée dev/prod
     advanced: {
-        useSecureCookies: process.env.NODE_ENV === "production",
-        cookieName: "better-auth.session_token",
-        crossSubDomainCookies: {
-            enabled: false, // Désactivé car frontend/backend sur domaines différents
-        },
-    },
+    useSecureCookies: process.env.NODE_ENV === "production",
+  },
 
+    
 
     emailAndPassword: {
         enabled: true,
