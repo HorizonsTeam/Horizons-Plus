@@ -16,12 +16,13 @@ type Props =
     name: string ;
     description : string ; 
     selected: boolean ; 
+    IsMobile : boolean ;
     
 }
 
 
 
-export default function ClassCard ({name, description,selected} : Props)
+export default function ClassCard ({name, description,selected, IsMobile} : Props)
 {
     const getIcon = () => {
         switch (name.toLowerCase()) {
@@ -38,7 +39,7 @@ export default function ClassCard ({name, description,selected} : Props)
         }
     };
     return (
-        <div className={`w-80 h-20 bg-[#103035] position-relative rounded-2xl border-2 
+        <div className={` ${IsMobile ? 'w-80' : 'w-60'} h-20 bg-[#103035] position-relative rounded-2xl border-2 
         ${selected ? 'border-[#98EAF3]':'border-[#2C474B]'}
         `}
          >
@@ -46,8 +47,8 @@ export default function ClassCard ({name, description,selected} : Props)
                 <img src={getIcon()} alt={name} className="w-8 h-8" />
 
                 <div>
-                    <p className={`text-left font-bold ${selected ? 'text-[#98EAF3]':'text-white'}`} >{name}</p>
-                    <p className={`text-left text-xs font-md text-opacity-10 ${selected ? 'text-[#98EAF3]':'text-white'} text-opacity-10 `} >{description}</p>
+                    <p className={`text-left font-bold text-sm ${selected ? 'text-[#98EAF3]':'text-white'}`} >{name}</p>
+                    <p className={`text-left  font-md text-opacity-10 ${selected ? 'text-[#98EAF3]':'text-white'} text-opacity-10 text-[10px] `} >{description}</p>
                 </div>
                 
 

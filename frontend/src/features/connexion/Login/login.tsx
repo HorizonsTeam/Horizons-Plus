@@ -3,6 +3,7 @@ import PageTransition from '../pageTransitions';
 import { useState } from 'react';
 import { authClient } from '../../../lib/auth-clients';
 import type React from 'react';
+import useIsMobile from '../../../components/layouts/UseIsMobile';
 
 export default function Login() {
 
@@ -55,14 +56,16 @@ export default function Login() {
 
   return (
     <PageTransition>
-      <div className="text-center min-h-screen flex flex-col mt-10   gap-6 ">
-        <h1 className="text-4xl font-bold mt-5 mb-10 text-[#98EAF3]">
+     <div className={`text-center min-h-screen flex flex-col mt-10   gap-6 ${useIsMobile() ? 'w-full px-4' : 'w-full'} `}>
+                      <h1 className="text-4xl font-bold   text-[#98EAF3] mb-20">
+
           Connectez-vous
         </h1>
 
+
         <form
           onSubmit={handleSubmit}
-          className="flex flex-col items-center  mt-12  space-y-4"
+          className={`flex flex-col items-center  mt-12 space-y-4 `}
         >
 
           {/* bloc erreur */}

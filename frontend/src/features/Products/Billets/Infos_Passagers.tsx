@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import Passagers_Data_From from './components/Passager_info/Passagers_DataForm';
 import { useState } from 'react';
+
+
 export default function Infos_Passagers() {
     const navigate = useNavigate();
     const [passagers, setPassagers] = useState([1]); 

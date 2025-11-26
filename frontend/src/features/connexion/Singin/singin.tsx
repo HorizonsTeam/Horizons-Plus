@@ -3,6 +3,7 @@ import PageTransition from '../pageTransitions';
 import type React from 'react';
 import { authClient } from '../../../lib/auth-clients';
 import { useState } from 'react';
+import useIsMobile from '../../../components/layouts/UseIsMobile';
  
  
  
@@ -18,6 +19,7 @@ export default function Singin() {
     const [confirm, setConfirm] = useState("");
     const [isloading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
  
     const handleSubmit = async (e: React.FormEvent) => {
  
@@ -60,7 +62,7 @@ export default function Singin() {
     return (
         <PageTransition>
  
-            <div className="text-center min-h-screen flex flex-col mt-10  gap-6">
+      <div className={`text-center min-h-screen flex flex-col mt-10   gap-6 ${useIsMobile() ? 'w-full px-4' : 'w-full'} `}>
                 <h1 className="text-4xl font-bold   text-[#98EAF3]">
                     Crée un Compte
                 </h1>

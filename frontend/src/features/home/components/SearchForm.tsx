@@ -1,6 +1,7 @@
 import { ArrowDownUp, Minus } from 'lucide-react';
 import { useState } from 'react';
 import AutocompleteInput from '../../../components/autocomplete/AutocompleteInput.tsx';
+
 import { useNavigate } from 'react-router-dom';
 import type { Suggestion } from '../../../components/autocomplete/types.ts';
 
@@ -171,6 +172,10 @@ export default function SearchForm() {
           >
             Rechercher
           </button>
+          
+
+          
+       
         </div>
 
         {/* Formulaire Desktop */}

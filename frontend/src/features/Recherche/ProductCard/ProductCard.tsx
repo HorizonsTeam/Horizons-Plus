@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
 export default function ProductCard({ isAirPlane, journey }: ProductCardProps) {
 
     return (
-        <div className="w-full bg-[#103035] rounded-3xl mt-6 border-4 border-[#2C474B] -ml-2 p-2">
+        <div className=" bg-[#103035] rounded-3xl mt-6 border-4 border-[#2C474B] -ml-2 p-2">
             <Link to="/Recap">
                 <div className="flex items-center p-2 mt-1  gap-5" >
                     {/* Logo transport */}
@@ -38,11 +38,13 @@ export default function ProductCard({ isAirPlane, journey }: ProductCardProps) {
                         <span className='font-bold text-xs'>{journey?.arrivalTime}</span>
                     </div>
 
-                    <div className='grid grid-col  w-10' >
-                        <div className='rounded-4xl border-white border-1 bg-black w-4 h-4 m-2'></div>
-                        <div className="border-l border-dashed border-white h-3 w-1 mr-4 ml-4"></div>
-
-                        <div className='rounded-4xl bg-white w-4 h-4 m-2'></div>
+                    <div className='grid grid-col gap-2 ' >
+                        <img src={isAirPlane ? airFrance : Mobigo} alt="" className='w-19 h-10 mx-3'/>
+                        <div className='grid grid-cols  '>
+                            <div className='rounded-4xl border-white border-1 bg-black w-4 h-4 m-2'></div>
+                            <div className="border-l border-dashed border-white h-3 w-1 mr-4 ml-4"></div>
+                            <div className='rounded-4xl bg-white w-4 h-4 m-2'></div>
+                        </div>
                     </div>
                     <div className='grid grid-col  gap-4 '>
                         <span className='font-bold text-xl text-left w-10'>{journey?.departureName}</span>
