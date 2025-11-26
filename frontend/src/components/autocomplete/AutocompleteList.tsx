@@ -1,20 +1,35 @@
 import type { AutocompleteListProps } from './types';
+import { useRef, useEffect } from 'react';
 import trainIcon from '../../assets/train-station (blue).png';
 import cityIcon from '../../assets/house-building (blue).png';
 
 
-function AutocompleteList({ suggestions, onSelect }: AutocompleteListProps) {
+function AutocompleteList({ suggestions, selectedIndex, onSelect }: AutocompleteListProps) {
+    useEffect(() => {
+        const ref = itemsRef.current[selectedIndex];
+        if (ref) {
+            ref.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        }
+    }, [selectedIndex]);
+
+    const itemsRef = useRef<(HTMLLIElement | null)[]>([]);
+
     if (!suggestions || suggestions.length === 0) return null;
     
     return (
-        <ul className="absolute autocomplete-suggestions left-0 right-0 z-50 mt-2 rounded-xl bg-[#0f2628] border border-[#1b3a3d] shadow-xl 
-                backdrop-blur-md max-h-72 overflow-y-auto text-left divide-y divide-[#1e3c3f] overflow-x-hidden">
-            {suggestions.map((s) => (
+        <ul 
+            className="absolute autocomplete-suggestions left-0 right-0 z-50 mt-2 rounded-xl bg-[#0f2628] border border-[#1b3a3d] shadow-xl 
+                backdrop-blur-md max-h-72 overflow-y-auto text-left divide-y divide-[#1e3c3f] overflow-x-hidden"
+            ref={(el) => { itemsRef.current = el ? Array.from(el.children) as (HTMLLIElement | null)[] : []; }}>
+            {suggestions.map((s, i) => (
                 <li
                     key={s.id}
                     onClick={() => onSelect(s)}
-                    className="flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-150 
-                                hover:bg-[#1b3a3d] hover:scale-[1.02] active:scale-[0.99]"
+                    className={`
+                            flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-150
+                            hover:bg-[#1b3a3d] hover:scale-[1.02] active:scale-[0.99]
+                            ${i === selectedIndex ? "bg-[#1b3a3d] scale-[1.02]" : ""}
+                        `}
                     >
                     <img
                         className="w-5 h-5 opacity-80 flex-shrink-0"
