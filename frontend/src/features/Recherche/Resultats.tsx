@@ -11,13 +11,7 @@ import Plane_Ico from '../../assets/plane_ico2.svg';
 import Productcard from './ProductCard/ProductCard.tsx';
 import BestPrice from './ProductCard/bestPrice.tsx';
 import Date_String from './Date.tsx';
-// import type { Suggestion } from '../../components/autocomplete/types.ts';
-
-// type ResultatsProps = {
-//     departure: Suggestion;
-//     arrival: Suggestion;
-//     datetime?: string;
-// }
+import type { Journey } from './ProductCard/types.ts';
 
 export default function Resultats() {
     const base = `${import.meta.env.VITE_API_URL || "http://localhost:3005"}`;
@@ -28,37 +22,40 @@ export default function Resultats() {
 
     const handleretour = () => navigate(-1);
 
-    const changeDate = (delta: number) => {
-        const newDate = new Date(date);
-        newDate.setDate(newDate.getDate() + delta);
-        setDate(newDate);
-    };
-
     const [searchParams] = useSearchParams();
     const fromId = searchParams.get('fromId') || '';
     const fromName = searchParams.get('fromName') || '';
     const toId = searchParams.get('toId') || '';
     const toName = searchParams.get("toName") || '';
-    const departureDate = searchParams.get('departureDate') || '';
+    const [departureDate, setDepartureDate] = useState<string>(
+        searchParams.get('departureDate') || new Date().toISOString().split('T')[0]
+    );
     const arrivalDate = searchParams.get('arrivalDate') || '';
 
-    const [date, setDate] = useState<Date>(new Date(departureDate));
+    const [journeyData, setJourneyData] = useState<Journey[]>([]);
+
+    const changeDate = (delta: number) => {
+        const current = new Date(departureDate);
+        current.setDate(current.getDate() + delta);
+        setDepartureDate(current.toISOString().split('T')[0]);
+    };
 
     useEffect(() => {
-        if (!fromId || !toId || !departureDate) {
-            console.log('Resultats: pas de from/to, skip fetch');
-            return;
-        }
+        if (!fromId || !toId || !departureDate) return;
 
+        console.log("departureDate:", departureDate);
+        
         fetch(`${base}/api/search/journeys?from=${encodeURIComponent(fromId)}&to=${encodeURIComponent(toId)}&datetime=${encodeURIComponent(departureDate)}`)
-        .then(res => res.json())
-        .then(data => {
-            console.log('API journeys response:', data);
-        })
-        .catch(err => console.error('Fetch journeys error:', err));
+            .then(res => res.json())
+            .then(data => {
+                console.log('API journeys response:', data);
+                setJourneyData(data);
+            })
+            .catch(err => console.error('Fetch journeys error:', err));
     }, [fromId, toId, departureDate, arrivalDate]);
 
-
+    console.log('journeyData:', journeyData);
+    
     return (
         <>
             <div className=" flex items-center justify-center mt-6">
@@ -77,7 +74,7 @@ export default function Resultats() {
                 <img src={Left_ico} alt="Previous Day" className="ml-2" />
                 </button>
 
-                <Date_String date={date} />
+                <Date_String date={new Date(departureDate)} />
 
                 <button
                 className="border-4 border-primary rounded-xl p-2 w-13"
@@ -136,10 +133,10 @@ export default function Resultats() {
                     <span className="text-[#133A40]">▼</span>
                     </button>
                 </div>
-                
+
                 {/* Product cards */}
                 {[...Array(6)].map((_, idx) => (
-                    <Productcard key={idx} airPlane={transport === 'plane'} />
+                    <Productcard key={idx} isAirPlane={transport === 'plane'} journey={journeyData[idx]} />
                 ))}
             
             </div>

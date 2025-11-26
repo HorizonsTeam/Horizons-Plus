@@ -48,7 +48,7 @@ const searchPlaces = express.Router();
             });
             
             res.json(placesList);
-            console.log("Stations trouvées :", placesList);
+            // console.log("Stations trouvées :", placesList);
 
     } catch (err) {
         console.error(err);
