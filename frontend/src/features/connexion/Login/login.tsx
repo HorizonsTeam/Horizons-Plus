@@ -56,14 +56,16 @@ export default function Login() {
 
   return (
     <PageTransition>
-      <div className={`text-center min-h-screen flex flex-col mt-10   gap-6 ${useIsMobile() ? 'w-full px-4' : 'w-full dispay-center grid grid-cols'} `}>
-        <h1 className="text-4xl font-bold mt-5 mb-10 text-[#98EAF3]">
+     <div className={`text-center min-h-screen flex flex-col mt-10   gap-6 ${useIsMobile() ? 'w-full px-4' : 'w-full'} `}>
+                      <h1 className="text-4xl font-bold   text-[#98EAF3] mb-20">
+
           Connectez-vous
         </h1>
 
+
         <form
           onSubmit={handleSubmit}
-          className={`flex flex-col items-center  mt-12  space-y-4 ${useIsMobile() ? 'w-full' : ' w-300 display-center '} `}
+          className={`flex flex-col items-center  mt-12 space-y-4 `}
         >
 
           {/* bloc erreur */}

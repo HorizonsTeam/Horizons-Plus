@@ -3,8 +3,8 @@ export type SuggestionType = "city" | "stop_area" | "other";
 export type Suggestion = {
   id: string;
   name: string;
-  type: SuggestionType;
-  region: string;
+  type?: SuggestionType;
+  region?: string;
 }
 
 export type AutocompleteInputProps = {
@@ -12,11 +12,13 @@ export type AutocompleteInputProps = {
     value: string;
     placeholder?: string;
     onChange: (newValue: string) => void;
+    onSelect: (s: Suggestion) => void;
     className?: string;
 }
 
 export type AutocompleteListProps = {
   suggestions: Suggestion[];
+  selectedIndex: number;
   onSelect: (s: Suggestion) => void;
 }
 

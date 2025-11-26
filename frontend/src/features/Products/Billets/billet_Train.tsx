@@ -105,7 +105,7 @@ export default function Billet_Train_recap ()
                 <div className='border-b-3 border-[#2C474B] '>
                     <p className='m-4 font-semibold text-center -ml-0.5'>Classe</p>
                 </div>
-                <div className={`flex ${isMobile ? 'flex-wrap gap-5 ' : 'flex-wrap gap-8'} w-full   justify-center py-5 p-3`}>
+                <div className={`flex ${isMobile ? 'flex-wrap    gap-5 ' : 'flex-wrap gap-8'} w-full   justify-center py-5 p-3`}>
                     {classes.map((classe) => (
                         <div key={classe.name} onClick={() => setSelectedClass(classe.name)}>
                             <ClassCard

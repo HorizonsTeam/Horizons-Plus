@@ -6,8 +6,9 @@ import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import cookieParser from "cookie-parser";
 import { toNodeHandler, fromNodeHeaders } from "better-auth/node";
-import auth from "./dist/auth.js";
-import searchRoutes from "./src/routes/search.js";
+import auth from "./dist/auth.js"; // export default depuis ton build
+import searchPlaces from "./src/routes/searchPlaces.js";
+import searchJourneys from "./src/routes/searchJourneys.js";
 import { loadGeoData } from "./src/utils/geoData.js";
 
 const app = express();
@@ -115,8 +116,8 @@ app.get("/api/me", async (req, res) => {
   }
 });
 
-
-app.use("/api/search", searchRoutes);
+app.use("/api/search", searchJourneys);
+app.use("/api/search", searchPlaces);
 
 // Health
 app.get("/api/health", (_req, res) => res.json({ ok: true }));
