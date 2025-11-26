@@ -6,7 +6,6 @@ import assurance_Ico from '../../../assets/assurance.svg';
 import useIsMobile from '../../../components/layouts/UseIsMobile';
 import { useEffect } from 'react';
 import CheckMarkSVG from '../../../assets/CheckMark.svg';
-import Quittersvg from '../../../assets/QuitterSvg.svg';
 
 
 
