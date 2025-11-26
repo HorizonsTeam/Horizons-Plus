@@ -77,7 +77,7 @@ if (process.env.NODE_ENV === "production") {
 }
 
 // Pattern correct pour Better Auth
-app.all("/api/auth/*", toNodeHandler(auth));
+app.use("/api/auth", toNodeHandler(auth));
 
 // introspection simple
 app.get("/api/auth/_routes", (_req, res) => {

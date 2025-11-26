@@ -12,8 +12,11 @@ import Recap from './features/Products/recap.tsx';
 import PaymentPage from './features/Products/Billets/Payment.tsx';
 
 import Infos_Passagers from './features/Products/Billets/Infos_Passagers.tsx';
+import Settings from './features/Settings/setingsPage.tsx';
+import UserInfoPageMobile from './features/Settings/components/UserInfoMobilePage.tsx';
 
-// import ResetPassword from './features/connexion/ResetPassword/resetpassword.tsx';
+
+
 
 
 function App() {
@@ -31,7 +34,8 @@ function App() {
           <Route path="Recap" element={<Recap />} />
           <Route path="PaymentPage" element={<PaymentPage />} />
           <Route path="Infos_Passagers" element={<Infos_Passagers />} />
-
+          <Route path="Settings" element={<Settings/>} />
+          <Route path="UserInfoPageMobile" element={<UserInfoPageMobile />} />
 
            
 
