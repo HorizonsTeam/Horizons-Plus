@@ -4,6 +4,12 @@ import ReturnBtn from '../../../assets/ReturnBtn.svg';
 import ModeDePaiementCard from './components/paiement/ModeDePaiementCard';
 import assurance_Ico from '../../../assets/assurance.svg';
 import useIsMobile from '../../../components/layouts/UseIsMobile';
+import { useEffect } from 'react';
+import CheckMarkSVG from '../../../assets/CheckMark.svg';
+import Quittersvg from '../../../assets/QuitterSvg.svg';
+
+
+
 
 export default function PaymentPage() {
 
@@ -14,8 +20,24 @@ export default function PaymentPage() {
     const onClick = () => setIsSelected(!IsSelected);
     const handleretour = () => navigate(-1);
 
+    const [ValidatePayment , setValidatePaymentOverlay] = useState(false);
+    useEffect (() => {
+        if (ValidatePayment)
+        {
+            document.body.style.overflow = 'hidden';
+        }
+        else
+        {
+            document.body.style.overflow = 'auto';  
+        }
+        }, [ValidatePayment]);
+
+ 
+    
+
     return (
-        <div className={`w-full ${isMobile ? "px-4" : " py-10"}`}>
+        <>
+        <div className={`relative w-full ${isMobile ? "px-4" : " py-10"}`}>
 
             {/* HEADER */}
             <div className="relative flex items-center justify-center mb-10">
@@ -78,10 +100,42 @@ export default function PaymentPage() {
             {/* BOUTON PAYER */}
             <div className="flex justify-center">
                 <button className="w-[250px] h-[55px] bg-[#98EAF3] rounded-xl mt-6 mb-10">
-                    <span className="text-[#115E66] font-bold text-2xl">Payer</span>
+                    <span className="text-[#115E66] font-bold text-2xl" onClick={() => setValidatePaymentOverlay(true)}>Payer</span>
                 </button>
             </div>
+                {ValidatePayment && (
+                    <div
+                        className="fixed inset-0 z-50 flex items-center justify-center bg-[#103035]/50"
+                        onClick={() => setValidatePaymentOverlay(false)}
+                    >
+                        <div
+                            className={`bg-[#2C474B] p-6 mx-5 rounded-2xl ${isMobile ? 'w-80' : 'w-[28rem]'
+                                }`}
+                            onClick={(e) => e.stopPropagation()} // empêche la fermeture quand on clique dans la carte
+                        >
+                            <div className={`grid ${isMobile ? 'gap-10' : 'gap-10'}`}>
+                                
+                                <div className='grid grid-cols gap-5 '>
+
+                                    <div className="flex justify-center">
+                                        <img src={CheckMarkSVG} alt="" />
+                                    </div>
+
+                                    <p
+                                        className={`text-center font-semibold ${isMobile ? 'text-sm' : 'text-xl'
+                                            }`}
+                                    >
+                                        Votre commande est validée. Un e-mail de confirmation vous sera envoyé.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
 
         </div>
+        
+        </>
     );
 }
