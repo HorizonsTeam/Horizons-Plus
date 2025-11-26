@@ -26,13 +26,29 @@ const ALLOWED = [
 const corsOptions = {
   origin(origin, cb) {
     if (!origin) return cb(null, true);
-    if (ALLOWED.includes(origin)) return cb(null, true);
+
+    const ALLOWED = [
+      "http://localhost:5173",
+      "http://127.0.0.1:5173",
+      "https://horizons-plus.vercel.app",
+      process.env.FRONT_URL,
+    ].filter(Boolean);
+
+    // Autorise automatiquement tous les previews Vercel
+    const isVercelPreview = origin.endsWith(".vercel.app");
+
+    if (ALLOWED.includes(origin) || isVercelPreview) {
+      return cb(null, true);
+    }
+
+    console.error("CORS BLOCKED →", origin);
     return cb(new Error(`Origin not allowed: ${origin}`));
   },
+
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
-  exposedHeaders: ["Set-Cookie"], // Permet au navigateur de lire les cookies dans la réponse
+  exposedHeaders: ["Set-Cookie"],
 };
 
 if (process.env.NODE_ENV === "production") {
