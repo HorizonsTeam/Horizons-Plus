@@ -226,7 +226,6 @@ export default function Resultats() {
                     .map((journey, idx) => (
                     <Productcard
                         key={idx}
-                        isAirPlane={transport === "plane"}
                         journey={journey}
                         passagersCount={passagerCount}
                         formattedDepartureDate={formattedDepartureDate}
