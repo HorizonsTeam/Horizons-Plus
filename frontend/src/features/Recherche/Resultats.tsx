@@ -20,19 +20,46 @@ export default function Resultats() {
 
     const [transport, setTransport] = useState<'plane' | 'train'>('train');
 
-    const handleretour = () => navigate(-1);
+    const handleRetour = () => navigate(-1);
 
     const [searchParams] = useSearchParams();
-    const fromId = searchParams.get('fromId') || '';
-    const fromName = searchParams.get('fromName') || '';
-    const toId = searchParams.get('toId') || '';
+    const fromId = searchParams.get("fromId") || '';
+    const fromName = searchParams.get("fromName") || '';
+    const toId = searchParams.get("toId") || '';
     const toName = searchParams.get("toName") || '';
+    const passagerCount = Number(searchParams.get("passagers") || 1);
+
     const [departureDate, setDepartureDate] = useState<string>(
-        searchParams.get('departureDate') || new Date().toISOString().split('T')[0]
+        searchParams.get("departureDate") || new Date().toISOString().split('T')[0]
     );
-    const arrivalDate = searchParams.get('arrivalDate') || '';
+
+    const [formattedDepartureDate, setFormattedDepartureDate] = useState<string>(
+        formatDateToFrench(departureDate)
+    );
+
+    useEffect(() => {
+        setFormattedDepartureDate(formatDateToFrench(departureDate));
+    }, [departureDate]);
+
+    const arrivalDate = searchParams.get("arrivalDate") || '';
+
+    const today = new Date().toISOString().split('T')[0];
+    const isPrevDisabled = new Date(departureDate) <= new Date(today);
 
     const [journeyData, setJourneyData] = useState<Journey[]>([]);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+    function formatDateToFrench(dateString: string): string {
+        const date = new Date(dateString);
+        const formatted = new Intl.DateTimeFormat("fr-FR", {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+        }).format(date);
+
+        return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+    }
 
     const changeDate = (delta: number) => {
         const current = new Date(departureDate);
@@ -43,103 +70,172 @@ export default function Resultats() {
     useEffect(() => {
         if (!fromId || !toId || !departureDate) return;
 
-        console.log("departureDate:", departureDate);
-        
         fetch(`${base}/api/search/journeys?from=${encodeURIComponent(fromId)}&to=${encodeURIComponent(toId)}&datetime=${encodeURIComponent(departureDate)}`)
             .then(res => res.json())
             .then(data => {
                 console.log('API journeys response:', data);
-                setJourneyData(data);
+
+                if (data.error) {
+                    setErrorMessage(data.error); // ou data.error.message
+                    setJourneyData([]);
+                } else {
+                    setErrorMessage(null);
+                    setJourneyData(data);
+                }
             })
-            .catch(err => console.error('Fetch journeys error:', err));
+            .catch(err => {
+                console.error('Fetch journeys error:', err);
+                setErrorMessage("Erreur serveur, réessayez plus tard");
+                setJourneyData([]);
+            });
     }, [fromId, toId, departureDate, arrivalDate]);
 
     console.log('journeyData:', journeyData);
-    
+
     return (
         <>
-            <div className=" flex items-center justify-center mt-6">
-                <button onClick={handleretour}><img src={ReturnBtn} alt="Return Button" className='absolute left-4 mt-10 transform -translate-y-1/2' /></button>
+            {/* Header */}
+            <div className="flex items-center justify-center mt-6">
+                <button onClick={handleRetour}>
+                    <img
+                        src={ReturnBtn}
+                        alt="Return Button"
+                        className="absolute left-4 mt-10 transform -translate-y-1/2"
+                    />
+                </button>
                 <div className="flex flex-col items-center">
-                    <h3 className='font-bold text-primary text-xl truncate max-w-[200px]'>{fromName} - {toName}</h3>
-                    <h4 className='text-primary'>1 passagers</h4>
+                    <h3 className="font-bold text-primary text-xl truncate max-w-[200px]">
+                        {fromName} - {toName}
+                    </h3>
+                    <h4 className="text-primary">
+                        {passagerCount} passager{passagerCount > 1 ? "s" : ""}
+                    </h4>
                 </div>
             </div>
 
+            {/* Date navigation */}
             <div className="flex items-center justify-center space-x-4 bg-dark p-4">
                 <button
-                className="border-4 border-primary rounded-xl p-2 w-13"
-                onClick={() => changeDate(-1)}
+                    onClick={() => changeDate(-1)}
+                    disabled={isPrevDisabled}
+                    className={`border-4 rounded-xl p-2 w-13 ${
+                    isPrevDisabled
+                        ? "border-gray-400 opacity-50 cursor-not-allowed"
+                        : "border-primary"
+                    }`}
                 >
-                <img src={Left_ico} alt="Previous Day" className="ml-2" />
+                    <img src={Left_ico} alt="Previous Day" className="ml-2" />
                 </button>
 
                 <Date_String date={new Date(departureDate)} />
 
                 <button
-                className="border-4 border-primary rounded-xl p-2 w-13"
-                onClick={() => changeDate(1)}
+                    className="border-4 border-primary rounded-xl p-2 w-13"
+                    onClick={() => changeDate(1)}
                 >
-                <img src={Right_ico} alt="Next Day" className="ml-2" />
+                    <img src={Right_ico} alt="Next Day" className="ml-2" />
                 </button>
             </div>
 
+            {/* Transport tabs */}
             <div className="flex items-center justify-between w-full m-10 -ml-4">
-                <button
-                onClick={() => setTransport('train')}
+            <button
+                onClick={() => setTransport("train")}
                 className={`w-2/3 h-[68px] flex justify-center items-center border-b-4 border-b-white rounded-tr-3xl transition-colors duration-300 ${
-                    transport === 'train' ? 'bg-[#133A40]' : 'bg-transparent'
+                transport === "train" ? "bg-[#133A40]" : "bg-transparent"
                 }`}
-                >
+            >
                 <div className="flex flex-col items-center">
-                    <img src={Train_Ico} alt="Train" />
-                    {transport === 'train' && <BestPrice />}
+                <img src={Train_Ico} alt="Train" />
+                {transport === "train" && <BestPrice />}
                 </div>
-                </button>
+            </button>
 
-                <button
-                onClick={() => setTransport('plane')}
+            <button
+                onClick={() => setTransport("plane")}
                 className={`w-2/3 h-[68px] flex justify-center items-center border-b-4 border-b-white rounded-tl-3xl transition-colors duration-300 ${
-                    transport === 'plane' ? 'bg-[#133A40]' : 'bg-transparent'
+                transport === "plane" ? "bg-[#133A40]" : "bg-transparent"
                 }`}
-                >
+            >
                 <div className="flex flex-col items-center">
-                    <img src={Plane_Ico} alt="Avion" />
-                    {transport === 'plane' && <BestPrice />}
+                <img src={Plane_Ico} alt="Avion" />
+                {transport === "plane" && <BestPrice />}
                 </div>
-                </button>
+            </button>
             </div>
 
-            <div className="bg-[#133A40] px-4 pt-5 -mt-10 w-[calc(109%)]  h-300 -ml-4 ">
-                <div className="flex  gap-2  -ml-3">
-                    <button className="flex items-center gap-1 border-primary border-2 px-4 py-2 rounded-full text-primary  rounded-full text-sm w-24">
-                    <span className='-ml-1'>Horaires </span>
+            {/* Results */}
+            <div className="bg-[#133A40] px-4 pt-5 -mt-10 w-[calc(109%)] h-300 -ml-4">
+            {errorMessage ? (
+                <div className="text-center text-red-400 font-bold py-10">
+                {errorMessage}
+                </div>
+            ) : (
+                <>
+                {/* Filters */}
+                <div className="flex gap-2 -ml-3">
+                    <button className="flex items-center gap-1 border-primary border-2 px-4 py-2 rounded-full text-primary text-sm w-24">
+                    <span className="-ml-1">Horaires</span>
                     <span className="text-primary">▼</span>
                     </button>
 
-                
-                    <button className="flex items-left  gap-1 border-primary border-2 px-4 py-2 rounded-full text-primary px-4 py-2 rounded-full text-sm w-20">
-                    <span className='-ml-1'>Gares </span>
+                    <button className="flex items-left gap-1 border-primary border-2 px-4 py-2 rounded-full text-primary text-sm w-20">
+                    <span className="-ml-1">Gares</span>
                     <span className="text-primary">▼</span>
                     </button>
 
-                    <button className="flex items-center gap-1 border-primary border-2 px-4 py-2 rounded-full text-primary text-primary px-4 py-2 rounded-full text-sm w-24">
-                    <span className='-ml-1'>Départs </span>
+                    <button className="flex items-center gap-1 border-primary border-2 px-4 py-2 rounded-full text-primary text-sm w-24">
+                    <span className="-ml-1">Départs</span>
                     <span className="text-primary">▼</span>
                     </button>
 
                     <button className="flex items-center gap-2 text-[#133A40] bg-primary px-4 py-2 rounded-full text-sm w-20">
-                    <span className='-ml-1'>Direct</span>
+                    <span className="-ml-1">Direct</span>
                     <span className="text-[#133A40]">▼</span>
                     </button>
                 </div>
 
                 {/* Product cards */}
-                {[...Array(6)].map((_, idx) => (
-                    <Productcard key={idx} isAirPlane={transport === 'plane'} journey={journeyData[idx]} />
-                ))}
-            
+                {journeyData
+                    .filter((journey) => {
+                    const now = new Date();
+
+                    // Combine departureDate (YYYY-MM-DD) + departureTime (HH:mm)
+                    const [hours, minutes] = journey.departureTime
+                        .split(":")
+                        .map(Number);
+                    const [year, month, day] = departureDate.split("-").map(Number);
+
+                    const departure = new Date(year, month - 1, day, hours, minutes);
+
+                    // Si la date est différente d'aujourd'hui → on garde toujours
+                    const today = new Date(
+                        now.getFullYear(),
+                        now.getMonth(),
+                        now.getDate()
+                    );
+                    const journeyDay = new Date(year, month - 1, day);
+
+                    if (journeyDay.getTime() !== today.getTime()) {
+                        return true;
+                    }
+
+                    // Si c'est aujourd'hui → on compare l'heure
+                    return departure >= now;
+                    })
+                    .slice(0, 6)
+                    .map((journey, idx) => (
+                    <Productcard
+                        key={idx}
+                        isAirPlane={transport === "plane"}
+                        journey={journey}
+                        passagersCount={passagerCount}
+                        formattedDepartureDate={formattedDepartureDate}
+                    />
+                    ))}
+                </>
+            )}
             </div>
         </>
-    )
+    );
 }

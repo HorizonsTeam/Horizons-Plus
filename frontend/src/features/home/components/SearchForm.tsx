@@ -11,6 +11,7 @@ export default function SearchForm() {
   const today = new Date().toISOString().split("T")[0];
   const [departureDate, setDepartureDate] = useState(today);
   const [arrivalDate, setArrivalDate] = useState<string>("");
+  const [passagerCount, setPassagerCount] = useState<number>(1);
 
   const [rotation, setRotation] = useState<number>(0);
 
@@ -61,7 +62,6 @@ export default function SearchForm() {
       setArrivalDate(value);
     }
   };
-
 
   return (
     <section className="px-4 py-8 lg:py-16">
@@ -152,11 +152,15 @@ export default function SearchForm() {
           {/* Passagers */}
           <div className="mb-5">
             <input
-              type="text"
+              type="number"
+              min={1}
+              value={passagerCount}
+              onChange={(e) => setPassagerCount(Number(e.target.value))}
               placeholder="Passagers"
               className="w-full bg-[#2C474B] text-white placeholder-slate-400 rounded-xl px-4 py-3.5 text-sm outline-none border-none focus:ring-2 focus:ring-cyan-400/30"
             />
           </div>
+
 
           {/* Bouton Rechercher */}
           <button 
@@ -166,7 +170,7 @@ export default function SearchForm() {
               if (isDisabled) return;
 
               Navigate(
-                `/Recherche?fromId=${encodeURIComponent(departure.id)}&fromName=${encodeURIComponent(departure.name)}&toId=${encodeURIComponent(arrival.id)}&toName=${encodeURIComponent(arrival.name)}&departureDate=${encodeURIComponent(departureDate)}&arrivalDate=${encodeURIComponent(arrivalDate || "")}`
+                `/Recherche?fromId=${encodeURIComponent(departure.id)}&fromName=${encodeURIComponent(departure.name)}&toId=${encodeURIComponent(arrival.id)}&toName=${encodeURIComponent(arrival.name)}&departureDate=${encodeURIComponent(departureDate)}&arrivalDate=${encodeURIComponent(arrivalDate || "")}&passagers=${encodeURIComponent(passagerCount)}`
               );
             }}
           >
@@ -237,11 +241,15 @@ export default function SearchForm() {
             </div>
             <div>
               <label className="block text-sm text-slate-400 mb-2">Passagers</label>
-              <select className="w-full bg-slate-600/50 text-white rounded-xl px-4 py-3.5 outline-none border-none focus:ring-2 focus:ring-cyan-400/30 cursor-pointer">
-                <option>1 passager</option>
-                <option>2 passagers</option>
-                <option>3 passagers</option>
-                <option>4+ passagers</option>
+              <select
+                className="w-full bg-slate-600/50 text-white rounded-xl px-4 py-3.5 outline-none border-none focus:ring-2 focus:ring-cyan-400/30 cursor-pointer"
+                value={passagerCount}
+                onChange={(e) => setPassagerCount(Number(e.target.value))}
+              >
+                <option value={1}>1 passager</option>
+                <option value={2}>2 passagers</option>
+                <option value={3}>3 passagers</option>
+                <option value={4}>4 passagers</option>
               </select>
             </div>
           </div>
@@ -254,7 +262,7 @@ export default function SearchForm() {
               if (isDisabled) return;
 
               Navigate(
-                `/Recherche?fromId=${encodeURIComponent(departure.id)}&fromName=${encodeURIComponent(departure.name)}&toId=${encodeURIComponent(arrival.id)}&toName=${encodeURIComponent(arrival.name)}&departureDate=${encodeURIComponent(departureDate)}&arrivalDate=${encodeURIComponent(arrivalDate || "")}`
+                `/Recherche?fromId=${encodeURIComponent(departure.id)}&fromName=${encodeURIComponent(departure.name)}&toId=${encodeURIComponent(arrival.id)}&toName=${encodeURIComponent(arrival.name)}&departureDate=${encodeURIComponent(departureDate)}&arrivalDate=${encodeURIComponent(arrivalDate || "")}&passagers=${encodeURIComponent(passagerCount)}`
               );
             }}
           >
