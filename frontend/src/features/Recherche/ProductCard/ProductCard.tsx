@@ -6,11 +6,11 @@ import train_not_active from '../../../assets/train_not_active.svg';
 import type { ProductCardProps } from './types.ts';
 import { Link } from 'react-router-dom';
 
-export default function ProductCard({ isAirPlane, journey }: ProductCardProps) {
+export default function ProductCard({ isAirPlane, journey, passagersCount, formattedDepartureDate }: ProductCardProps) {
 
     return (
         <div className=" bg-[#103035] rounded-3xl mt-6 border-4 border-[#2C474B] -ml-2 p-2">
-            <Link to="/Recap">
+            <Link to="/Recap" state={{ journey, passagersCount, formattedDepartureDate }}>
                 <div className="flex items-center p-2 mt-1  gap-5" >
                     {/* Logo transport */}
                     <img src={isAirPlane ? planelogo : train_not_active} alt="" />
@@ -39,7 +39,7 @@ export default function ProductCard({ isAirPlane, journey }: ProductCardProps) {
                     </div>
 
                     <div className='grid grid-col gap-2 ' >
-                        <img src={isAirPlane ? airFrance : Mobigo} alt="" className='w-19 h-10 mx-3'/>
+                        {/* <img src={isAirPlane ? airFrance : Mobigo} alt="" className='w-19 h-10 mx-3'/> */}
                         <div className='grid grid-cols  '>
                             <div className='rounded-4xl border-white border-1 bg-black w-4 h-4 m-2'></div>
                             <div className="border-l border-dashed border-white h-3 w-1 mr-4 ml-4"></div>
@@ -51,7 +51,7 @@ export default function ProductCard({ isAirPlane, journey }: ProductCardProps) {
                         <span className='font-bold text-xs w-25 text-left'>{journey?.arrivalName}</span>
                     </div>
                     <div className='grid grid-col gap-9 w-10 mt-5 h-10'>
-                        <span className='text-2xl font-extrabold w-28 -mb-5 mr-10'>{journey?.price}</span>
+                        <span className='text-2xl font-extrabold w-28 -mb-5 mr-10'>{journey?.price} €</span>
                         <div className="bg-[#FFB856] rounded-bl-xl rounded-tl-xl rounded-br-3xl w-35 h-8 text-white font-semibold text-xs items-center flex justify-center">
                             <p>Il reste 5 places</p>
                         </div>
