@@ -61,7 +61,7 @@ export default function Infos_Passagers() {
 
       <Link
         to="/PaymentPage"
-        state={{ journey, selectedClass, passagersCount, formattedDepartureDate }}
+        state={{ journey, selectedClass, passagersCount: passagers.length, formattedDepartureDate }}
       >
         <button className="w-80 h-15 bg-[#98EAF3] rounded-xl mt-4 ml-3">
           <span className="text-[#115E66] font-bold text-xl">Continuer</span>
