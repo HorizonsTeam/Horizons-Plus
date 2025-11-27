@@ -1,64 +1,110 @@
-import Mobigo from '../../../assets/mobigo_ico.svg';
 import ClockIco from '../../../assets/clock.svg';
-import planelogo from '../../../assets/plane_ico2.svg';
-import airFrance from '../../../assets/Air_France_ico.png';
-import train_not_active from '../../../assets/train_not_active.svg';
 import type { ProductCardProps } from './types.ts';
 import { Link } from 'react-router-dom';
 
 export default function ProductCard({ isAirPlane, journey }: ProductCardProps) {
+    if (!journey) return null;
 
+    const hasNoTransfer = journey.numberOfTransfers === 0;
+
+    const formatDuration = (duration: any) => {
+        if (typeof duration === 'number') {
+            const hours = Math.floor(duration / 60);
+            const minutes = duration % 60;
+            return `${hours}h${minutes.toString().padStart(2, '0')} min`;
+        }
+        // si c'est déjà une string genre "0h37 min"
+        return duration;
+    };
+
+    
     return (
-        <div className=" bg-[#103035] rounded-3xl mt-6 border-4 border-[#2C474B] -ml-2 p-2">
-            <Link to="/Recap">
-                <div className="flex items-center p-2 mt-1  gap-5" >
-                    {/* Logo transport */}
-                    <img src={isAirPlane ? planelogo : train_not_active} alt="" />
-                    {/* Logo opérateur */}
-                    <img src={isAirPlane ? airFrance : Mobigo} alt="" />
-                    {journey?.numberOfTransfers === 0 ? (
-                        <div className='bg-[#98EAF3] h-6 rounded-md w-[60px] ml-5 p-1'>
-                            <p className='text-[#103035] font-bold text-xs text-center'>Direct</p>
-                        </div>
-                    ) : (
-                        <div className='bg-[#FF6B6B] h-6 rounded-md w-[112px] ml-5 p-1'>
-                            <p className='text-white font-bold text-xs text-center'>
-                                {journey?.numberOfTransfers} correspondance{journey?.numberOfTransfers > 1 ? 's' : ''}
-                            </p>
-                        </div>
-                    )}
-                    <div className='flex items-center gap-1'>
-                        <img src={ClockIco} alt="" />
-                        <span className='text-xs opacity-50 '>{journey?.duration}min</span>
-                    </div>
-                </div>
-                <div className=' w-full flex flex-wrap text-center h-23 gap-2  '>
-                    <div className='grid grid-col w-10 gap-4 mt-3'>
-                        <span className='font-bold text-xs '>{journey?.departureTime}</span>
-                        <span className='font-bold text-xs'>{journey?.arrivalTime}</span>
-                    </div>
-
-                    <div className='grid grid-col gap-2 ' >
-                        <img src={isAirPlane ? airFrance : Mobigo} alt="" className='w-19 h-10 mx-3'/>
-                        <div className='grid grid-cols  '>
-                            <div className='rounded-4xl border-white border-1 bg-black w-4 h-4 m-2'></div>
-                            <div className="border-l border-dashed border-white h-3 w-1 mr-4 ml-4"></div>
-                            <div className='rounded-4xl bg-white w-4 h-4 m-2'></div>
-                        </div>
-                    </div>
-                    <div className='grid grid-col  gap-4 '>
-                        <span className='font-bold text-xl text-left w-10'>{journey?.departureName}</span>
-                        <span className='font-bold text-xs w-25 text-left'>{journey?.arrivalName}</span>
-                    </div>
-                    <div className='grid grid-col gap-9 w-10 mt-5 h-10'>
-                        <span className='text-2xl font-extrabold w-28 -mb-5 mr-10'>{journey?.price}</span>
-                        <div className="bg-[#FFB856] rounded-bl-xl rounded-tl-xl rounded-br-3xl w-35 h-8 text-white font-semibold text-xs items-center flex justify-center">
-                            <p>Il reste 5 places</p>
+        <Link to="/Recap" className="block">
+            <article className="mt-4 rounded-3xl bg-[#0C2529] border border-[#2C474B] px-4 py-3 sm:px-5 sm:py-4 text-white mx-2">
+                <div className="flex flex-col gap-8 sm:flex-row sm:items-stretch sm:justify-between">
+                    {/* GAUCHE : transport + horaires + villes + durée */}
+                    <div className="flex flex-1 gap-8 min-w-0">
+                        {/* Icône + opérateur */}
+                        <div className='flex flex-col gap-4 min-w-0'>
+                            <p className='text-xl font-bold'>Ter </p>
+                            <span className="text-lg sm:text-xl font-semibold">
+                                {journey.departureTime}
+                            </span>
+                            <span className="text-lg sm:text-xl font-semibold">
+                                {journey.arrivalTime}
+                            </span>
                         </div>
 
+                        {/* Heures + villes + ligne SNCF + durée */}
+                        <div className="flex flex-col gap-2 min-w-0">
+                            {/* Durée en dessous */}
+                            <div className="mt-2 flex items-center gap-2 text-xs sm:text-sm opacity-80">
+                                <img src={ClockIco} alt="" className="h-4 w-4" />
+                                <span>{formatDuration(journey.duration)}</span>
+                            </div>
+                            {/* Départ */}
+                            <div className="flex items-baseline gap-2 min-w-0">
+                                
+                                <span className="text-xl sm:text-sm truncate opacity-90">
+                                    {journey.departureName}
+                                </span>
+                            </div>
+
+                            {/* Ligne verticale style SNCF */}
+                            <div className="ml-1.5 h-5 border-l border-dashed border-[#4C6A6F]" />
+
+                            {/* Arrivée */}
+                            <div className="flex items-baseline gap-2 min-w-0">
+                                
+                                <span className="text-xl sm:text-sm truncate opacity-90">
+                                    {journey.arrivalName}
+                                </span>
+                            </div>
+
+                           
+                        </div>
+                   
+
+                    {/*  */}
+                    <div className="flex flex-col items-end gap-2 min-w-[120px]">
+                        {/* Badge Direct / correspondances */}
+                        <div
+                            className={`px-3 py-1 rounded-full text-[8px] sm:text-xs font-semibold ${hasNoTransfer
+                                    ? 'bg-[#98EAF3] text-[#103035]'
+                                    : 'bg-[#FF6B6B] text-white'
+                                }`}
+                        >
+                            {hasNoTransfer ? (
+                                <span>Direct</span>
+                            ) : (
+                                <span>
+                                    {journey.numberOfTransfers} correspondance
+                                    {journey.numberOfTransfers > 1 ? 's' : ''}
+                                </span>
+                            )}
+                        </div>
+
+                        {/* Prix */}
+                        <span className="text-xl sm:text-2xl font-extrabold">
+                            {journey.price}
+                        </span>
+
+                        {/* Places restantes */}
+                        <span className="text-[11px] sm:text-xs text-emerald-300">
+                            Il reste 5 places
+                        </span>
+
+                        {/* Bouton Voir le détail */}
+                        <button
+                            type="button"
+                            className="mt-1 rounded-full bg-[#FFB856] px-4 py-1 text-[11px] sm:text-xs font-semibold text-[#103035]"
+                        >
+                            Voir le détail
+                        </button>
                     </div>
                 </div>
-            </Link>
-        </div>
+                </div>
+            </article>
+        </Link>
     );
 }
