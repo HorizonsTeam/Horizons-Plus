@@ -2,7 +2,7 @@ import ClockIco from '../../../assets/clock.svg';
 import type { ProductCardProps } from './types.ts';
 import { Link } from 'react-router-dom';
 
-export default function ProductCard({journey}: ProductCardProps) {
+export default function ProductCard({ isAirPlane, journey }: ProductCardProps) {
     if (!journey) return null;
 
     const hasNoTransfer = journey.numberOfTransfers === 0;

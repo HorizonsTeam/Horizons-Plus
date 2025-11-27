@@ -10,6 +10,7 @@ export type Journey = {
 
 export type ProductCardProps =
 {
+    isAirPlane: boolean;
     journey: Journey;
 }
 

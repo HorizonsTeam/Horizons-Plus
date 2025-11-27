@@ -136,7 +136,7 @@ export default function Resultats() {
 
                 {/* Product cards */}
                 {[...Array(6)].map((_, idx) => (
-                    <Productcard key={idx}  journey={journeyData[idx]} />
+                    <Productcard key={idx} isAirPlane={transport === 'plane'} journey={journeyData[idx]} />
                 ))}
             
             </div>
