@@ -9,22 +9,23 @@ import priseIco from'../../../assets/Prises.svg'
 import climatisation_Ico from '../../../assets/climatisation.svg'   
 import Serinita_card from './components/serenita_card.tsx';
 import AjouterPanierBtn from './components/AjouterPanierBtn.tsx';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import useIsMobile from '../../../components/layouts/UseIsMobile.tsx';
+import type { LocationState } from '../Billets/types.ts';
 
 
-
-
-
-export default function Billet_Train_recap ()
+export default function Billet_Train_recap()
 {
+    const { state } = useLocation();
+    const { journey, passagersCount, formattedDepartureDate } = (state || {}) as LocationState;
+    
     const navigate = useNavigate();
     const handleretour = () =>
     {
         navigate(-1);
     };
-    let isMobile  : boolean= useIsMobile();
+    const isMobile : boolean = useIsMobile();
     
     const [selectedClass, setSelectedClass] = useState('Économie');
     const classes = [
@@ -53,39 +54,39 @@ export default function Billet_Train_recap ()
                 < h1 className='text-3xl text-[#98EAF3] font-medium text-center'>Récapitulatif</h1>
             </div>
             <div className='w-full items-center h-70 bg-[#133A40] rounded-2xl border-2 border-[#2C474B] mt-15 '>
-                <p className='font-bold h-auto w-full text-center mt-5'>Jeudi 18 septembre 2025</p>
+                <p className='font-bold h-auto w-full text-center mt-5'>{formattedDepartureDate}</p>
                 <div className=' w-full h-40  mt-6 border-t-[#2C474B] border-b-[#2C474B] border-t-2 border-b-2 flex justify-between items-center'>
                     <div className='grid grid-cols gap-15 p-4'>
-                        <span className='font-bold'>6h50</span>
-                        <span className='font-bold'>7h37</span>
+                        <span className='font-bold'>{journey.departureTime}</span>
+                        <span className='font-bold'>{journey.arrivalTime}</span>
                     </div>
                     <div className='grid grid-cols gap-1 p-4'>
                         <div className='h-4 w-4 bg-gray-400 border-white border-2 rounded-2xl'></div>
-                        <div className='border-l-3  border-dashed border-white h-14 w-1 ml-1.5  '></div>
+                        <div className='border-l-3  border-dashed border-white h-14 w-1 ml-1.5'></div>
                         <div className='h-4 w-4 bg-black border-white border-2 rounded-2xl'></div>
                     </div>
                     <div className='grid grid-cols  gap-6 p-4 -ml-6'>
                         <div className='grid grid-cols'>
-                        <span className='font-bold'>Moulins-sur-Allier</span>
-                            <span className='text-xs font-light'>Gare de Moulins </span>
+                            <span className='font-bold'>{journey.departureName}</span>
+                            {/* <span className='text-xs font-light'>Gare de Moulins </span> */}
                         </div>
                         <div className='grid grid-cols'>
-                        <span className='font-bold'>Nevers</span>
-                        <span className='text-xs font-light'>Gare de Nevers</span>
+                            <span className='font-bold'>{journey.arrivalName}</span>
+                            {/* <span className='text-xs font-light'>Gare de Nevers</span> */}
                         </div>
                     </div>
                     <div className='flex  gap-2 p-4 m-3'>
                         <img src={clockIco} className='h-5 w-5 mt-1' />
-                        <span className='font-bold text-xl'>1h30</span>
+                        <span className='font-bold text-xl'>{journey.duration}</span>
                     </div>
                 </div>
-                <p className='m-4'>Total pour un passager : <span className='font-bold'>59,50 €</span></p>
+                <p className='m-4'>Total pour {passagersCount} passager{(passagersCount ?? 1) > 1 ? 's' : ''} : <span className='font-bold'>{journey.price * (passagersCount ?? 1)} €</span></p>
 
 
             </div>
             <div className='w-full items-center h-55 bg-[#133A40] rounded-2xl border-2 border-[#2C474B] mt-5'>
                 <div className='border-b-3 border-[#2C474B] '>
-                    <p className='m-4 font-semibold text-center -ml-2'>Informations </p>
+                    <p className='m-4 font-semibold text-center -ml-2'>Informations</p>
                 </div>
                 <div className='flex justify-between'>
                     <div className='grid grid-cols gap-7 p-6'>
@@ -119,19 +120,19 @@ export default function Billet_Train_recap ()
                 </div>
             </div>
             
-            <Inclus avantage1='Wifi' Ico_path_Avantage1={icoWifi} avantage2='Prises électriques ' Ico_path_Avantage2={priseIco} 
-            avantage3='Climatisations' Ico_path_Avantage3={climatisation_Ico}/>
+            <Inclus avantage1='WIFI' Ico_path_Avantage1={icoWifi} avantage2='Prise électrique' Ico_path_Avantage2={priseIco} 
+            avantage3='Climatisation' Ico_path_Avantage3={climatisation_Ico}/>
 
             <Serinita_card/>
 
             <div className=' flex justify-between m-5 '>
                 <p className='font-bold text-3xl'>Total : </p>
-                <p className='font-bold text-3xl'>59,00 €</p>
+                <p className='font-bold text-3xl'>{journey.price * (passagersCount ?? 1)} €</p>
 
             </div>
             <div className='grid grid-cols gap-2 m-4 justify-center items-center '>
             <AjouterPanierBtn/>
-                <Link to="/Infos_Passagers">
+                <Link to="/Infos_Passagers" state={{ journey, selectedClass, passagersCount, formattedDepartureDate }}>
                     <button className="w-80  h-15 bg-[#98EAF3] rounded-xl mt-4">
                         <span className="text-[#115E66] font-bold text-xl">Continuer</span>
                     </button>

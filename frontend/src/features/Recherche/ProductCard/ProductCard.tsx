@@ -2,8 +2,7 @@ import ClockIco from '../../../assets/clock.svg';
 import type { ProductCardProps } from './types.ts';
 import { Link } from 'react-router-dom';
 
-export default function ProductCard({ isAirPlane, journey }: ProductCardProps) {
-    if (!journey) return null;
+export default function ProductCard({ isAirPlane, journey, passagersCount, formattedDepartureDate }: ProductCardProps) {
 
     const hasNoTransfer = journey.numberOfTransfers === 0;
 
@@ -19,7 +18,7 @@ export default function ProductCard({ isAirPlane, journey }: ProductCardProps) {
 
     
     return (
-        <Link to="/Recap" className="block">
+        <Link to="/Recap" className="block" state={{ journey, passagersCount, formattedDepartureDate }}>
             <article className="mt-4 rounded-3xl bg-[#0C2529] border border-[#2C474B] px-4 py-3 sm:px-5 sm:py-4 text-white mx-2">
                 <div className="flex flex-col gap-8 sm:flex-row sm:items-stretch sm:justify-between">
                     {/* GAUCHE : transport + horaires + villes + durée */}
