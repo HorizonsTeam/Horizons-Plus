@@ -137,10 +137,9 @@ export default function Resultats() {
                 </button>
             </div>
 
-            {/* Transport tabs */}
-            <div className="flex items-center justify-between w-full m-10 -ml-4">
-            <button
-                onClick={() => setTransport("train")}
+            <div className="flex items-center justify-between w-full my-10 ">
+                <button
+                onClick={() => setTransport('train')}
                 className={`w-2/3 h-[68px] flex justify-center items-center border-b-4 border-b-white rounded-tr-3xl transition-colors duration-300 ${
                 transport === "train" ? "bg-[#133A40]" : "bg-transparent"
                 }`}
@@ -165,7 +164,7 @@ export default function Resultats() {
             </div>
 
             {/* Results */}
-            <div className="bg-[#133A40] px-4 pt-5 -mt-10 w-[calc(109%)] h-300 -ml-4">
+            <div className="bg-[#133A40] px-2 pt-5 -mt-10 w-full h-300">
             {errorMessage ? (
                 <div className="text-center text-red-400 font-bold py-10">
                 {errorMessage}
