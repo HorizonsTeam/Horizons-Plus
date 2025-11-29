@@ -16,15 +16,33 @@ function AutocompleteInput({ label, value, placeholder, onChange, onSelect, clas
             return;
         }
 
-        const timeout = setTimeout(() => {
-            fetch(`${base}/api/search/stations?q=${value}`)
-            .then(res => res.json())
-            .then(data => setSuggestions(data))
-            .catch(() => setSuggestions([]));
-        }, 300);
+        const timeout = setTimeout(async () => {
+            try {
+                const sncfRes = await fetch(`${base}/api/search/stations?q=${value}`);
+                const sncfData = await sncfRes.json();
 
-        return () => clearTimeout(timeout);
+                // Appel API Amadeus
+                const amadeusRes = await fetch(`${base}/api/search/airports?q=${value}`);
+                const amadeusData = await amadeusRes.json();
+
+                // Combiner les deux résultats
+                const combined = [...sncfData, ...amadeusData];
+
+                // Supprimer les doublons (par exemple selon le name ou id)
+                const unique = combined.filter(
+                    (v, i, a) => a.findIndex(e => e.id === v.id) === i
+                );
+
+                setSuggestions(unique);
+            } catch (err) {
+                console.error(err);
+                setSuggestions([]);
+            }
+    }, 300);
+
+    return () => clearTimeout(timeout);
     }, [value]);
+
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
