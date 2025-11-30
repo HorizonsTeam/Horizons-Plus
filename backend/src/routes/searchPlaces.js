@@ -9,7 +9,7 @@ searchPlaces.get("/stations", async (req, res) => {
 
     try {
         const response = await fetch(
-        `https://api.sncf.com/v1/coverage/sncf/places?q=${q}`,
+        `https://api.sncf.com/v1/coverage/sncf/places?q=${encodeURIComponent(q)}`,
             {
                 headers: {
                     "Authorization": "Basic " + Buffer.from(process.env.NAVITIA_API_KEY + ":").toString("base64")
@@ -18,7 +18,7 @@ searchPlaces.get("/stations", async (req, res) => {
         );
 
         const data = await response.json();
-        console.log("Données reçues de l'API SNCF :", data);
+        // console.log("Données reçues de l'API SNCF :", data);
 
         const places = Array.isArray(data.places) ? data.places : [];
 

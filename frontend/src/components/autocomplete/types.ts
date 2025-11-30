@@ -1,4 +1,4 @@
-export type SuggestionType = "city" | "stop_area" | "other";
+export type SuggestionType = "city" | "stop_area" | "airport";
 
 export type Suggestion = {
   id: string;

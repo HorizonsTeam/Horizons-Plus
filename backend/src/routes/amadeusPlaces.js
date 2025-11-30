@@ -3,9 +3,16 @@ import amadeus from "../amadeusClient.js";
 
 const amadeusPlaces = express.Router();
 
+function capitalizeWithHyphens(str) {
+    return str
+        .toLowerCase()
+        .replace(/(^\p{L})|([\s-]\p{L})/gu, c => c.toUpperCase());
+}
+
+
 amadeusPlaces.get("/airports", async (req, res) => {
     const q = req.query.q;
-    if (!q) return res.json([]);
+    if (!q || q.length < 3 || q.length > 40) return res.json([]); 
 
     try {
         const response = await amadeus.referenceData.locations.get({
@@ -15,18 +22,24 @@ amadeusPlaces.get("/airports", async (req, res) => {
 
         const data = response.data || [];
 
-        // const places = data.map((place) => ({
-        //     id: place.id,
-        //     name: place.name,
-        //     iata: place.iataCode,
-        //     type: place.subType,
-        //     country: place.address?.countryName || null,
-        // }));
+        const placesList = data.map(p => {
+            const name = capitalizeWithHyphens(p.name);
+            const type = p.subType.toLowerCase();
+            const countryName = new Intl.DisplayNames(['fr'], { type: "region" });
+            const region = capitalizeWithHyphens(countryName.of(p.address.countryCode));
 
-        // res.json(places);
-        res.json(data);
-    }
-    catch (err) {
+            return { id: p.id, name, type, region };
+        });
+
+        res.json(placesList);
+    } catch (err) {
+        console.log(err);
+
+        if (err.code === "ClientError" && err.description?.[0]?.status === 429) {
+            console.warn("Amadeus rate limit exceeded, returning empty list");
+            return res.json([]);
+        }
+
         console.error(err);
         res.status(500).json([]);
     }

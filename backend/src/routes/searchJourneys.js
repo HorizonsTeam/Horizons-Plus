@@ -32,7 +32,7 @@ searchJourneys.get("/journeys", async (req, res) => {
         console.log("Requête SNCF :", departure, "→", arrival);
 
         const response = await fetch(
-            `https://api.sncf.com/v1/coverage/sncf/journeys?from=${departure}&to=${arrival}&datetime=${datetime}&count=10`,
+            `https://api.sncf.com/v1/coverage/sncf/journeys?from=${encodeURIComponent(departure)}&to=${encodeURIComponent(arrival)}&datetime=${encodeURIComponent(datetime)}&count=10`,
             {
                 headers: {
                     "Authorization":

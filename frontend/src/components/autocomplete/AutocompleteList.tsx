@@ -2,6 +2,8 @@ import type { AutocompleteListProps } from './types';
 import { useRef, useEffect } from 'react';
 import trainIcon from '../../assets/train-station (blue).png';
 import cityIcon from '../../assets/house-building (blue).png';
+import airportIcon from '../../assets/airport.png';
+import type { SuggestionType } from './types';
 
 
 function AutocompleteList({ suggestions, selectedIndex, onSelect }: AutocompleteListProps) {
@@ -16,6 +18,18 @@ function AutocompleteList({ suggestions, selectedIndex, onSelect }: Autocomplete
 
     if (!suggestions || suggestions.length === 0) return null;
     
+    const icons = {
+        city: cityIcon,
+        stop_area: trainIcon,
+        airport: airportIcon,
+    };
+
+    const labels: Record<SuggestionType, string> = {
+        city: "Ville",
+        stop_area: "Gare",
+        airport: "Aéroport",
+    };
+
     return (
         <ul 
             className="absolute autocomplete-suggestions left-0 right-0 z-50 mt-2 rounded-xl bg-[#0f2628] border border-[#1b3a3d] shadow-xl 
@@ -33,13 +47,13 @@ function AutocompleteList({ suggestions, selectedIndex, onSelect }: Autocomplete
                     >
                     <img
                         className="w-5 h-5 opacity-80 flex-shrink-0"
-                        src={s.type === 'stop_area' ? trainIcon : cityIcon}
+                        src={icons[s.type ?? "city"]}
                         alt=""
                     />
 
                     <div className="overflow-hidden">
                         <div className="text-[0.7rem] font-medium text-gray-400 uppercase tracking-wide mb-0.5">
-                        {s.type === 'stop_area' ? 'Gare' : 'Ville'}
+                        {labels[s.type ?? "city"]}
                         </div>
 
                         <div className="flex items-center gap-2">

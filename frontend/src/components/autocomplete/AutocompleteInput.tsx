@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import type { AutocompleteInputProps, Suggestion } from './types';
+import type { AutocompleteInputProps, Suggestion, SuggestionType } from './types';
 import AutocompleteList from './AutocompleteList';
 
 function AutocompleteInput({ label, value, placeholder, onChange, onSelect, className }: AutocompleteInputProps) {
@@ -11,29 +11,43 @@ function AutocompleteInput({ label, value, placeholder, onChange, onSelect, clas
     const base = `${import.meta.env.VITE_API_URL || "http://localhost:3005"}`;
 
     useEffect(() => {
-        if (!value) {
+        if (!value || value.length < 3) {
             setSuggestions([]);
             return;
         }
 
         const timeout = setTimeout(async () => {
             try {
-                const sncfRes = await fetch(`${base}/api/search/stations?q=${value}`);
-                const sncfData = await sncfRes.json();
+                const [sncfData, amadeusData] = await Promise.allSettled([
+                    fetch(`${base}/api/search/stations?q=${encodeURIComponent(value)}`).then(r => r.json()),
+                    fetch(`${base}/api/search/airports?q=${encodeURIComponent(value)}`).then(r => r.json()),
+                ]);
 
-                // Appel API Amadeus
-                const amadeusRes = await fetch(`${base}/api/search/airports?q=${value}`);
-                const amadeusData = await amadeusRes.json();
+                const sncfResults: Suggestion[] = sncfData.status === 'fulfilled' ? sncfData.value : [];
+                const amadeusResults: Suggestion[] = amadeusData.status === 'fulfilled' ? amadeusData.value : [];
 
                 // Combiner les deux résultats
-                const combined = [...sncfData, ...amadeusData];
-
-                // Supprimer les doublons (par exemple selon le name ou id)
+                const combined = [...sncfResults, ...amadeusResults];
+                
+                // Supprimer les doublons
                 const unique = combined.filter(
-                    (v, i, a) => a.findIndex(e => e.id === v.id) === i
+                    (v, i, a) =>
+                        a.findIndex(e => e.name.toLowerCase() === v.name.toLowerCase()) === i
                 );
 
-                setSuggestions(unique);
+                const typeOrder: Record<SuggestionType, number> = {
+                    city: 0,
+                    stop_area: 1,
+                    airport: 2
+                };
+
+                const sorted = unique.sort((a, b) => {
+                    const typeA = a.type ?? "city";
+                    const typeB = b.type ?? "city";
+                    return typeOrder[typeA] - typeOrder[typeB];
+                });
+
+                setSuggestions(sorted);
             } catch (err) {
                 console.error(err);
                 setSuggestions([]);
