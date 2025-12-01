@@ -14,7 +14,7 @@ import PaymentPage from './features/Products/Billets/Payment.tsx';
 import Infos_Passagers from './features/Products/Billets/Infos_Passagers.tsx';
 import Settings from './features/Settings/setingsPage.tsx';
 import UserInfoPageMobile from './features/Settings/components/UserInfoMobilePage.tsx';
-
+import ResetPassword from './features/connexion/ResetPassword/resetpassword.tsx';
 
 
 
@@ -28,6 +28,7 @@ function App() {
           <Route index element={<HomePage />} />
           <Route path="login" element={<Login />} />
           <Route path="mdpoublie" element={<MdpOublie />} />
+          <Route path="ResetPassword" element={<ResetPassword />} />
           <Route path="singin" element={<Singin />} />
           <Route path="panier" element={<Panier />} />
           <Route path="Recherche" element={<Resultats />} />
