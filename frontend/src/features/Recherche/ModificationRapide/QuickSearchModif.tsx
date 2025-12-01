@@ -1,11 +1,8 @@
 
-import { number } from "framer-motion";
-import { useState } from "react";
-
 type Props = React.InputHTMLAttributes<HTMLInputElement> & {
     label: string;
     containerClassName?: string;
-    inputValue?: string ; 
+    inputValue?: string | number; 
 
 };
 
@@ -73,7 +70,7 @@ export default function QouickModificationOverlay ({villeDepart, villeArrive, Pa
             <div className="grid  grid-cols  justify-center gap-2 mt-4  ">
             <div className="flex justify-center gap-5 ">
                 <FloatingInput
-                label="ville Depart"
+                label="Ville départ"
                 type="text"
                 inputMode="numeric"
                 autoComplete="cc-number"
@@ -81,7 +78,7 @@ export default function QouickModificationOverlay ({villeDepart, villeArrive, Pa
                 
             />
              <FloatingInput
-                label="ville Arrive"
+                label="Ville arrivée"
                 type="text"
                 inputMode="numeric"
                 autoComplete="cc-number"
@@ -105,7 +102,7 @@ export default function QouickModificationOverlay ({villeDepart, villeArrive, Pa
                     inputValue={dateSearch}
                 />
                 <button className="w-full  h-15 bg-[#98EAF3] rounded-xl mt-4" onClick={() => handleValidation()}>
-                    <span className="text-[#115E66] font-bold text-xl">Validé les modifications </span>
+                    <span className="text-[#115E66] font-bold text-xl">Valider les modifications </span>
                 </button>  
             
             </div>
