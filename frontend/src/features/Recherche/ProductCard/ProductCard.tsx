@@ -12,7 +12,6 @@ export default function ProductCard({ journey, passagersCount, formattedDepartur
             const minutes = duration % 60;
             return `${hours}h${minutes.toString().padStart(2, '0')} min`;
         }
-        // si c'est déjà une string genre "0h37 min"
         return duration;
     };
 
