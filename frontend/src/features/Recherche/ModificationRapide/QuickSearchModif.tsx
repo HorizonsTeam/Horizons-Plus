@@ -1,6 +1,4 @@
 
-import { number } from "framer-motion";
-import { useState } from "react";
 
 type Props = React.InputHTMLAttributes<HTMLInputElement> & {
     label: string;
