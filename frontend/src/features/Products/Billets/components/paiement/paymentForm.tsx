@@ -11,7 +11,7 @@ function FloatingInput({ label, containerClassName = "", className = "", ...prop
         <div className={`relative ${containerClassName}`}>
             <input
                 {...props}
-                placeholder=" "                        // important : espace pour activer peer-placeholder-shown
+                placeholder=" "                        
                 className={[
                     "peer h-19 w-full rounded-xl bg-[#103035] px-4 text-white outline-none",
                     "placeholder-transparent ring-1 ring-transparent",
