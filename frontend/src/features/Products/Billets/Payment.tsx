@@ -84,11 +84,11 @@ export default function PaymentPage() {
                     <p className="font-bold mb-4">Récapitulatif de votre réservation</p>
 
                     <ul className="space-y-4 text-[15px] display-center items-center">
-                        <li><p>Trajet : <span className="font-semibold">Moulins-sur-Allier → Nevers</span></p></li>
-                        <li><p>Date : <span className="font-semibold">Jeudi 18 septembre 2025 • 6h50 - 7h37</span></p></li>
-                        <li><p>Classe : <span className="font-semibold">Économie</span></p></li>
-                        <li><p>Passager : <span className="font-semibold">Pierre Dupont</span></p></li>
-                        <li><p>Prix Total : <span className="font-bold text-xl">59,00 €</span></p></li>
+                        <li><p>Trajet : <span className="font-semibold">{journey.departureName} → {journey.arrivalName}</span></p></li>
+                        <li><p>Date : <span className="font-semibold">{formattedDepartureDate} • {journey.departureTime} - {journey.arrivalTime}</span></p></li>
+                        <li><p>Classe : <span className="font-semibold">{selectedClass}</span></p></li>
+                        <li><p>Passager : <span className="font-semibold">{passagersCount} passager{(passagersCount ?? 1) > 1 ? "s" : ""}</span></p></li>
+                        <li><p>Prix Total : <span className="font-bold text-xl">{journey.price * (passagersCount ?? 1)} €</span></p></li>
                     </ul>
                 </div>
 
@@ -143,7 +143,7 @@ export default function PaymentPage() {
 
                     <div className="flex justify-between items-center mt-10">
                         <p className="text-2xl font-bold">Total :</p>
-                        <p className="text-2xl font-bold">59,00 €</p>
+                        <p className="text-2xl font-bold">{journey.price * (passagersCount ?? 1)} €</p>
                     </div>
                 </div>
 
@@ -154,31 +154,6 @@ export default function PaymentPage() {
                     </button>
                 </div>
 
-                {/* CODE PROMO */}
-                <div className="flex items-center gap-4 mt-6">
-                    <p className="font-bold w-32">Code promo</p>
-                    <input
-                        type="text"
-                        className="flex-1 bg-[#103035] h-[45px] rounded-xl p-3 outline-none focus:ring-2 focus:ring-[#98EAF3] font-semibold"
-                    />
-                </div>
-
-
-                {/* TOTAL */}
-                <div className={` ${isMobile ? '' : 'm-20'}  p-5 mb-8 `}>
-
-                    <div className="flex justify-between items-center mt-10">
-                        <p className="text-2xl font-bold">Total :</p>
-                        <p className="text-2xl font-bold">{journey.price * (passagersCount ?? 1)} €</p>
-                    </div>
-                </div>
-
-                {/* BOUTON PAYER */}
-                <div className="flex justify-center">
-                    <button className="w-[250px] h-[55px] bg-[#98EAF3] rounded-xl mt-6 mb-10">
-                        <span className="text-[#115E66] font-bold text-2xl" onClick={() => setValidatePaymentOverlay(true)}>Payer</span>
-                    </button>
-                </div>
                 {ValidatePayment && (
                     <div
                         className="fixed inset-0 z-50 flex items-center justify-center bg-[#103035]/50"
