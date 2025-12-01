@@ -32,7 +32,7 @@ searchJourneys.get("/journeys", async (req, res) => {
         console.log("Requête SNCF :", departure, "→", arrival);
 
         const response = await fetch(
-            `https://api.sncf.com/v1/coverage/sncf/journeys?from=${departure}&to=${arrival}&datetime=${datetime}&count=6`,
+            `https://api.sncf.com/v1/coverage/sncf/journeys?from=${departure}&to=${arrival}&datetime=${datetime}&count=10`,
             {
                 headers: {
                     "Authorization":
@@ -43,8 +43,18 @@ searchJourneys.get("/journeys", async (req, res) => {
         );
 
         const data = await response.json();
+        
+        if (data.error) { // On regarde si le retour API est pas "out of bounds"
+            console.warn("Erreur API SNCF :", data.error);
+            return res.status(404).json({
+                error: data.error.message || "No journeys found",
+                code: data.error.id
+            });
+        }
 
-        console.log("Réponse SNCF OK");
+        if (!data.journeys || data.journeys.length === 0) {
+            return res.status(404).json({ error: "No journeys available" });
+        }
 
         const JourneyList = data.journeys.map((journey) => 
         {
@@ -76,7 +86,7 @@ searchJourneys.get("/journeys", async (req, res) => {
                 arrivalName = journey.sections[journey.sections.length - 1].to.name;
             }
 
-            let price = journey.fare?.total.value ? (journey.fare.total.value / 100).toFixed(2) + " €" : "N/A";
+            let price = journey.fare?.total.value ? (journey.fare.total.value / 100).toFixed(2) : null;
             let departureTime = journey.departure_date_time.split('T')[1].slice(0, 4);
             departureTime = departureTime.slice(0,2) + ":" + departureTime.slice(2,4);
             let arrivalTime = journey.arrival_date_time.split('T')[1].slice(0, 4);

@@ -1,7 +1,7 @@
 export type Journey = {
     departureName: string;
     arrivalName: string;
-    price: string;
+    price: number;
     departureTime: string;
     arrivalTime: string;
     duration: string;
@@ -10,8 +10,9 @@ export type Journey = {
 
 export type ProductCardProps =
 {
-    isAirPlane: boolean;
     journey: Journey;
+    passagersCount: number;
+    formattedDepartureDate: string;
 }
 
 export type DateStringProps = {

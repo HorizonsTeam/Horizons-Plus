@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import ReturnBtn from '../../../assets/ReturnBtn.svg';
 import ModeDePaiementCard from './components/paiement/ModeDePaiementCard';
 import assurance_Ico from '../../../assets/assurance.svg';
@@ -10,8 +10,13 @@ import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
+import type { LocationState } from '../Billets/types.ts';
+
+
 
 export default function PaymentPage() {
+    const { state } = useLocation();
+    const { journey, selectedClass, passagersCount, formattedDepartureDate } = (state || {}) as LocationState;
 
     const [IsSelected, setIsSelected] = useState(false);
     const navigate = useNavigate();
@@ -23,7 +28,7 @@ export default function PaymentPage() {
 
     const [triggerPayment, setTriggerPayment] = useState<(() => void) | null>(null);
 
-    // Affichage dès le payement validé
+    // Affichage dès le payement validé    
     useEffect(() => {
         if (ValidatePayment) {
             document.body.style.overflow = 'hidden';
@@ -95,7 +100,7 @@ export default function PaymentPage() {
                         stripe={stripePromise}
                         options={{
                             clientSecret,
-                            appearance: { theme: "night" } 
+                            appearance: { theme: "night" }
                         }}
                     >
                         <ModeDePaiementCard
@@ -116,7 +121,7 @@ export default function PaymentPage() {
                     <button
                         onClick={onClick}
                         className={`w-full flex justify-between items-center p-4 rounded-xl border-2 transition 
-          ${IsSelected ? "border-[#98EAF3] text-[#98EAF3]" : "border-[#2C474B] text-white"}`}
+                        ${IsSelected ? "border-[#98EAF3] text-[#98EAF3]" : "border-[#2C474B] text-white"}`}
                     >
                         <img src={assurance_Ico} className="h-6 w-6" />
                         <p className="font-semibold text-sm flex-1 ml-4">Assurance annulation (+3,50 €)</p>
@@ -149,6 +154,31 @@ export default function PaymentPage() {
                     </button>
                 </div>
 
+                {/* CODE PROMO */}
+                <div className="flex items-center gap-4 mt-6">
+                    <p className="font-bold w-32">Code promo</p>
+                    <input
+                        type="text"
+                        className="flex-1 bg-[#103035] h-[45px] rounded-xl p-3 outline-none focus:ring-2 focus:ring-[#98EAF3] font-semibold"
+                    />
+                </div>
+
+
+                {/* TOTAL */}
+                <div className={` ${isMobile ? '' : 'm-20'}  p-5 mb-8 `}>
+
+                    <div className="flex justify-between items-center mt-10">
+                        <p className="text-2xl font-bold">Total :</p>
+                        <p className="text-2xl font-bold">{journey.price * (passagersCount ?? 1)} €</p>
+                    </div>
+                </div>
+
+                {/* BOUTON PAYER */}
+                <div className="flex justify-center">
+                    <button className="w-[250px] h-[55px] bg-[#98EAF3] rounded-xl mt-6 mb-10">
+                        <span className="text-[#115E66] font-bold text-2xl" onClick={() => setValidatePaymentOverlay(true)}>Payer</span>
+                    </button>
+                </div>
                 {ValidatePayment && (
                     <div
                         className="fixed inset-0 z-50 flex items-center justify-center bg-[#103035]/50"
@@ -180,8 +210,7 @@ export default function PaymentPage() {
                 )}
 
 
-            </div>
-
+            </div >
         </>
     );
 }
