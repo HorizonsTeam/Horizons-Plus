@@ -2,18 +2,29 @@ import Gender_Selection from './Gender';
 import { useState } from 'react';
 import CarteReduction from './Carte_De_Reduction'
 import closeSvg from '../../../../../assets/CloseSVG.svg'
+import type { User } from '../../components/paiement/Types/Types';
+
 
 type Props = {
     passagerIndex?: number;
     suprimer_Passager?: () => void;
-    onChange: (data: any) => void;
+    onChange: (data: User) => void;
 };
 
-export default function Passagers_Data_From({ passagerIndex, suprimer_Passager, onChange }: Props) {
+export default function Passagers_Data_Form({ passagerIndex, suprimer_Passager, onChange }: Props) 
+{      
     const [Abonement_Reduction, setAbonement_reduc] = useState(false);
     const fermer = () => {
         setAbonement_reduc(false);
     }
+    const [formData, setFormData] = useState<User>({
+        Nom: "",
+        Prenom: "",
+        BirthDate: "",
+        Sexe: "Homme",
+        Email: ""
+    });
+
 
     const titre = passagerIndex === 1
         ? "Vos informations"
@@ -49,58 +60,80 @@ export default function Passagers_Data_From({ passagerIndex, suprimer_Passager, 
                         </button>
                     )}
                 </div>
-                <div className="w-full mt-2 border-t-2 border-[#2C474B] ">
-                    <div className="flex  mt-4 mb-4">
-                        <Gender_Selection
-                            value="Homme"
-                            IsSelected={selectedGender === "Homme"}
+            <div className="w-full mt-2 border-t-2 border-[#2C474B] ">
+                <div className="flex  mt-4 mb-4">
+                    <Gender_Selection
+                        value="Homme"
+                        IsSelected={selectedGender === "Homme"}
                             onClick={() => {
                                 setSelectedGender("Homme");
-                                updateField("gender", "Homme");
+                                setFormData({ ...formData, Sexe: "Homme" });
+                                onChange({ ...formData, Sexe: "Homme" });
                             }}
-                        />
+                    />
 
-                        <Gender_Selection
-                            value="Femme"
-                            IsSelected={selectedGender === "Femme"}
+                    <Gender_Selection
+                        value="Femme"
+                        IsSelected={selectedGender === "Femme"}
                             onClick={() => {
                                 setSelectedGender("Femme");
-                                updateField("gender", "Femme");
+                                setFormData({ ...formData, Sexe: "Femme" });
+                                onChange({ ...formData, Sexe: "Femme" });
                             }}
-                        />
+                    />
 
-                        <Gender_Selection
-                            value="Autre"
-                            IsSelected={selectedGender === "Autre"}
+                    <Gender_Selection
+                        value="Autre"
+                        IsSelected={selectedGender === "Autre"}
                             onClick={() => {
                                 setSelectedGender("Autre");
-                                updateField("gender", "Autre");
+                                setFormData({ ...formData, Sexe: "Autre" });
+                                onChange({ ...formData, Sexe: "Autre" });
                             }}
-                        />
-                    </div>
-                    <div className="grid grid-cols-[1fr_2fr]  mt-8 mb-8">
-                        <div className="grid grid-cols  gap-10 mt-4">
+                    />
+                </div>
+            <div className="grid grid-cols-[1fr_2fr]  mt-8 mb-8">
+                <div className="grid grid-cols  gap-10 mt-4">
 
-                            <label className="text-white">Prénom <span className='font-bold text-[#FFB856]'>*</span></label>
-                            <label className="text-white">Nom <span className='font-bold text-[#FFB856]'>*</span></label>
-                            <label className="text-white w-full ">Date de naissance  <span className='font-bold text-[#FFB856]'>*</span></label>
-                            <label className="text-white">Email <span className='font-bold text-[#FFB856]'>*</span></label>
-                            <label className="text-white">Num <span className='font-bold text-[#FFB856]'>*</span></label>
-                        </div>
-                        <div className='grid grid-cols gap-10 '>
-                            <input type="text" className="h-13  rounded-md px-3 border-3 border-[#2C474B] bg-[#103035] focus:border-[#98EAF3] focus:outline-none w-full" value={formData.firstname} onChange={(e) => updateField("firstname", e.target.value)} />
-                            <input type="text" className="h-13  rounded-md px-3 border-3 border-[#2C474B] bg-[#103035] focus:border-[#98EAF3] focus:outline-none w-full" value={formData.lastname} onChange={(e) => updateField("lastname", e.target.value)} />
+                    <label className="text-white">Prénom <span className='font-bold text-[#FFB856]'>*</span></label>
+                    <label className="text-white">Nom <span className='font-bold text-[#FFB856]'>*</span></label>
+                    <label className="text-white w-full ">Date de naissance  <span className='font-bold text-[#FFB856]'>*</span></label>
+                    <label className="text-white">Email <span className='font-bold text-[#FFB856]'>*</span></label>
+                    <label className="text-white">Num <span className='font-bold text-[#FFB856]'>*</span></label>
+                </div>
+                <div className='grid grid-cols gap-10 '>
+                            <input type="text" value={formData.Prenom}   onChange={(e) => { const updated = { ...formData, Prenom: e.target.value }; setFormData(updated); onChange(updated);}} className="h-13  rounded-md px-3 border-3 border-[#2C474B] bg-[#103035] focus:border-[#98EAF3] focus:outline-none w-full" />
+
+
+                            <input type="text"
+                                value={formData.Nom}
+                                onChange={(e) => {
+                                    const updated = { ...formData, Nom: e.target.value };
+                                    setFormData(updated);
+                                    onChange(updated);
+                                }} className="h-13  rounded-md px-3 border-3 border-[#2C474B] bg-[#103035] focus:border-[#98EAF3] focus:outline-none w-full" />
+
+
                             <input
                                 type="date"
+                                value={formData.BirthDate}
+                                onChange={(e) => {
+                                    const updated = { ...formData, BirthDate: e.target.value };
+                                    setFormData(updated);
+                                    onChange(updated);
+                                }}
                                 className="h-13 rounded-md px-3 border-3 border-[#2C474B] bg-[#103035] focus:border-[#98EAF3] focus:outline-none w-full input-date-white"
                                 value={formData.birthdate}
                                 onChange={(e) => updateField("birthdate", e.target.value)}
                             />
-                            <input type="email" className="h-13  rounded-md px-3 border-3 border-[#2C474B] bg-[#103035] focus:border-[#98EAF3] focus:outline-none w-full" value={formData.email} onChange={(e) => updateField("email", e.target.value)} />
-                            <input type="tel" className="h-13  rounded-md px-3 border-3 border-[#2C474B] bg-[#103035] focus:border-[#98EAF3] focus:outline-none w-full" value={formData.phone} onChange={(e) => updateField("phone", e.target.value)} />
-
-                        </div>
-                    </div>
+                            <input type="email"
+                                value={formData.Email}
+                                onChange={(e) => {
+                                    const updated = { ...formData, Email: e.target.value };
+                                    setFormData(updated);
+                                    onChange(updated);
+                                }} className="h-13  rounded-md px-3 border-3 border-[#2C474B] bg-[#103035] focus:border-[#98EAF3] focus:outline-none w-full" />
+                    <input type="tel" className="h-13  rounded-md px-3 border-3 border-[#2C474B] bg-[#103035] focus:border-[#98EAF3] focus:outline-none w-full" />
 
 
                 </div>

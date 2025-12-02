@@ -13,7 +13,16 @@ import BestPrice from './ProductCard/bestPrice.tsx';
 import Date_String from './Date.tsx';
 import type { Journey } from './ProductCard/types.ts';
 
+
+import QouickModificationOverlay from './ModificationRapide/QuickSearchModif.tsx';
+
+
 export default function Resultats() {
+
+
+    const [BoxIsOn, setBoxIsOn] = useState(false);
+
+
     const base = `${import.meta.env.VITE_API_URL || "http://localhost:3005"}`;
 
     const navigate = useNavigate();
@@ -95,7 +104,7 @@ export default function Resultats() {
     return (
         <>
             {/* Header */}
-            <div className="flex items-center justify-center mt-6">
+            <div className="flex items-center justify-center mt-6" onClick={ () => setBoxIsOn(true)}>
                 <button onClick={handleRetour}>
                     <img
                         src={ReturnBtn}
@@ -114,7 +123,7 @@ export default function Resultats() {
             </div>
 
             {/* Date navigation */}
-            <div className="flex items-center justify-center space-x-4 bg-dark p-4">
+            <div className="flex items-center justify-center space-x-4 bg-dark p-4" >
                 <button
                     onClick={() => changeDate(-1)}
                     disabled={isPrevDisabled}
@@ -234,6 +243,7 @@ export default function Resultats() {
                 </>
             )}
             </div>
+            <QouickModificationOverlay villeDepart={fromName} villeArrive={toName} Passagers={passagerCount} dateSearch={departureDate} BoxIsOn={BoxIsOn} setBoxIsOn={setBoxIsOn} />
         </>
     );
 }
