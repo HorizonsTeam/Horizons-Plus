@@ -23,6 +23,16 @@ export default function Infos_Passagers() {
     setPassagers(passagers.filter(p => p !== num));
   };
 
+  const [passagersData, setPassagersData] = useState<any[]>([]);
+
+  const updatePassager = (index: number, data: any) => {
+  setPassagersData((prev) => {
+    const copy = [...prev];
+    copy[index - 1] = data; 
+    return copy;
+  });
+};
+
   return (
     <div className="flex-wrap m-2 p-3 -mt-3 ">
       <div className="m-2 p-3 -mt-3 ">
@@ -45,6 +55,7 @@ export default function Infos_Passagers() {
           key={num}
           passagerIndex={num}
           suprimer_Passager={() => Supprimer_Passager(num)}
+          onChange={(data) => updatePassager(num, data)}
         />
       ))}
 
@@ -61,7 +72,7 @@ export default function Infos_Passagers() {
 
       <Link
         to="/PaymentPage"
-        state={{ journey, selectedClass, passagersCount: passagers.length, formattedDepartureDate }}
+        state={{ journey, selectedClass, passagersCount: passagers.length, formattedDepartureDate, passagersData, }}
       >
         <button className="w-80 h-15 bg-[#98EAF3] rounded-xl mt-4 ml-3">
           <span className="text-[#115E66] font-bold text-xl">Continuer</span>

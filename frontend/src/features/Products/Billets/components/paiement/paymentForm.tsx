@@ -3,7 +3,7 @@ import { CardNumberElement, CardExpiryElement, CardCvcElement, useStripe, useEle
 import { useEffect } from "react";
 
 
-export default function PaiementForm({ clientSecret, onSuccess, onReady }: any) {
+export default function PaiementForm({ clientSecret, onSuccess, onReady, passagersData, journey, formattedDepartureDate }: any) {
 
     const stripe = useStripe();
     const elements = useElements();
@@ -24,32 +24,46 @@ export default function PaiementForm({ clientSecret, onSuccess, onReady }: any) 
     };
 
     const handlePayment = async () => {
-    if (!stripe || !elements) return;
+        if (!stripe || !elements) return;
 
-    const result = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: {
-            card: elements.getElement(CardNumberElement)!,
+        const result = await stripe.confirmCardPayment(clientSecret, {
+            payment_method: {
+                card: elements.getElement(CardNumberElement)!,
+            }
+        });
+
+        if (result.error) {
+            alert(result.error.message);
+        } else if (result.paymentIntent.status === "succeeded") {
+
+            await fetch(`${import.meta.env.VITE_API_URL}/api/payments/send-confirmation`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    email: passagersData[0].email,
+                    customerName: passagersData[0].firstname + " " + passagersData[0].lastname,
+                    journey: `${journey.departureName} → ${journey.arrivalName}`,
+                    date: formattedDepartureDate,
+                    time: `${journey.departureTime} - ${journey.arrivalTime}`,
+                    price: journey.price * passagersData.length,
+                    passengers: passagersData.length,
+                })
+            });
+            onSuccess();
         }
-    });
-
-    if (result.error) {
-        alert(result.error.message);
-    } else if (result.paymentIntent.status === "succeeded") {
-        onSuccess();
-    }
-};
+    };
 
     useEffect(() => {
         if (stripe && elements && onReady) {
-            onReady(() => handlePayment());   
+            onReady(() => handlePayment());
         }
     }, [stripe, elements]);
-    
+
 
     console.log("stripe", stripe, "elements", elements);
     return (
 
-        <form onSubmit={(e) => {e.preventDefault(); handlePayment();}} className="mt-4 w-full grid gap-4">
+        <form onSubmit={(e) => { e.preventDefault(); handlePayment(); }} className="mt-4 w-full grid gap-4">
             {/* Numéro de carte */}
             <div>
                 <label className="text-gray-300 text-sm">Numéro de carte</label>
