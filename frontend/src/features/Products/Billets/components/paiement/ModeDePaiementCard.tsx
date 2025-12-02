@@ -8,7 +8,7 @@ import useIsMobile from '../../../../../components/layouts/UseIsMobile';
 
 
 
-export default function ModeDePaiementCard({ clientSecret, setValidatePaymentOverlay, setTriggerPayment }: any) {
+export default function ModeDePaiementCard({ clientSecret, setValidatePaymentOverlay, setTriggerPayment, passagersData, journey, formattedDepartureDate }: any) {
     const [selectedMode, setSelectedMode] = useState<string>("Carte bancaire");
     const isMobile = useIsMobile();
 
@@ -50,6 +50,9 @@ export default function ModeDePaiementCard({ clientSecret, setValidatePaymentOve
                         clientSecret={clientSecret}
                         onSuccess={() => setValidatePaymentOverlay(true)}
                         onReady={(fn: () => void) => setTriggerPayment(() => fn)}
+                        passagersData={passagersData}
+                        journey={journey}
+                        formattedDepartureDate={formattedDepartureDate}
                     />
                 </div>
             )}

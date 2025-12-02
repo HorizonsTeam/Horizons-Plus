@@ -16,7 +16,7 @@ import type { LocationState } from '../Billets/types.ts';
 
 export default function PaymentPage() {
     const { state } = useLocation();
-    const { journey, selectedClass, passagersCount, formattedDepartureDate } = (state || {}) as LocationState;
+    const { journey, selectedClass, passagersCount, formattedDepartureDate, passagersData } = (state || {}) as LocationState & { passagersData: any[]};
 
     const [IsSelected, setIsSelected] = useState(false);
     const navigate = useNavigate();
@@ -107,6 +107,9 @@ export default function PaymentPage() {
                             clientSecret={clientSecret}
                             setValidatePaymentOverlay={setValidatePaymentOverlay}
                             setTriggerPayment={setTriggerPayment}
+                            passagersData={passagersData}
+                            journey={journey}
+                            formattedDepartureDate={formattedDepartureDate}
                         />
                     </Elements>
                 )}
