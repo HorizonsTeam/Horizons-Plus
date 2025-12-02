@@ -46,6 +46,16 @@ export default function Infos_Passagers() {
     setPassagers(passagers.filter(p => p !== num));
   };
 
+  const [passagersData, setPassagersData] = useState<any[]>([]);
+
+  const updatePassager = (index: number, data: any) => {
+  setPassagersData((prev) => {
+    const copy = [...prev];
+    copy[index - 1] = data; 
+    return copy;
+  });
+};
+
   return (
     <div className={`relative w-full ${isMobile ? "px-4" : " py-10 px-20"}`}>
       <div className="m-2 p-3 -mt-3 mb-4  ">
@@ -90,7 +100,7 @@ export default function Infos_Passagers() {
 
       <Link
         to="/PaymentPage"
-        state={{ journey, selectedClass, passagersCount: passagers.length, formattedDepartureDate }}
+        state={{ journey, selectedClass, passagersCount: passagers.length, formattedDepartureDate, passagersData, }}
       >
 
         <div className="flex justify-center">

@@ -10,6 +10,7 @@ import auth from "./dist/auth.js"; // export default depuis ton build
 import searchPlaces from "./src/routes/searchPlaces.js";
 import searchJourneys from "./src/routes/searchJourneys.js";
 import { loadGeoData } from "./src/utils/geoData.js";
+import paymentRoutes from "./src/routes/payment.js"
 
 const app = express();
 const PORT = Number(process.env.PORT || 3005);
@@ -100,8 +101,12 @@ app.get("/api/me", async (req, res) => {
   }
 });
 
+// Feat : Autocomplétion
 app.use("/api/search", searchJourneys);
 app.use("/api/search", searchPlaces);
+
+// Feat : Payement 
+app.use("/api/payments", paymentRoutes);
 
 // Health
 app.get("/api/health", (_req, res) => res.json({ ok: true }));

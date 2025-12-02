@@ -1,72 +1,130 @@
 // Floating inputs with Tailwind peer classes
-import React from "react";
+import { CardNumberElement, CardExpiryElement, CardCvcElement, useStripe, useElements } from "@stripe/react-stripe-js";
+import { useEffect } from "react";
 
-type Props = React.InputHTMLAttributes<HTMLInputElement> & {
-    label: string;
-    containerClassName?: string;
-};
 
-function FloatingInput({ label, containerClassName = "", className = "", ...props }: Props) {
+export default function PaiementForm({ clientSecret, onSuccess, onReady, passagersData, journey, formattedDepartureDate }: any) {
+
+    const stripe = useStripe();
+    const elements = useElements();
+
+    console.log("stripe", stripe);
+    console.log("elements", elements);
+    // Style 
+    const styleInput = {
+        style: {
+            base: {
+                color: "white",
+                fontSize: "16px",
+            },
+            invalid: {
+                color: "#ff4d4f"
+            }
+        }
+    };
+
+    const handlePayment = async () => {
+        if (!stripe || !elements) return;
+
+        const result = await stripe.confirmCardPayment(clientSecret, {
+            payment_method: {
+                card: elements.getElement(CardNumberElement)!,
+            }
+        });
+
+        if (result.error) {
+            alert(result.error.message);
+        } else if (result.paymentIntent.status === "succeeded") {
+
+            await fetch(`${import.meta.env.VITE_API_URL}/api/payments/send-confirmation`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    email: passagersData[0].email,
+                    customerName: passagersData[0].firstname + " " + passagersData[0].lastname,
+                    journey: `${journey.departureName} → ${journey.arrivalName}`,
+                    date: formattedDepartureDate,
+                    time: `${journey.departureTime} - ${journey.arrivalTime}`,
+                    price: journey.price * passagersData.length,
+                    passengers: passagersData.length,
+                })
+            });
+            onSuccess();
+        }
+    };
+
+    useEffect(() => {
+        if (stripe && elements && onReady) {
+            onReady(() => handlePayment());
+        }
+    }, [stripe, elements]);
+
+
+    console.log("stripe", stripe, "elements", elements);
     return (
-        <div className={`relative ${containerClassName}`}>
-            <input
-                {...props}
-                placeholder=" "                        
-                className={[
-                    "peer h-19 w-full rounded-xl bg-[#103035] px-4 text-white outline-none",
-                    "placeholder-transparent ring-1 ring-transparent",
-                    "focus:ring-2 focus:ring-cyan-400",
-                    className,
-                ].join(" ")}
 
-            />
-            <label
-                className={[
-                    "pointer-events-none absolute left-4 top-1 -translate-y-1/2",
-                    "text-gray-400 transition-all duration-150",
-                    "peer-focus:top-2 peer-focus:-translate-y-0 peer-focus:text-xs peer-focus:text-cyan-300",
-                    "peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-base",
-                    "peer-[:not(:placeholder-shown)]:top-2 peer-[:not(:placeholder-shown)]:-translate-y-0 peer-[:not(:placeholder-shown)]:text-xs",
-                ].join(" ")}
+        <form onSubmit={(e) => { e.preventDefault(); handlePayment(); }} className="mt-4 w-full grid gap-4">
+            {/* Numéro de carte */}
+            <div>
+                <label className="text-gray-300 text-sm">Numéro de carte</label>
+                <div className="rounded-xl bg-[#103035] px-4 py-3">
+                    <CardNumberElement
+                        options={{
+                            style: {
+                                base: {
+                                    color: "#fff",
+                                    fontSize: "15px",
+                                },
+                                invalid: {
+                                    color: "red",
+                                }
+                            }
+                        }}
+                    />
+                </div>
 
+            </div>
+
+            {/* Titulaire */}
+            <div>
+                <label className="text-gray-300 text-sm">Titulaire</label>
+                <input
+                    type="text"
+                    placeholder="Nom"
+                    className="w-full bg-[#103035] p-3 rounded-xl text-white outline-none"
+                />
+            </div>
+
+
+            <div className="flex gap-4">
+                {/* Expiration */}
+                <div className="w-full">
+                    <label className="text-gray-300 text-sm">Date d'expiration</label>
+                    <div className="rounded-xl bg-[#103035] p-3" style={{ position: "relative", zIndex: 1 }}>
+                        <CardExpiryElement options={styleInput} />
+                    </div>
+                </div>
+
+                {/* CVV */}
+                <div className="w-28">
+                    <label className="text-gray-300 text-sm">CVV</label>
+                    <div className="rounded-xl bg-[#103035] p-3" >
+                        <CardCvcElement options={styleInput} />
+                    </div>
+                </div>
+            </div>
+
+            {/* Bouton payer */}
+
+            {/* <button
+                type="submit"
+                className="w-full mt-2 h-[50px] bg-[#98EAF3] text-[#115E66] font-bold rounded-xl"
             >
-                {label}
-            </label>
-        </div>
+                Payer
+            </button> */}
+
+
+        </form >
     );
 }
 
-export default function PaiementForm() {
-    return (
-        <div className="mt-3 w-full">
-            <div className="grid gap-3">
-                <FloatingInput
-                    label="Numéro de carte"
-                    type="text"
-                    inputMode="numeric"
-                    autoComplete="cc-number"
-                />
-                <FloatingInput
-                    label="Propriétaire de la carte"
-                    type="text"
-                    autoComplete="cc-name"
-                />
-            </div>
-
-            <div className="mt-3 flex w-full items-center gap-4">
-                <FloatingInput
-                    label="Date d’expiration"
-                    type="text"
-                    autoComplete="cc-exp"
-                    className="w-full"
-                />
-                <FloatingInput
-                    label="CVV"
-                    type="text"
-                    autoComplete="cc-csc"
-                    className="w-28"
-                />
-            </div>
-        </div>
-    );
-}
