@@ -17,14 +17,6 @@ export default function Passagers_Data_Form({ passagerIndex, suprimer_Passager, 
     const fermer = () => {
         setAbonement_reduc(false);
     }
-    const [formData, setFormData] = useState<User>({
-        Nom: "",
-        Prenom: "",
-        BirthDate: "",
-        Sexe: "Homme",
-        Email: ""
-    });
-
 
     const titre = passagerIndex === 1
         ? "Vos informations"
@@ -159,7 +151,7 @@ export default function Passagers_Data_Form({ passagerIndex, suprimer_Passager, 
                 }
             </div>
 
-
+</div></div>
         </>
     );
 }

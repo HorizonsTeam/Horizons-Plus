@@ -71,7 +71,7 @@ export default function PaymentPage() {
             <div className={`relative w-full ${isMobile ? "px-4" : " py-10 px-20"}`}>
 
                 <div className="relative mt-4 mb-10 flex justify-center items-center">
-                    <button onClick={handleretour}>
+                    <button onClick={() => handleRetour}>
                         <img
                             src={ReturnBtn}
                             alt="Return Button"
