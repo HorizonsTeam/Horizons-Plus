@@ -1,3 +1,4 @@
+
 type Props = React.InputHTMLAttributes<HTMLInputElement> & {
     label: string;
     containerClassName?: string;
@@ -50,9 +51,14 @@ function FloatingInput({ label, containerClassName = "", className = "",  inputV
 }
 export default function QouickModificationOverlay ({villeDepart, villeArrive, Passagers, dateSearch , BoxIsOn , setBoxIsOn} : ModificationProps , )
 {
+    let Ischanged = false ; 
     const handleValidation = () =>
     {
-        setBoxIsOn(false);
+        if (!Ischanged)
+        {
+            setBoxIsOn(false);
+        }
+        
     }
 
 
