@@ -16,9 +16,10 @@ API Node.js + Express pour Horizons+ :
 ---
 
 ## SOMMAIRE 
-- Installation - ligne 23
-- Changement de branche et problèmes courants - ligne 146
-- Mot de passe oublié - ligne 
+- Installation - ligne 24
+- Changement de branche et problèmes courants - ligne 147
+- Mot de passe oublié - ligne 185
+- Paiement - ligne 232
 
 ## 2 Installation
 
@@ -227,3 +228,42 @@ Après avoir cliquez saissisez votre nouveau mot de passe et encore une fois pou
 - Étape 5 : Se connecter avec le nouveau mot de passe
 
 Connectez-vous avec votre email et le nouveau mot de passe
+
+# Paiement 
+# Backend : Création du Payment intent
+
+- Route : POST /api/payments/create-payment-intent
+
+Retour attendu :
+
+{
+  "clientSecret": "pi_xxx_secret_xxx"
+}
+
+
+Cette route doit recevoir :
+
+{
+  "amount": 5900,
+  "currency": "eur"
+}
+
+# Frontend : initialisation de Stripe
+
+Dans PaymentPage :
+
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
+
+# <Elements
+  stripe={stripePromise}
+  options={{ clientSecret, appearance: { theme: "night" } }}
+>
+  <ModeDePaiementCard
+    clientSecret={clientSecret}
+    setValidatePaymentOverlay={setValidatePaymentOverlay}
+  />
+</Elements>
+
+# A savoir ! 
+
+- Le champ Numéro de carte, Expiration, CVV sont gérés par Stripe Elements.

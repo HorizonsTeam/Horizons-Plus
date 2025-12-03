@@ -319,7 +319,7 @@ export default function Header() {
     { label: "Mes réservations", icon: Reservation_ico, path: "/" },
     { label: "Panier", icon: Panier_Ico, path: "/panier" },
     { label: "Mes cartes de réduction", icon: Carte_Reduc_Ico, path: "/" },
-    { label: "Paramètres", icon: Parametres_Ico, path: "/" },
+    { label: "Paramètres", icon: Parametres_Ico, path: "/Settings" },
     { label: "Destinations", icon: Destinations_Ico, path: "/" },
     { label: "Promotions", icon: Promotions_Ico, path: "/" },
     { label: "Évènements", icon: Evenements_Ico, path: "/" },

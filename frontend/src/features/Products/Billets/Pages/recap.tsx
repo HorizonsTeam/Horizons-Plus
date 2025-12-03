@@ -1,5 +1,5 @@
 
-import Billet_Train_recap from "./Billets/billet_Train"
+import Billet_Train_recap from "./billet_Train"
 
 export default function Recap ()
 

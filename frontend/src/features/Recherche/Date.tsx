@@ -1,8 +1,6 @@
-type Props = {
-  date: Date;
-};
+import type { DateStringProps } from './ProductCard/types.ts';
 
-export default function Date_String({ date }: Props) {
+export default function DateString({ date }: DateStringProps) {
   const options: Intl.DateTimeFormatOptions = {
     weekday: 'short',
     day: 'numeric',
