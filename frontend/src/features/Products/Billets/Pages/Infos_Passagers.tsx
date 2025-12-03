@@ -1,9 +1,9 @@
-import ReturnBtn from '../../../assets/ReturnBtn.svg';
+import ReturnBtn from '../../../../assets/ReturnBtn.svg';
 import { useNavigate } from 'react-router-dom';
 import { Link, useLocation } from 'react-router-dom';
-import Passagers_Data_From from './components/Passager_info/Passagers_DataForm';
+import Passagers_Data_From from '../components/Passager_info/Passagers_DataForm.tsx';
 import { useState } from 'react';
-import type { LocationState } from '../Billets/types.ts';
+import type { LocationState } from '../types.ts';
 
 export default function Infos_Passagers() {
   const navigate = useNavigate();

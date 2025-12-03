@@ -1,16 +1,16 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import ReturnBtn from '../../../assets/ReturnBtn.svg';
-import ModeDePaiementCard from './components/paiement/ModeDePaiementCard';
-import assurance_Ico from '../../../assets/assurance.svg';
-import useIsMobile from '../../../components/layouts/UseIsMobile';
+import ReturnBtn from '../../../../assets/ReturnBtn.svg';
+import ModeDePaiementCard from '../components/paiement/ModeDePaiementCard.tsx';
+import assurance_Ico from '../../../../assets/assurance.svg';
+import useIsMobile from '../../../../components/layouts/UseIsMobile.tsx';
 import { useEffect } from 'react';
-import CheckMarkSVG from '../../../assets/CheckMark.svg';
+import CheckMarkSVG from '../../../../assets/CheckMark.svg';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
-import type { LocationState } from '../Billets/types.ts';
+import type { LocationState } from '../types.ts';
 
 
 

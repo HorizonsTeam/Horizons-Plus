@@ -1,18 +1,18 @@
-import ReturnBtn from '../../../assets/ReturnBtn.svg';
-import clockIco from '../../../assets/clock.svg';
-import checkMarck from '../../../assets/checkMarck.svg';
-import ClassCard from '../Billets/components/Classcard.tsx';
+import ReturnBtn from '../../../../assets/ReturnBtn.svg';
+import clockIco from '../../../../assets/clock.svg';
+import checkMarck from '../../../../assets/checkMarck.svg';
+import ClassCard from '../components/Recap/Classcard.tsx';
 import { useState } from 'react';
-import Inclus  from './components/Inclus.tsx';
-import icoWifi from '../../../assets/wifi.svg'
-import priseIco from'../../../assets/Prises.svg'
-import climatisation_Ico from '../../../assets/climatisation.svg'   
-import Serinita_card from './components/serenita_card.tsx';
-import AjouterPanierBtn from './components/AjouterPanierBtn.tsx';
+import Inclus  from '../components/Recap/Inclus.tsx';
+import icoWifi from '../../../../assets/wifi.svg'
+import priseIco from'../../../../assets/Prises.svg'
+import climatisation_Ico from '../../../../assets/climatisation.svg'   
+import Serinita_card from '../components/Recap/serenita_card.tsx';
+import AjouterPanierBtn from '../components/Recap/AjouterPanierBtn.tsx';
 import { Link, useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import useIsMobile from '../../../components/layouts/UseIsMobile.tsx';
-import type { LocationState } from '../Billets/types.ts';
+import useIsMobile from '../../../../components/layouts/UseIsMobile.tsx';
+import type { LocationState } from '../types.ts';
 
 
 export default function Billet_Train_recap()
