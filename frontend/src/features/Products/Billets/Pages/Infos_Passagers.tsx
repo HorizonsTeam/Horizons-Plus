@@ -1,9 +1,9 @@
-import ReturnBtn from '../../../assets/ReturnBtn.svg';
+import ReturnBtn from '../../../../assets/ReturnBtn.svg';
 import { useNavigate } from 'react-router-dom';
 import { Link, useLocation } from 'react-router-dom';
-import Passagers_Data_From from './components/Passager_info/Passagers_DataForm';
+import Passagers_Data_From from '../components/Passager_info/Passagers_DataForm.tsx';
 import { useState } from 'react';
-import type { LocationState } from '../Billets/types.ts';
+import type { LocationState } from '../types.ts';
 
 export default function Infos_Passagers() {
   const navigate = useNavigate();
@@ -34,14 +34,14 @@ export default function Infos_Passagers() {
 };
 
   return (
-    <div className="flex-wrap m-2 p-3 -mt-3 ">
-      <div className="m-2 p-3 -mt-3 ">
+    <div className="flex-wrap m-2 p-3  -mt-3 ">
+      <div className="m-2 p-3 -mt-3  ">
         <div className="relative mt-4 flex justify-center items-center">
           <button onClick={handleretour}>
             <img
               src={ReturnBtn}
               alt="Return Button"
-              className="absolute left-0 -translate-x-1/2 mt-5 transform"
+              className="absolute left-0 -translate-x-1/2 mx-4 transform"
             />
           </button>
           <h1 className="text-3xl text-[#98EAF3] font-medium text-center">
@@ -69,7 +69,7 @@ export default function Infos_Passagers() {
           </div>
         </button>
       </div>
-
+      <div  className='flex justify-center'>
       <Link
         to="/PaymentPage"
         state={{ journey, selectedClass, passagersCount: passagers.length, formattedDepartureDate, passagersData, }}
@@ -78,6 +78,7 @@ export default function Infos_Passagers() {
           <span className="text-[#115E66] font-bold text-xl">Continuer</span>
         </button>
       </Link>
+    </div>
     </div>
   );
 }

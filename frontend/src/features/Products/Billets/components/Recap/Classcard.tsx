@@ -1,12 +1,12 @@
 
-import ecoIco from '../../../../assets/ecoIco.webp';
-import comfort_ico from '../../../../assets/comfort_eco.svg';
-import business_ico from '../../../../assets/business_ico.svg';
-import premiere_ico from '../../../../assets/premiere_ico.svg';
-import ecoIco_slected from '../../../../assets/ecoIco.svg';
-import comfort_ico_selected from '../../../../assets/comfort_eco_selected.webp';
-import business_ico_selected from '../../../../assets/business_ico_selected.webp';
-import premiere_ico_selected from '../../../../assets/premiere_ico_selected.webp';
+import ecoIco from '../../../../../assets/ecoIco.webp';
+import comfort_ico from '../../../../../assets/comfort_eco.svg';
+import business_ico from '../../../../../assets/business_ico.svg';
+import premiere_ico from '../../../../../assets/premiere_ico.svg';
+import ecoIco_slected from '../../../../../assets/ecoIco.svg';
+import comfort_ico_selected from '../../../../../assets/comfort_eco_selected.webp';
+import business_ico_selected from '../../../../../assets/business_ico_selected.webp';
+import premiere_ico_selected from '../../../../../assets/premiere_ico_selected.webp';
 
 
 
