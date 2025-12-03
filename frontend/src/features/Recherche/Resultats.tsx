@@ -104,14 +104,16 @@ export default function Resultats() {
     return (
         <>
             {/* Header */}
-            <div className="flex items-center justify-center mt-6" onClick={ () => setBoxIsOn(true)}>
+            <div>
                 <button onClick={handleRetour}>
-                    <img
-                        src={ReturnBtn}
-                        alt="Return Button"
-                        className="absolute left-4 mt-10 transform -translate-y-1/2"
-                    />
-                </button>
+                <img
+                    src={ReturnBtn}
+                    alt="Return Button"
+                    className="absolute left-4 mt-10 transform -translate-y-1/2"
+                />
+            </button>
+            <div className="flex items-center justify-center mt-6" onClick={ () => setBoxIsOn(true)}>
+                
                 <div className="flex flex-col items-center">
                     <h3 className="font-bold text-primary text-xl truncate max-w-[200px]">
                         {fromName} - {toName}
@@ -244,6 +246,7 @@ export default function Resultats() {
             )}
             </div>
             <QouickModificationOverlay villeDepart={fromName} villeArrive={toName} Passagers={passagerCount} dateSearch={departureDate} BoxIsOn={BoxIsOn} setBoxIsOn={setBoxIsOn} />
+        </div>
         </>
     );
 }

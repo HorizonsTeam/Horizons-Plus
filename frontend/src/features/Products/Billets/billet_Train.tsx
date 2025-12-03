@@ -48,12 +48,12 @@ export default function Billet_Train_recap()
     ];
 
     return (
-        <div className='m-2 p-3 -mt-3'>
+        <div className='m-2 p-3  -mt-3 justify-center items-center '>
             <div className='relative mt-4 display flex justify-center items-center '>
                 <button onClick={handleretour}><img src={ReturnBtn} alt="Return Button" className='absolute left-1 mt-5 transform -translate-y-1/2'  /></button>
                 < h1 className='text-3xl text-[#98EAF3] font-medium text-center'>Récapitulatif</h1>
             </div>
-            <div className='w-full items-center h-70 bg-[#133A40] rounded-2xl border-2 border-[#2C474B] mt-15 '>
+            <div className='w-full  px-4 items-center h-70 bg-[#133A40] rounded-2xl border-2 border-[#2C474B] mt-15 '>
                 <p className='font-bold h-auto w-full text-center mt-5'>{formattedDepartureDate}</p>
                 <div className=' w-full h-40  mt-6 border-t-[#2C474B] border-b-[#2C474B] border-t-2 border-b-2 flex justify-between items-center'>
                     <div className='grid grid-cols gap-15 p-4'>
