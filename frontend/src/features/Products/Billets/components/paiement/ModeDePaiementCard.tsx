@@ -5,6 +5,10 @@ import creditCard_ico from '../../../../../assets/credit-card.svg'
 import Paypal_ico from '../../../../../assets/paypal_ico.svg'
 import ApplePay_ico from '../../../../../assets/applePay.svg'
 import useIsMobile from '../../../../../components/layouts/UseIsMobile';
+import CreditCardNotselected from '../../../../../assets/CreditCard_NotSelected.webp'
+import Paypal_Is_Selected_Ico from '../../../../../assets/Paypal_Selected.webp'
+import ApplePaySelected from '../../../../../assets/ApplePay_IsSelected.webp'
+
 
 
 
@@ -24,7 +28,7 @@ export default function ModeDePaiementCard({ clientSecret, setValidatePaymentOve
                     onClick={() => setSelectedMode("Carte bancaire")
 
                     }
-                    icone={creditCard_ico}
+                    icone={selectedMode === "Carte bancaire" ? creditCard_ico : CreditCardNotselected  }
                 />
                 <ModeDePaiementItem
                     cardName="Paypal"
@@ -33,15 +37,17 @@ export default function ModeDePaiementCard({ clientSecret, setValidatePaymentOve
                     onClick={() => setSelectedMode("Paypal")
 
                     }
-                    icone={Paypal_ico
+                    icone={selectedMode === "Paypal" ? Paypal_Is_Selected_Ico : Paypal_ico
                     }
                 />
                 <ModeDePaiementItem
                     cardName="Apple Pay"
                     cardDescription="Paiements rapides et sécurisés"
                     IsSelected={selectedMode === "Apple Pay"}
-                    onClick={() => setSelectedMode("Apple Pay")}
-                    icone={ApplePay_ico}
+                    onClick={() => setSelectedMode("Apple Pay")
+
+                    }
+                    icone={selectedMode === "Apple Pay"  ? ApplePaySelected : ApplePay_ico}
                 />
             </div>
             {selectedMode === "Carte bancaire" && (

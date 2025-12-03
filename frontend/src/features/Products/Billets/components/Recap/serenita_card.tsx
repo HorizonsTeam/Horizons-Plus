@@ -1,5 +1,5 @@
 
-import sheild from '../../../../assets/shield.svg'
+import sheild from '../../../../../assets/shield.svg'
 
 
 export default function Serinita_card ()
