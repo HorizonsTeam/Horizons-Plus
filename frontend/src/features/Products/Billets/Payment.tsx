@@ -16,7 +16,7 @@ import type { LocationState } from '../Billets/types.ts';
 
 export default function PaymentPage() {
     const { state } = useLocation();
-    const { journey, selectedClass, passagersCount, formattedDepartureDate, passagersData } = (state || {}) as LocationState & { passagersData: any[]};
+    const { journey, selectedClass, passagersCount, formattedDepartureDate, passagersData } = (state || {}) as LocationState & { passagersData: any[] };
 
     const [IsSelected, setIsSelected] = useState(false);
     const navigate = useNavigate();
@@ -68,19 +68,14 @@ export default function PaymentPage() {
 
     return (
         <>
-            <div className={`relative w-full ${isMobile ? "px-4" : " py-10 px-20"}`}>
+            <div className={`relative w-full ${isMobile ? "px-4" : " py-10"}`}>
 
-                <div className="relative mt-4 mb-10 flex justify-center items-center">
-                    <button onClick={handleretour}>
-                        <img
-                            src={ReturnBtn}
-                            alt="Return Button"
-                            className="absolute left-0  transform"
-                        />
+                {/* HEADER */}
+                <div className="relative flex items-center justify-center mb-10">
+                    <button onClick={handleRetour} className="absolute left-2 top-1/2 -translate-y-1/2">
+                        <img src={ReturnBtn} alt="Retour" className="h-6 w-6" />
                     </button>
-                    <h1 className="text-3xl text-[#98EAF3] font-medium text-center">
-                        Paiement 
-                    </h1>
+                    <h1 className="text-3xl text-[#98EAF3] font-semibold">Paiement</h1>
                 </div>
 
                 {/* A recupérer les infos - A FAIRE BACKEND */}
