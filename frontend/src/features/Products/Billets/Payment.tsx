@@ -16,7 +16,7 @@ import type { LocationState } from '../Billets/types.ts';
 
 export default function PaymentPage() {
     const { state } = useLocation();
-    const { journey, selectedClass, passagersCount, formattedDepartureDate, passagersData } = (state || {}) as LocationState & { passagersData: any[] };
+    const { journey, selectedClass, passagersCount, formattedDepartureDate, passagersData } = (state || {}) as LocationState & { passagersData: number[] };
 
     const [IsSelected, setIsSelected] = useState(false);
     const navigate = useNavigate();
@@ -27,6 +27,7 @@ export default function PaymentPage() {
     const [ValidatePayment, setValidatePaymentOverlay] = useState(false);
 
     const [triggerPayment, setTriggerPayment] = useState<(() => void) | null>(null);
+    const [assurance, setAssurance] = useState<boolean>(false);
 
     // Affichage dès le payement validé    
     useEffect(() => {
@@ -96,7 +97,7 @@ export default function PaymentPage() {
                         <li><p>Date : <span className="font-semibold">{formattedDepartureDate} • {journey.departureTime} - {journey.arrivalTime}</span></p></li>
                         <li><p>Classe : <span className="font-semibold">{selectedClass}</span></p></li>
                         <li><p>Passager : <span className="font-semibold">{passagersCount} passager{(passagersCount ?? 1) > 1 ? "s" : ""}</span></p></li>
-                        <li><p>Prix Total : <span className="font-bold text-xl">{journey.price * (passagersCount ?? 1)} €</span></p></li>
+                        <li><p>Prix Total : <span className="font-bold text-xl">{journey.price * (passagersCount ?? 1) + (assurance == true ? 3.50 : 0)} €</span></p></li>
                     </ul>
                 </div>
 
@@ -131,11 +132,11 @@ export default function PaymentPage() {
                     {/* Assurance */}
                     <button
                         onClick={onClick}
-                        className={`w-full flex justify-between items-center p-4 rounded-xl border-2 transition 
+                        className={`w-full flex justify-between items-center p-4 rounded-xl border-2 transition cursor-pointer
                         ${IsSelected ? "border-[#98EAF3] text-[#98EAF3]" : "border-[#2C474B] text-white"}`}
                     >
-                        <img src={assurance_Ico} className="h-6 w-6" />
-                        <p className="font-semibold text-sm flex-1 ml-4">Assurance annulation (+3,50 €)</p>
+                        <img src={assurance_Ico} className="h-6 w-6"/>
+                        <p className="font-semibold text-sm flex-1 ml-4" onClick={() => setAssurance(!assurance)}>Assurance annulation (+3,50 €)</p>
                         <div className={`h-6 w-6 rounded-full border-2 border-[#2C474B] ${IsSelected ? 'bg-[#98EAF3]' : ''}`} />
                     </button>
 
@@ -154,7 +155,7 @@ export default function PaymentPage() {
 
                     <div className="flex justify-between items-center mt-10">
                         <p className="text-2xl font-bold">Total :</p>
-                        <p className="text-2xl font-bold">{journey.price * (passagersCount ?? 1)} €</p>
+                        <p className="text-2xl font-bold">{journey.price * (passagersCount ?? 1) + (assurance == true ? 3.50 : 0)} €</p>
                     </div>
                 </div>
 
