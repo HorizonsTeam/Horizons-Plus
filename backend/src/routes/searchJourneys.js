@@ -28,6 +28,30 @@ searchJourneys.get("/journeys", async (req, res) => {
         return numberOfTransfers
     }
 
+    const calculerPrixFictif = (
+        distanceM,
+        nbTransfers,
+        trainType
+    ) => {
+        const distanceKm = distanceM / 1000;
+        const base = 5;
+        const coeffDistance = 0.05;
+        const coeffTransfert = 2;
+        const coeffType = {
+            "TER / Intercités": 1,
+            "Train grande vitesse": 4,
+            
+        };
+
+        let prix =
+            base +
+            distanceKm * coeffDistance +
+            nbTransfers * coeffTransfert +
+            (coeffType[trainType] || 1) * 5;
+
+        return Math.round(prix * 100) / 100; // Arrondi à 2 décimales
+    };
+
     try {
         console.log("Requête SNCF :", departure, "→", arrival);
 
@@ -41,6 +65,8 @@ searchJourneys.get("/journeys", async (req, res) => {
                 }
             }
         );
+
+
 
         const data = await response.json();
         
@@ -86,14 +112,20 @@ searchJourneys.get("/journeys", async (req, res) => {
                 arrivalName = journey.sections[journey.sections.length - 1].to.name;
             }
 
-            let price = journey.fare?.total.value ? (journey.fare.total.value / 100).toFixed(2) : null;
+            const transportSection = journey.sections.find(
+                (section) => section.type === "public_transport"
+            );
+            const distanceM = transportSection?.geojson?.properties?.[0]?.length || 0;
+            const trainType = transportSection?.display_informations?.physical_mode || "TER";
+            const numberOfTransfers = analyzeJourney(journey);
+
+            let price = journey.fare?.total.value != 0 ? (journey.fare.total.value / 100).toFixed(2) : calculerPrixFictif(distanceM, numberOfTransfers, trainType);
             let departureTime = journey.departure_date_time.split('T')[1].slice(0, 4);
             departureTime = departureTime.slice(0,2) + ":" + departureTime.slice(2,4);
             let arrivalTime = journey.arrival_date_time.split('T')[1].slice(0, 4);
             arrivalTime = arrivalTime.slice(0, 2) + ":" + arrivalTime.slice(2, 4);
             let duration = journey.duration;
             duration = formatDuration(duration);
-            const numberOfTransfers = analyzeJourney(journey);
 
             console.log("Nombre de correspondances :", numberOfTransfers);
 
