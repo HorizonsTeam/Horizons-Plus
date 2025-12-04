@@ -65,7 +65,7 @@ export default function SearchForm() {
 
   return (
     <section className="px-4 py-8 lg:py-16">
-      <div className=" mx-auto lg:max-w-4xl">
+      <div className="">
         <h1 className="text-4xl mx-auto  lg:text-5xl font-bold text-center mb-8 lg:mb-12 text-primary">
           Envie de voyager ?
         </h1>
@@ -183,11 +183,20 @@ export default function SearchForm() {
         </div>
 
         {/* Formulaire Desktop */}
-        <div className="hidden lg:block bg-slate-700/50 backdrop-blur-sm rounded-2xl p-8 shadow-xl">
+        <div className="hidden lg:block rounded-2xl  w-full px-10 ">
           
           {/* Villes départ et arrivée */}
-          <div className="grid grid-cols-2 gap-4 mb-6">
+          <div className="flex gap-10 justify-center px-10 w-full   py-20">
             <div>
+              <label className="block text-sm text-slate-400 mb-2">Date de départ</label>
+              <input
+                type="date"
+                value={departureDate}
+                onChange={(e) => handleDateChange(e, true)}
+                className="w-full bg-slate-600/50 text-white rounded-xl px-4 py-3.5 outline-none border-none focus:ring-2 focus:ring-cyan-400/30 [color-scheme:dark]"
+              />
+            </div>
+            <div className='flex justify-center '>
               <AutocompleteInput 
                 label="Ville départ"
                 value={departure?.name || ''}                  // affiche le nom si dispo
@@ -199,13 +208,12 @@ export default function SearchForm() {
                             )
                           }
                 onSelect={(obj) => setDeparture(obj)}          // obj = {id, name, type, region}
-                className="search-input w-full bg-slate-600/50 text-white placeholder-slate-400 rounded-xl px-4 py-3.5 outline-none border-none focus:ring-2 focus:ring-cyan-400/30"
+                className=" w-full text-black  bg-white rounded-tl-xl rounded-bl-xl px-4 py-3.5 outline-none border-none focus:ring-2 focus:ring-cyan-400/30"
               />
-            </div>
-            <div>
+            
               <AutocompleteInput 
                 label="Ville arrivée"
-                value={arrival?.name || ''}                  // affiche le nom si dispo
+                value={arrival?.name || ''}                
                 placeholder="Où allez-vous ?"
                 onChange={(text) =>
                             setArrival(arrival
@@ -214,31 +222,11 @@ export default function SearchForm() {
                             )
                           }
                 onSelect={(obj) => setArrival(obj)}          // obj = {id, name, type, region}
-                className="search-input w-full bg-slate-600/50 text-white placeholder-slate-400 rounded-xl px-4 py-3.5 outline-none border-none focus:ring-2 focus:ring-cyan-400/30"
+                className=" w-full text-black bg-white rounded-tr-xl rounded-br-xl  py-3.5 outline-none border-none focus:ring-2 focus:ring-cyan-400/30"
               />
             </div>
-          </div>
-
-          {/* Dates et Passagers */}
-          <div className="grid grid-cols-3 gap-4 mb-6">
-            <div>
-              <label className="block text-sm text-slate-400 mb-2">Date de départ</label>
-              <input
-                type="date"
-                value={departureDate}
-                onChange={(e) => handleDateChange(e, true)}
-                className="w-full bg-slate-600/50 text-white rounded-xl px-4 py-3.5 outline-none border-none focus:ring-2 focus:ring-cyan-400/30 [color-scheme:dark]"
-              />
-            </div>
-            <div>
-              <label className="block text-sm text-slate-400 mb-2">Date d'arrivée</label>
-              <input
-                type="date"
-                value={arrivalDate}
-                onChange={(e) => handleDateChange(e, false)}
-                className="w-full bg-slate-600/50 text-white rounded-xl px-4 py-3.5 outline-none border-none focus:ring-2 focus:ring-cyan-400/30 [color-scheme:dark]"
-              />
-            </div>
+            
+            
             <div>
               <label className="block text-sm text-slate-400 mb-2">Passagers</label>
               <select
@@ -252,22 +240,30 @@ export default function SearchForm() {
                 <option value={4}>4 passagers</option>
               </select>
             </div>
+            {/* Bouton Rechercher */}
+            <button
+              disabled={isDisabled}
+              className="w-full bg-white max-w-40 max-h-40 hover:bg-cyan-300 text-[#115E66] font-semibold  rounded-xl transition-colors duration-200 text-base shadow-lg cursor-pointer"
+              onClick={() => {
+                if (isDisabled) return;
+
+                Navigate(
+                  `/Recherche?fromId=${encodeURIComponent(departure.id)}&fromName=${encodeURIComponent(departure.name)}&toId=${encodeURIComponent(arrival.id)}&toName=${encodeURIComponent(arrival.name)}&departureDate=${encodeURIComponent(departureDate)}&arrivalDate=${encodeURIComponent(arrivalDate || "")}&passagers=${encodeURIComponent(passagerCount)}`
+                );
+              }}
+            >
+              Rechercher
+            </button>
           </div>
 
-          {/* Bouton Rechercher */}
-          <button 
-            disabled={isDisabled}
-            className="w-full bg-primary hover:bg-cyan-300 text-[#115E66] font-semibold py-4 px-6 rounded-xl transition-colors duration-200 text-base shadow-lg cursor-pointer"
-            onClick={() => {
-              if (isDisabled) return;
+          {/* Dates et Passagers */}
+          <div className="grid grid-cols-3 gap-4 mb-6">
+            
+            
+            
+          </div>
 
-              Navigate(
-                `/Recherche?fromId=${encodeURIComponent(departure.id)}&fromName=${encodeURIComponent(departure.name)}&toId=${encodeURIComponent(arrival.id)}&toName=${encodeURIComponent(arrival.name)}&departureDate=${encodeURIComponent(departureDate)}&arrivalDate=${encodeURIComponent(arrivalDate || "")}&passagers=${encodeURIComponent(passagerCount)}`
-              );
-            }}
-          >
-            Rechercher
-          </button>
+          
         </div>
       </div>
     </section>
