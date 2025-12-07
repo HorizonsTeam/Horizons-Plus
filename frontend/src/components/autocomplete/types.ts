@@ -5,6 +5,7 @@ export type Suggestion = {
   name: string;
   type?: SuggestionType;
   region?: string;
+  country?: string;
 }
 
 export type AutocompleteInputProps = {

@@ -25,6 +25,8 @@ searchPlaces.get("/stations", async (req, res) => {
         const placesList = places.map(p => {
             let type = 'other';
             let regionName = null;
+            let country = "France";
+            if (p.id.includes("osm")) country = "Hors France";
 
             if (p.embedded_type === "stop_area") {
                 type = "stop_area";
@@ -43,7 +45,8 @@ searchPlaces.get("/stations", async (req, res) => {
                 id: p.id,
                 name: p.name.replace(/\s*\(.*\)/, ""),
                 type,
-                region: regionName
+                region: regionName,
+                country
             };
         });
         

@@ -19,3 +19,7 @@ export type ProductCardProps =
 export type DateStringProps = {
     date: Date;
 };
+
+export type BestPriceProps = {
+    value: number | null;
+};

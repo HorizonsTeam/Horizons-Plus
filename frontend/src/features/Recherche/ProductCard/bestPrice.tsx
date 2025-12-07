@@ -1,11 +1,10 @@
+import type { BestPriceProps } from "./types";
 
-
-
-export default function BestPrice ()
+export default function BestPrice({ value }: BestPriceProps)
 {
     return (
-        <div>
-            <span className='text-[#98EAF3] -ml-1'> 10,50 €</span>    
+            <div>
+                <span className='text-[#98EAF3] -ml-1'>{value} €</span>    
             </div>
         )
 

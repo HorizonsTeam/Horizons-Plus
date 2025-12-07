@@ -65,10 +65,10 @@ function AutocompleteList({ suggestions, selectedIndex, onSelect }: Autocomplete
                         </span>
                         {s.region && (
                             <span
-                            className="text-sm font-medium text-primary truncate max-w-[200px]"
-                            title={s.region}
+                                className="text-sm font-medium text-primary truncate max-w-[200px]"
+                                title={s.region}
                             >
-                            ({s.region})
+                                ({s.region})
                             </span>
                         )}
                         </div>

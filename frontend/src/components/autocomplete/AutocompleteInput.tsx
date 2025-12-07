@@ -11,7 +11,7 @@ function AutocompleteInput({ label, value, placeholder, onChange, onSelect, clas
     const base = `${import.meta.env.VITE_API_URL || "http://localhost:3005"}`;
 
     useEffect(() => {
-        if (!value || value.length < 3) {
+        if (!value) {
             setSuggestions([]);
             return;
         }
@@ -26,14 +26,19 @@ function AutocompleteInput({ label, value, placeholder, onChange, onSelect, clas
                 const sncfResults: Suggestion[] = sncfData.status === 'fulfilled' ? sncfData.value : [];
                 const amadeusResults: Suggestion[] = amadeusData.status === 'fulfilled' ? amadeusData.value : [];
 
+                console.log("amadeusResults", amadeusResults);
+
                 // Combiner les deux résultats
                 const combined = [...sncfResults, ...amadeusResults];
-                
+
                 // Supprimer les doublons
-                const unique = combined.filter(
-                    (v, i, a) =>
-                        a.findIndex(e => e.name.toLowerCase() === v.name.toLowerCase()) === i
-                );
+                const seen = new Set<string>();
+                const unique = combined.filter(v => {
+                    const key = `${v.name.toLowerCase()}|${v.id}`;
+                    if (seen.has(key)) return false;
+                    seen.add(key);
+                    return true;
+                });
 
                 const typeOrder: Record<SuggestionType, number> = {
                     city: 0,
