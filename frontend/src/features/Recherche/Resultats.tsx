@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import ReturnBtn from '../../assets/ReturnBtn.svg';
@@ -99,7 +99,11 @@ export default function Resultats() {
             });
     }, [fromId, toId, departureDate, arrivalDate]);
 
-    console.log('journeyData:', journeyData);
+    const lowestPrice = useMemo(() => {
+        if (!journeyData?.length) return null;
+        return Math.min(...journeyData.map(j => j.price));
+    }, [journeyData]);
+
 
     return (
         <>
@@ -157,7 +161,7 @@ export default function Resultats() {
             >
                 <div className="flex flex-col items-center">
                 <img src={Train_Ico} alt="Train" />
-                {transport === "train" && <BestPrice />}
+                {transport === "train" && <BestPrice value={lowestPrice} />}
                 </div>
             </button>
 
@@ -169,7 +173,7 @@ export default function Resultats() {
             >
                 <div className="flex flex-col items-center">
                 <img src={Plane_Ico} alt="Avion" />
-                {transport === "plane" && <BestPrice />}
+                {transport === "plane" && <BestPrice value={lowestPrice} />}
                 </div>
             </button>
             </div>
