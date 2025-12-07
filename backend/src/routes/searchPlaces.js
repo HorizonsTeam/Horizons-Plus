@@ -25,28 +25,36 @@ searchPlaces.get("/stations", async (req, res) => {
         const placesList = places.map(p => {
             let type = 'other';
             let regionName = null;
-            let country = "France";
-            if (p.id.includes("osm")) country = "Hors France";
+            let lat = 0;
+            let lon = 0;
 
             if (p.embedded_type === "stop_area") {
                 type = "stop_area";
 
                 const region = p.stop_area?.administrative_regions?.[0]?.insee;
                 regionName = region ? getRegionByInsee(region) : "Hors France";
+
+                lat = p.stop_area.coord.lat;
+                lon = p.stop_area.coord.lon;
             }
             else if (p.embedded_type === "administrative_region") {
                 type = "city";
 
                 const region = p.administrative_region?.insee;
                 regionName = region ? getRegionByInsee(region) : "Hors France";
+
+                lat = p.administrative_region.coord.lat;
+                lon = p.administrative_region.coord.lon;
             }
 
             return {
                 id: p.id,
-                name: p.name.replace(/\s*\(.*\)/, ""),
+                name: p.name.replace(/\s*\(.*\)/, ""), 
                 type,
                 region: regionName,
-                country
+                source: "sncf",
+                lat,
+                lon
             };
         });
         

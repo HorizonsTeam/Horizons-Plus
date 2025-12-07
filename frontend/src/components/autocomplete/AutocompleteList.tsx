@@ -73,8 +73,7 @@ function AutocompleteList({ suggestions, selectedIndex, onSelect }: Autocomplete
                         )}
                         </div>
                     </div>
-                    </li>
-
+                </li>
             ))}
         </ul>
     )
