@@ -21,4 +21,4 @@ export type DateStringProps = {
 
 export type BestPriceProps = {
     value: number | null;
-}
+};

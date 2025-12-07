@@ -1,10 +1,11 @@
-export type SuggestionType = "city" | "stop_area" | "other";
+export type SuggestionType = "city" | "stop_area" | "airport";
 
 export type Suggestion = {
   id: string;
   name: string;
   type?: SuggestionType;
   region?: string;
+  country?: string;
 }
 
 export type AutocompleteInputProps = {

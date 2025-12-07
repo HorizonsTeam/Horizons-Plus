@@ -9,6 +9,7 @@ import { toNodeHandler, fromNodeHeaders } from "better-auth/node";
 import auth from "./dist/auth.js"; // export default depuis ton build
 import searchPlaces from "./src/routes/searchPlaces.js";
 import searchJourneys from "./src/routes/searchJourneys.js";
+import amadeusPlaces from "./src/routes/amadeusPlaces.js";
 import { loadGeoData } from "./src/utils/geoData.js";
 import paymentRoutes from "./src/routes/payment.js"
 
@@ -102,6 +103,7 @@ app.get("/api/me", async (req, res) => {
 });
 
 // Feat : Autocomplétion
+app.use("/api/search", amadeusPlaces);
 app.use("/api/search", searchJourneys);
 app.use("/api/search", searchPlaces);
 
