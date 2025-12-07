@@ -99,11 +99,38 @@ export default function Resultats() {
             });
     }, [fromId, toId, departureDate, arrivalDate]);
 
-    const lowestPrice = useMemo(() => {
-        if (!journeyData?.length) return null;
-        return Math.min(...journeyData.map(j => j.price));
-    }, [journeyData]);
+    const journeyList: Journey[] = journeyData
+        .filter((journey) => {
+            const now = new Date();
 
+            // Combine departureDate (YYYY-MM-DD) + departureTime (HH:mm)
+            const [hours, minutes] = journey.departureTime
+                .split(":")
+                .map(Number);
+            const [year, month, day] = departureDate.split("-").map(Number);
+
+            const departure = new Date(year, month - 1, day, hours, minutes);
+
+            // Si la date est différente d'aujourd'hui → on garde toujours
+            const today = new Date(
+                now.getFullYear(),
+                now.getMonth(),
+                now.getDate()
+            );
+            const journeyDay = new Date(year, month - 1, day);
+
+            if (journeyDay.getTime() !== today.getTime()) {
+                return true;
+            }
+
+            // Si c'est aujourd'hui → on compare l'heure
+            return departure >= now;
+        })
+        
+    const lowestPrice = useMemo(() => {
+        if (!journeyList?.length) return null;
+        return Math.min(...journeyList.map(j => j.price));
+    }, [journeyList]);
 
     return (
         <>
@@ -210,42 +237,14 @@ export default function Resultats() {
                 </div>
 
                 {/* Product cards */}
-                {journeyData
-                    .filter((journey) => {
-                    const now = new Date();
-
-                    // Combine departureDate (YYYY-MM-DD) + departureTime (HH:mm)
-                    const [hours, minutes] = journey.departureTime
-                        .split(":")
-                        .map(Number);
-                    const [year, month, day] = departureDate.split("-").map(Number);
-
-                    const departure = new Date(year, month - 1, day, hours, minutes);
-
-                    // Si la date est différente d'aujourd'hui → on garde toujours
-                    const today = new Date(
-                        now.getFullYear(),
-                        now.getMonth(),
-                        now.getDate()
-                    );
-                    const journeyDay = new Date(year, month - 1, day);
-
-                    if (journeyDay.getTime() !== today.getTime()) {
-                        return true;
-                    }
-
-                    // Si c'est aujourd'hui → on compare l'heure
-                    return departure >= now;
-                    })
-                    .slice(0, 6)
-                    .map((journey, idx) => (
+                {journeyList.map((journey, idx) => (
                     <Productcard
                         key={idx}
                         journey={journey}
                         passagersCount={passagerCount}
                         formattedDepartureDate={formattedDepartureDate}
                     />
-                    ))}
+                ))}
                 </>
             )}
             </div>
