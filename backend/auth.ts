@@ -6,18 +6,18 @@ import { sendMail } from "./server/mailer.js";
 const prisma = new PrismaClient();
 
 const getBaseURL = () => {
-    if (process.env.BETTER_AUTH_URL) {
-        return process.env.BETTER_AUTH_URL;
-    }
-    // En dev, utilise localhost
-    return process.env.NODE_ENV === "production"
-        ? "https://horizons-plus-production.up.railway.app"
-        : "http://localhost:3005";
+  if (process.env.BETTER_AUTH_URL) return process.env.BETTER_AUTH_URL;
+
+  if (process.env.NODE_ENV !== "production") {
+    return "http://localhost:3005";
+  }
+
+  throw new Error("BETTER_AUTH_URL must be set in production");
 };
 
 
 export const auth = betterAuth({
-    database: prismaAdapter(prisma, { provider: "mysql" }),
+    database: prismaAdapter(prisma, { provider: "postgresql" }),
 
     // BaseURL pointe vers la racine
     baseURL: getBaseURL(),
