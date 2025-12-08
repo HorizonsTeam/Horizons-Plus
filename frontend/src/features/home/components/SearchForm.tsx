@@ -390,7 +390,7 @@ export default function SearchForm() {
               </div>
 
               {/* Recherche carré */}
-              <div className='p-2  bg-gradient-to-r from-[#7ADFEA] via-[#98EAF3] to-[#C7F7FB] bg-200  rounded-2xl shadow-md '>
+              <div className='p-1  bg-gradient-to-r from-[#7ADFEA] via-[#98EAF3] to-[#C7F7FB] bg-200  rounded-2xl shadow-md '>
                 <button
                   type="button"
                   onClick={goSearch}

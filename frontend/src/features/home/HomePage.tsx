@@ -120,12 +120,10 @@ export default function HomePage() {
           {/* Version Desktop */}
           <div className="hidden lg:grid lg:grid-cols-2 lg:gap-16 lg:items-center lg:px-12">
             {/* Colonne gauche - Image */}
-            <div className="relative overflow-hidden h-[600px] lg:order-first">
-              <img 
-                src={TrainImage} 
-                alt="Train dans les nuages"
-                className="absolute inset-0 w-full h-full object-contain object-center"
-              />
+            <div
+              className="relative overflow-hidden  w-full h-[600px] lg:order-first p-4 bg-cover bg-center rounded-xl "
+              style={{ backgroundImage: `url(${TrainImage})` }}
+            >
             </div>
 
             {/* Colonne droite - Texte et CTA */}
