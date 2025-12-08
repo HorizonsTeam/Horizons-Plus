@@ -1,7 +1,6 @@
 import { ArrowDownUp, Minus } from 'lucide-react';
-import { useState } from 'react';
+import {  useState } from 'react';
 import AutocompleteInput from '../../../components/autocomplete/AutocompleteInput.tsx';
-
 import { useNavigate } from 'react-router-dom';
 import type { Suggestion } from '../../../components/autocomplete/types.ts';
 
@@ -81,13 +80,20 @@ export default function SearchForm() {
                 label=""
                 value={departure?.name || ''}                // affiche le nom si dispo
                 placeholder="Ville départ"
-                onChange={(text) =>
-                            setDeparture(departure
-                              ? { ...departure, name: text }
-                              : { id: "", name: text }
-                            )
-                          }
-                onSelect={(obj) => setDeparture(obj)}        // obj = {id, name, type, region}
+                onChange={(text) => {
+                  setDeparture(
+                    departure
+                      ? { ...departure, name: text }
+                      : {
+                          id: "",
+                          name: text,
+                          source: "sncf",
+                          lat: 0,
+                          lon: 0,
+                        }
+                  );
+                }}
+                onSelect={(obj) => setDeparture(obj)}
                 className="search-input w-full bg-[#2C474B] text-white placeholder-slate-400 rounded-xl px-4 py-3.5 text-sm outline-none border-none focus:ring-2 focus:ring-cyan-400/30"
               />
             </div>
@@ -98,13 +104,20 @@ export default function SearchForm() {
                 label=""
                 value={arrival?.name || ''}                  // affiche le nom si dispo
                 placeholder="Ville arrivée"
-                onChange={(text) =>
-                            setArrival(arrival
-                              ? { ...arrival, name: text }
-                              : { id: "", name: text }
-                            )
-                          }
-                onSelect={(obj) => setArrival(obj)}          // obj = {id, name, type, region}
+                onChange={(text) => {
+                  setArrival(
+                    arrival
+                      ? { ...arrival, name: text }
+                      : {
+                          id: "",
+                          name: text,
+                          source: "sncf",
+                          lat: 0,
+                          lon: 0,
+                        }
+                  );
+                }}
+                onSelect={(obj) => setArrival(obj)}
                 className="search-input w-full bg-[#2C474B] text-white placeholder-slate-400 rounded-xl px-4 py-3.5 text-sm outline-none border-none focus:ring-2 focus:ring-cyan-400/30"
               />
             </div>
@@ -176,10 +189,6 @@ export default function SearchForm() {
           >
             Rechercher
           </button>
-          
-
-          
-       
         </div>
 
         {/* Formulaire Desktop */}
@@ -201,12 +210,19 @@ export default function SearchForm() {
                 label="Ville départ"
                 value={departure?.name || ''}                  // affiche le nom si dispo
                 placeholder="D'où partez-vous ?"
-                onChange={(text) =>
-                            setDeparture(departure
-                              ? { ...departure, name: text }
-                              : { id: "", name: text }
-                            )
-                          }
+                onChange={(text) => {
+                  setDeparture(
+                    departure
+                      ? { ...departure, name: text }
+                      : {
+                          id: "",
+                          name: text,
+                          source: "sncf",
+                          lat: 0,
+                          lon: 0,
+                        }
+                  );
+                }}
                 onSelect={(obj) => setDeparture(obj)}          // obj = {id, name, type, region}
                 className=" w-full text-black  bg-white rounded-tl-xl rounded-bl-xl px-4 py-3.5 outline-none border-none focus:ring-2 focus:ring-cyan-400/30"
               />
@@ -215,12 +231,19 @@ export default function SearchForm() {
                 label="Ville arrivée"
                 value={arrival?.name || ''}                
                 placeholder="Où allez-vous ?"
-                onChange={(text) =>
-                            setArrival(arrival
-                              ? { ...arrival, name: text }
-                              : { id: "", name: text }
-                            )
-                          }
+                onChange={(text) => {
+                  setArrival(
+                    arrival
+                      ? { ...arrival, name: text }
+                      : {
+                          id: "",
+                          name: text,
+                          source: "sncf",
+                          lat: 0,
+                          lon: 0,
+                        }
+                  );
+                }}
                 onSelect={(obj) => setArrival(obj)}          // obj = {id, name, type, region}
                 className=" w-full text-black bg-white rounded-tr-xl rounded-br-xl  py-3.5 outline-none border-none focus:ring-2 focus:ring-cyan-400/30"
               />
