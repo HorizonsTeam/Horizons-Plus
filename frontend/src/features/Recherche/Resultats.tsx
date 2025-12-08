@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import ReturnBtn from '../../assets/ReturnBtn.svg';
@@ -99,7 +99,56 @@ export default function Resultats() {
             });
     }, [fromId, toId, departureDate, arrivalDate]);
 
+    const journeyList: Journey[] = journeyData
+        .filter((journey) => {
+            const now = new Date();
+
+            // Combine departureDate (YYYY-MM-DD) + departureTime (HH:mm)
+            const [hours, minutes] = journey.departureTime
+                .split(":")
+                .map(Number);
+            const [year, month, day] = departureDate.split("-").map(Number);
+
+            const departure = new Date(year, month - 1, day, hours, minutes);
+
+            // Si la date est différente d'aujourd'hui → on garde toujours
+            const today = new Date(
+                now.getFullYear(),
+                now.getMonth(),
+                now.getDate()
+            );
+            const journeyDay = new Date(year, month - 1, day);
+
+            if (journeyDay.getTime() !== today.getTime()) {
+                return true;
+            }
+
+            // Si c'est aujourd'hui → on compare l'heure
+            return departure >= now;
+        })
+        
+    const lowestPrice = useMemo(() => {
+        if (!journeyList?.length) return null;
+        return Math.min(...journeyList.map(j => j.price));
+    }, [journeyList]);
     console.log('journeyData:', journeyData);
+    const handleApplyModifications = (values: {
+        fromName: string;
+        toName: string;
+        passagers: number;
+        departureDate: string;
+    }) => {
+        const params = new URLSearchParams({
+            fromName: values.fromName,
+            toName: values.toName,
+            passagers: String(values.passagers),
+            departureDate: values.departureDate,
+            fromId,
+            toId
+        });
+
+        navigate(`/resultats?${params.toString()}`);
+    };
 
     return (
         <>
@@ -157,7 +206,7 @@ export default function Resultats() {
             >
                 <div className="flex flex-col items-center">
                 <img src={Train_Ico} alt="Train" />
-                {transport === "train" && <BestPrice />}
+                {transport === "train" && <BestPrice value={lowestPrice} />}
                 </div>
             </button>
 
@@ -169,7 +218,7 @@ export default function Resultats() {
             >
                 <div className="flex flex-col items-center">
                 <img src={Plane_Ico} alt="Avion" />
-                {transport === "plane" && <BestPrice />}
+                {transport === "plane" && <BestPrice value={lowestPrice} />}
                 </div>
             </button>
             </div>
@@ -206,46 +255,26 @@ export default function Resultats() {
                 </div>
 
                 {/* Product cards */}
-                {journeyData
-                    .filter((journey) => {
-                    const now = new Date();
-
-                    // Combine departureDate (YYYY-MM-DD) + departureTime (HH:mm)
-                    const [hours, minutes] = journey.departureTime
-                        .split(":")
-                        .map(Number);
-                    const [year, month, day] = departureDate.split("-").map(Number);
-
-                    const departure = new Date(year, month - 1, day, hours, minutes);
-
-                    // Si la date est différente d'aujourd'hui → on garde toujours
-                    const today = new Date(
-                        now.getFullYear(),
-                        now.getMonth(),
-                        now.getDate()
-                    );
-                    const journeyDay = new Date(year, month - 1, day);
-
-                    if (journeyDay.getTime() !== today.getTime()) {
-                        return true;
-                    }
-
-                    // Si c'est aujourd'hui → on compare l'heure
-                    return departure >= now;
-                    })
-                    .slice(0, 6)
-                    .map((journey, idx) => (
+                {journeyList.map((journey, idx) => (
                     <Productcard
                         key={idx}
                         journey={journey}
                         passagersCount={passagerCount}
                         formattedDepartureDate={formattedDepartureDate}
                     />
-                    ))}
+                ))}
                 </>
             )}
             </div>
-            <QouickModificationOverlay villeDepart={fromName} villeArrive={toName} Passagers={passagerCount} dateSearch={departureDate} BoxIsOn={BoxIsOn} setBoxIsOn={setBoxIsOn} />
+                <QouickModificationOverlay
+                    villeDepart={fromName}
+                    villeArrive={toName}
+                    Passagers={passagerCount}
+                    dateSearch={departureDate}
+                    BoxIsOn={BoxIsOn}
+                    setBoxIsOn={setBoxIsOn}
+                    onValidate={handleApplyModifications}
+                />
         </div>
         </>
     );
