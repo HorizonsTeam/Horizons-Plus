@@ -131,6 +131,24 @@ export default function Resultats() {
         if (!journeyList?.length) return null;
         return Math.min(...journeyList.map(j => j.price));
     }, [journeyList]);
+    console.log('journeyData:', journeyData);
+    const handleApplyModifications = (values: {
+        fromName: string;
+        toName: string;
+        passagers: number;
+        departureDate: string;
+    }) => {
+        const params = new URLSearchParams({
+            fromName: values.fromName,
+            toName: values.toName,
+            passagers: String(values.passagers),
+            departureDate: values.departureDate,
+            fromId,
+            toId
+        });
+
+        navigate(`/resultats?${params.toString()}`);
+    };
 
     return (
         <>
@@ -248,7 +266,15 @@ export default function Resultats() {
                 </>
             )}
             </div>
-            <QouickModificationOverlay villeDepart={fromName} villeArrive={toName} Passagers={passagerCount} dateSearch={departureDate} BoxIsOn={BoxIsOn} setBoxIsOn={setBoxIsOn} />
+                <QouickModificationOverlay
+                    villeDepart={fromName}
+                    villeArrive={toName}
+                    Passagers={passagerCount}
+                    dateSearch={departureDate}
+                    BoxIsOn={BoxIsOn}
+                    setBoxIsOn={setBoxIsOn}
+                    onValidate={handleApplyModifications}
+                />
         </div>
         </>
     );

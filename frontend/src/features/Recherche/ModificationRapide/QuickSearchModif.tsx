@@ -1,4 +1,6 @@
 
+
+import { useState } from "react";
 type Props = React.InputHTMLAttributes<HTMLInputElement> & {
     label: string;
     containerClassName?: string;
@@ -15,11 +17,17 @@ type ModificationProps =
     dateSearch : string ; 
     BoxIsOn : boolean ;
     setBoxIsOn : (value : boolean) => void ;
+    onValidate: (newValues: {
+            fromName: string;
+            toName: string;
+            passagers: number;
+            departureDate: string;
+        }) => void;
 
 }
 
 
-function FloatingInput({ label, containerClassName = "", className = "",  inputValue,...props }: Props) {
+function FloatingInput({ label, containerClassName = "", className = "", inputValue, ...props }: Props) {
     return (
         <div className={`relative ${containerClassName} `}>
             <input
@@ -49,19 +57,25 @@ function FloatingInput({ label, containerClassName = "", className = "",  inputV
         </div>
     );
 }
-export default function QouickModificationOverlay ({villeDepart, villeArrive, Passagers, dateSearch , BoxIsOn , setBoxIsOn} : ModificationProps , )
-{
+export default function QuickModificationOverlay({villeDepart,villeArrive,Passagers,dateSearch,BoxIsOn,setBoxIsOn,onValidate}: ModificationProps) {
+
     let Ischanged = false ; 
-    const handleValidation = () =>
-    {
-        if (!Ischanged)
-        {
-            setBoxIsOn(false);
-        }
-        
-    }
+    
+    const [newVilleDepart, setNewVilleDepart] = useState(villeDepart);
+    const [newVilleArrive, setNewVilleArrive] = useState(villeArrive);
+    const [newPassagers, setNewPassagers] = useState(Passagers);
+    const [newDateSearch, setNewDateSearch] = useState(dateSearch);
 
+    const handleValidation = () => {
+        onValidate({
+            fromName: newVilleDepart,
+            toName: newVilleArrive,
+            passagers: newPassagers,
+            departureDate: newDateSearch
+        });
 
+        setBoxIsOn(false);
+    };
 
 
     return (
@@ -79,7 +93,10 @@ export default function QouickModificationOverlay ({villeDepart, villeArrive, Pa
                 type="text"
                 inputMode="numeric"
                 autoComplete="cc-number"
-                inputValue={villeDepart}
+                inputValue={newVilleDepart}
+                onChange={(e) => setNewVilleDepart(e.target.value)}
+                
+
                 
             />
              <FloatingInput
@@ -87,7 +104,9 @@ export default function QouickModificationOverlay ({villeDepart, villeArrive, Pa
                 type="text"
                 inputMode="numeric"
                 autoComplete="cc-number"
-                inputValue={villeArrive}
+                inputValue={newVilleArrive}
+                onChange={(e) => setNewVilleArrive (e.target.value)}
+                
 
             />
                 </div>
@@ -97,14 +116,18 @@ export default function QouickModificationOverlay ({villeDepart, villeArrive, Pa
                     type="Number"
                     inputMode="numeric"
                     autoComplete="cc-number"
-                    inputValue={Passagers}
+                    inputValue={newPassagers}
+                    onChange={(e) => setNewPassagers(Number (e.target.value))}
+                    
                 />
                 <FloatingInput
                     label="Numéro de carte"
                     type="Date"
                     inputMode="numeric"
                     autoComplete="cc-number"
-                    inputValue={dateSearch}
+                    inputValue={newDateSearch}
+                    onChange={(e) => setNewDateSearch(e.target.value)}
+                    
                 />
                 <button className="w-full  h-15 bg-[#98EAF3] rounded-xl mt-4" onClick={() => handleValidation()}>
                     <span className="text-[#115E66] font-bold text-xl">Valider les modifications </span>
