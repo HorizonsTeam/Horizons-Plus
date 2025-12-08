@@ -105,6 +105,7 @@ function AutocompleteInput({ label, value, placeholder, onChange, onSelect, clas
     }
 
     return (
+        <>
         <div ref={containerRef} className="autocomplete relative">
             {
             !label || label.length === 0 
@@ -123,11 +124,15 @@ function AutocompleteInput({ label, value, placeholder, onChange, onSelect, clas
                 onKeyDown={handleKeyDown}
             />
 
-            {isFocused && suggestions.length > 0 && (
-                <AutocompleteList suggestions={suggestions} selectedIndex={selectedIndex} onSelect={handleSelect} />
-            )}
+            
             
         </div>
+        {
+        isFocused && suggestions.length > 0 && (
+            <AutocompleteList suggestions={suggestions} selectedIndex={selectedIndex} onSelect={handleSelect} />
+        )
+    }
+        </>
     );
 }
 
