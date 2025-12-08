@@ -1,96 +1,148 @@
-import { ArrowDownUp, Minus } from 'lucide-react';
-import {  useState } from 'react';
+import { ArrowDownUp, Minus, Search } from 'lucide-react';
+import { useState, useMemo, type ChangeEvent } from 'react';
 import AutocompleteInput from '../../../components/autocomplete/AutocompleteInput.tsx';
 import { useNavigate } from 'react-router-dom';
 import type { Suggestion } from '../../../components/autocomplete/types.ts';
+import { DateBtn } from './Date.tsx';
+import Avatar from '../../../assets/Avatar.svg'
+
+type TripType = 'oneway' | 'roundtrip';
 
 export default function SearchForm() {
-  const [departure, setDeparture] = useState<Suggestion | null>(null); // Pour stocker l'objet complet de la ville de départ
-  const [arrival, setArrival] = useState<Suggestion | null>(null);   // Pour stocker l'objet complet de la ville d'arrivée
-  const today = new Date().toISOString().split("T")[0];
+  const [departure, setDeparture] = useState<Suggestion | null>(null);
+  const [arrival, setArrival] = useState<Suggestion | null>(null);
+
+  const today = useMemo(() => new Date().toISOString().split('T')[0], []);
   const [departureDate, setDepartureDate] = useState(today);
-  const [arrivalDate, setArrivalDate] = useState<string>("");
+  const [arrivalDate, setArrivalDate] = useState<string>('');
   const [passagerCount, setPassagerCount] = useState<number>(1);
 
   const [rotation, setRotation] = useState<number>(0);
+  const [tripType, setTripType] = useState<TripType>('oneway');
 
   const Navigate = useNavigate();
 
-  const isDisabled =
-  !departure?.id ||
-  !departure?.name ||
-  !arrival?.id ||
-  !arrival?.name ||
-  !departureDate;
-
-  //Fonction swap
-  const handleSwap = () => {
-    setDeparture(departure);
-    setArrival(arrival);
-    setRotation((prev) => prev + 180);
-  }
-
-  const handleDateChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    isDeparture: boolean
-  ) => {
-    const value = e.target.value;
-
-    // Si la valeur n'est pas complète (moins de 10 caractères "YYYY-MM-DD"), on ne valide pas encore
+  // --- validation dates réutilisable (mobile + desktop)
+  const validateDepartureDate = (value: string) => {
     if (value.length < 10) {
-      if (isDeparture) setDepartureDate(value);
-      else setArrivalDate(value);
+      setDepartureDate(value);
       return;
     }
 
     const selectedDate = new Date(value);
-    const todayDate = new Date(today); // today = "YYYY-MM-DD"
+    const todayDate = new Date(today);
 
-    if (isDeparture) {
-      if (selectedDate < todayDate) {
-        alert("La date de départ ne peut pas être dans le passé.");
-        return;
-      }
-      setDepartureDate(value);
-    } else {
-      const departure = departureDate ? new Date(departureDate) : null;
-      if (departure && selectedDate < departure) {
-        alert("La date d'arrivée ne peut pas être avant la date de départ.");
-        return;
-      }
-      setArrivalDate(value);
+    if (selectedDate < todayDate) {
+      alert("La date de départ ne peut pas être dans le passé.");
+      return;
     }
+
+    setDepartureDate(value);
+
+    // si l'arrivée existe et devient invalide -> reset
+    if (arrivalDate) {
+      const arr = new Date(arrivalDate);
+      if (arr < selectedDate) {
+        setArrivalDate('');
+      }
+    }
+  };
+
+  const validateArrivalDate = (value: string) => {
+    if (value.length < 10) {
+      setArrivalDate(value);
+      return;
+    }
+
+    const selectedDate = new Date(value);
+    const dep = departureDate ? new Date(departureDate) : null;
+
+    if (dep && selectedDate < dep) {
+      alert("La date d'arrivée ne peut pas être avant la date de départ.");
+      return;
+    }
+
+    setArrivalDate(value);
+  };
+
+  const handleDateChange = (
+    e: ChangeEvent<HTMLInputElement>,
+    isDeparture: boolean
+  ) => {
+    const value = e.target.value;
+    if (isDeparture) validateDepartureDate(value);
+    else validateArrivalDate(value);
+  };
+
+  // --- bouton swap
+  const handleSwap = () => {
+    const oldDeparture = departure;
+    setDeparture(arrival);
+    setArrival(oldDeparture);
+    setRotation((prev) => prev + 180);
+  };
+
+  const isDisabled = useMemo(() => {
+    const base =
+      !departure?.id ||
+      !departure?.name ||
+      !arrival?.id ||
+      !arrival?.name ||
+      !departureDate;
+
+    if (base) return true;
+    if (tripType === 'roundtrip' && !arrivalDate) return true;
+    return false;
+  }, [departure, arrival, departureDate, arrivalDate, tripType]);
+
+  const goSearch = () => {
+    if (isDisabled || !departure || !arrival) return;
+
+    Navigate(
+      `/Recherche?fromId=${encodeURIComponent(
+        departure.id
+      )}&fromName=${encodeURIComponent(
+        departure.name
+      )}&toId=${encodeURIComponent(
+        arrival.id
+      )}&toName=${encodeURIComponent(
+        arrival.name
+      )}&departureDate=${encodeURIComponent(
+        departureDate
+      )}&arrivalDate=${encodeURIComponent(
+        tripType === 'roundtrip' ? arrivalDate || '' : ''
+      )}&passagers=${encodeURIComponent(passagerCount)}`
+    );
   };
 
   return (
     <section className="px-4 py-8 lg:py-16">
-      <div className="">
-        <h1 className="text-4xl mx-auto  lg:text-5xl font-bold text-center mb-8 lg:mb-12 text-primary">
+      <div>
+        <h1 className="text-4xl mx-auto lg:text-5xl font-bold text-center mb-8 lg:mb-12 text-primary">
           Envie de voyager ?
         </h1>
 
-        {/* Formulaire Mobile */}
+        {/* ========== MOBILE ========== */}
         <div className="lg:hidden">
-          
-          {/* Container pour Ville départ + Ville arrivée avec bouton swap */}
+          {/* Villes + swap */}
           <div className="relative mb-4">
             {/* Ville départ */}
             <div className="mb-3">
-              <AutocompleteInput 
+              <AutocompleteInput
                 label=""
-                value={departure?.name || ''}                // affiche le nom si dispo
+                value={departure?.name || ''}
                 placeholder="Ville départ"
                 onChange={(text) => {
                   setDeparture(
                     departure
                       ? { ...departure, name: text }
                       : {
-                          id: "",
-                          name: text,
-                          source: "sncf",
-                          lat: 0,
-                          lon: 0,
-                        }
+                        id: '',
+                        name: text,
+                        source: 'sncf',
+                        lat: 0,
+                        lon: 0,
+                      }
                   );
                 }}
                 onSelect={(obj) => setDeparture(obj)}
@@ -100,21 +152,21 @@ export default function SearchForm() {
 
             {/* Ville arrivée */}
             <div>
-              <AutocompleteInput 
+              <AutocompleteInput
                 label=""
-                value={arrival?.name || ''}                  // affiche le nom si dispo
+                value={arrival?.name || ''}
                 placeholder="Ville arrivée"
                 onChange={(text) => {
                   setArrival(
                     arrival
                       ? { ...arrival, name: text }
                       : {
-                          id: "",
-                          name: text,
-                          source: "sncf",
-                          lat: 0,
-                          lon: 0,
-                        }
+                        id: '',
+                        name: text,
+                        source: 'sncf',
+                        lat: 0,
+                        lon: 0,
+                      }
                   );
                 }}
                 onSelect={(obj) => setArrival(obj)}
@@ -122,19 +174,19 @@ export default function SearchForm() {
               />
             </div>
 
-            {/* Bouton swap - positionné à droite entre les deux champs */}
+            {/* Bouton swap */}
             <button
-              type='button'
+              type="button"
               onClick={handleSwap}
               style={{ transform: `rotate(${rotation}deg)` }}
-              className="absolute right-2 top-1/2 -translate-y-1/2 bg-primary p-2 rounded-4xl border-2 border-dark text-white transition-transform duration-300"              
+              className="absolute right-2 top-1/2 -translate-y-1/2 bg-primary p-2 rounded-4xl border-2 border-dark text-white transition-transform duration-300"
               aria-label="Inverser"
             >
               <ArrowDownUp className="w-4 h-4 text-slate-900 stroke-[2.5]" />
             </button>
           </div>
 
-          {/* Dates - Départ et Arrivée côte à côte */}
+          {/* Dates */}
           <div className="grid grid-cols-2 gap-3 mb-4">
             <div className="relative">
               <input
@@ -153,12 +205,16 @@ export default function SearchForm() {
                 onChange={(e) => handleDateChange(e, false)}
                 className="w-full bg-[#2C474B] text-white placeholder-slate-400 rounded-xl px-4 py-3.5 text-sm outline-none border-none focus:ring-2 focus:ring-cyan-400/30 [color-scheme:dark]"
               />
+              {!!arrivalDate && (
                 <button
-                className="absolute right-3 top-1.2 -translate-y-1/2 bg-red-700 rounded-full p-1 border-[#103035] border-3 z-10"
-                aria-label="Cancel arrival date"
-              >
-                <Minus className="w-3 h-3 text-white stroke-[3]" />
-              </button>
+                  type="button"
+                  onClick={() => setArrivalDate('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 bg-red-700 rounded-full p-1 border-[#103035] border-3 z-10"
+                  aria-label="Cancel arrival date"
+                >
+                  <Minus className="w-3 h-3 text-white stroke-[3]" />
+                </button>
+              )}
             </div>
           </div>
 
@@ -174,119 +230,187 @@ export default function SearchForm() {
             />
           </div>
 
-
           {/* Bouton Rechercher */}
-          <button 
+          <button
             disabled={isDisabled}
-            className="w-full bg-primary active:bg-cyan-300 text-[#115E66] font-semibold py-4 px-6 rounded-xl transition-colors duration-200 text-base shadow-lg" 
-            onClick={() => {
-              if (isDisabled) return;
-
-              Navigate(
-                `/Recherche?fromId=${encodeURIComponent(departure.id)}&fromName=${encodeURIComponent(departure.name)}&toId=${encodeURIComponent(arrival.id)}&toName=${encodeURIComponent(arrival.name)}&departureDate=${encodeURIComponent(departureDate)}&arrivalDate=${encodeURIComponent(arrivalDate || "")}&passagers=${encodeURIComponent(passagerCount)}`
-              );
-            }}
+            className="w-full bg-primary active:bg-cyan-300 text-[#115E66] font-semibold py-4 px-6 rounded-xl transition-colors duration-200 text-base shadow-lg"
+            onClick={goSearch}
           >
             Rechercher
           </button>
         </div>
 
-        {/* Formulaire Desktop */}
-        <div className="hidden lg:block rounded-2xl  w-full px-10 ">
+
+
+
+        {/* ========== DESKTOP ========== */}
+        <div className="hidden lg:block w-full  mt-40">
           
-          {/* Villes départ et arrivée */}
-          <div className="flex gap-10 justify-center px-10 w-full   py-20">
-            <div>
-              <label className="block text-sm text-slate-400 mb-2">Date de départ</label>
-              <input
-                type="date"
-                value={departureDate}
-                onChange={(e) => handleDateChange(e, true)}
-                className="w-full bg-slate-600/50 text-white rounded-xl px-4 py-3.5 outline-none border-none focus:ring-2 focus:ring-cyan-400/30 [color-scheme:dark]"
-              />
-            </div>
-            <div className='flex justify-center '>
-              <AutocompleteInput 
-                label="Ville départ"
-                value={departure?.name || ''}                  // affiche le nom si dispo
-                placeholder="D'où partez-vous ?"
-                onChange={(text) => {
-                  setDeparture(
-                    departure
-                      ? { ...departure, name: text }
-                      : {
-                          id: "",
-                          name: text,
-                          source: "sncf",
-                          lat: 0,
-                          lon: 0,
-                        }
-                  );
-                }}
-                onSelect={(obj) => setDeparture(obj)}          // obj = {id, name, type, region}
-                className=" w-full text-black  bg-white rounded-tl-xl rounded-bl-xl px-4 py-3.5 outline-none border-none focus:ring-2 focus:ring-cyan-400/30"
-              />
-            
-              <AutocompleteInput 
-                label="Ville arrivée"
-                value={arrival?.name || ''}                
-                placeholder="Où allez-vous ?"
-                onChange={(text) => {
-                  setArrival(
-                    arrival
-                      ? { ...arrival, name: text }
-                      : {
-                          id: "",
-                          name: text,
-                          source: "sncf",
-                          lat: 0,
-                          lon: 0,
-                        }
-                  );
-                }}
-                onSelect={(obj) => setArrival(obj)}          // obj = {id, name, type, region}
-                className=" w-full text-black bg-white rounded-tr-xl rounded-br-xl  py-3.5 outline-none border-none focus:ring-2 focus:ring-cyan-400/30"
-              />
-            </div>
-            
-            
-            <div>
-              <label className="block text-sm text-slate-400 mb-2">Passagers</label>
-              <select
-                className="w-full bg-slate-600/50 text-white rounded-xl px-4 py-3.5 outline-none border-none focus:ring-2 focus:ring-cyan-400/30 cursor-pointer"
-                value={passagerCount}
-                onChange={(e) => setPassagerCount(Number(e.target.value))}
-              >
-                <option value={1}>1 passager</option>
-                <option value={2}>2 passagers</option>
-                <option value={3}>3 passagers</option>
-                <option value={4}>4 passagers</option>
-              </select>
-            </div>
-            {/* Bouton Rechercher */}
-            <button
-              disabled={isDisabled}
-              className="w-full bg-white max-w-40 max-h-40 hover:bg-cyan-300 text-[#115E66] font-semibold  rounded-xl transition-colors duration-200 text-base shadow-lg cursor-pointer"
-              onClick={() => {
-                if (isDisabled) return;
 
-                Navigate(
-                  `/Recherche?fromId=${encodeURIComponent(departure.id)}&fromName=${encodeURIComponent(departure.name)}&toId=${encodeURIComponent(arrival.id)}&toName=${encodeURIComponent(arrival.name)}&departureDate=${encodeURIComponent(departureDate)}&arrivalDate=${encodeURIComponent(arrivalDate || "")}&passagers=${encodeURIComponent(passagerCount)}`
-                );
-              }}
-            >
-              Rechercher
-            </button>
+          {/* Barre de recherche */}
+          <div className=" grid grid-cols justify-center">
+            <div className="flex justify-start mb-6">
+              <div className="inline-flex rounded-full bg-primary  p-1 h-15">
+                <button
+                  type="button"
+                  onClick={() => setTripType('oneway')}
+                  className={[
+                    'px-5 py-1/2 rounded-full text-sm font-medium transition ',
+                    tripType === 'oneway'
+                      ? 'bg-secondary  border border-white/30 shadow-[-1px_-1px_5px_rgba(255,_255,_255,_0.6),_1px_1px_5px_rgba(0,_0,_0,_0.3),inset_-2px_-2px_5px_rgba(255,_255,_255,_1),inset_2px_2px_4px_rgba(0,_0,_0,_0.3)]'
+                      : 'bg-transparent ',
+                  ].join(' ')}
+                >
+                  Aller simple
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTripType('roundtrip')}
+                  className={[
+                    'px-5 py-1/2 rounded-full text-sm font-medium transition',
+                    tripType === 'roundtrip'
+                      ? 'bg-secondary text-white border border-white/30 shadow-[-1px_-1px_5px_rgba(255,_255,_255,_0.6),_1px_1px_5px_rgba(0,_0,_0,_0.3),inset_-2px_-2px_5px_rgba(255,_255,_255,_1),inset_2px_2px_4px_rgba(0,_0,_0,_0.3)]'
+                      : 'bg-transparent ',
+                  ].join(' ')}
+                >
+                  Aller-retour
+                </button>
+              </div>
+            </div>
+            <div className="flex   min-h-20 gap-8">
+              {/* Date carré */}
+              <div className="h-full w-14">
+                <DateBtn
+                  label=""
+                  value={departureDate}
+                  min={today}
+                  onChange={validateDepartureDate}
+                  size="sm"
+                  className=""
+                />
+              </div>
+              {tripType === 'roundtrip' && (
+              
+              <div className="h-full w-14 ml-10">
+                <DateBtn
+                  label=""
+                  value={departureDate}
+                  min={today}
+                  onChange={validateDepartureDate}
+                  size="sm"
+                  className=""
+                />
+              </div>
+              )
+}
+
+
+              {/* Bloc villes unique */}
+              <div className="relative flex bg-white rounded-xl shadow-sm mx-10">
+                {/* Ville départ */}
+                <div className="min-w-[290px] h-full">
+
+                  <AutocompleteInput
+                    label=""
+                    value={departure?.name || ''}
+                    placeholder="Ville de départ"
+                    onChange={(text) => {
+                      setDeparture(
+                        departure
+                          ? { ...departure, name: text }
+                          : {
+                            id: '',
+                            name: text,
+                            source: 'sncf',
+                            lat: 0,
+                            lon: 0,
+                          }
+                      );
+                    }}
+                    onSelect={(obj) => setDeparture(obj)}
+                    className="min-h-22 w-full text-black bg-white rounded-l-xl px-4 outline-none border-none"
+                  />
+                </div>
+
+                {/* Séparateur central + swap */}
+                <div className="mr-10">
+                  <button
+                    type="button"
+                    onClick={handleSwap}
+                    style={{ transform: `rotate(${rotation}deg)` }}
+                    className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
+                       h-9 w-9 rounded-full bg-slate-200 border border-slate-300
+                       flex items-center justify-center transition-transform duration-300 "
+                    aria-label="Inverser"
+                  >
+                    <ArrowDownUp className="w-4 h-4 text-slate-800 stroke-[2.5] rotate-90 " />
+                  </button>
+                </div>
+
+                {/* Ville arrivée */}
+                <div className="min-w-[260px] h-full">
+                  <AutocompleteInput
+                    label=""
+                    value={arrival?.name || ''}
+                    placeholder="Ville d'arrivée"
+                    onChange={(text) => {
+                      setArrival(
+                        arrival
+                          ? { ...arrival, name: text }
+                          : {
+                            id: '',
+                            name: text,
+                            source: 'sncf',
+                            lat: 0,
+                            lon: 0,
+                          }
+                      );
+                    }}
+                    onSelect={(obj) => setArrival(obj)}
+                    className="min-h-22 text-black bg-white px-4 outline-none border-none"
+                  />
+                </div>
+              </div>
+
+              {/* Passagers carré */}
+              <div className="bg-white rounded-xl grid grid-cols shadow-sm flex items-center px-4 py-3.5 -ml-10">
+                <img src={Avatar} alt="" className='justify-center ml-2' />
+                <div>
+                <select
+                  value={passagerCount}
+                  onChange={(e) => setPassagerCount(Number(e.target.value))}
+                  className='text-black text-xm'
+                >
+                  <option value={1}>x1</option>
+                  <option value={2}>x2</option>
+                  <option value={3}>x3</option>
+                  <option value={4}>x4</option>
+                </select>
+                </div>
+              </div>
+
+              {/* Recherche carré */}
+              <div className='p-2  bg-gradient-to-r from-[#7ADFEA] via-[#98EAF3] to-[#C7F7FB] bg-200  rounded-2xl shadow-md '>
+                <button
+                  type="button"
+                  onClick={goSearch}
+                  className={`
+        px-4 py-4
+        flex items-center 
+        text-slate-500
+        shadow-[-5px_-5px_10px_rgba(255,_255,_255,_0.8),_5px_5px_10px_rgba(0,_0,_0,_0.25)]
+        h-full
+        transition-all
+        rounded-xl
+        hover:shadow-[-1px_-1px_5px_rgba(255,_255,_255,_0.6),_1px_1px_5px_rgba(0,_0,_0,_0.3),inset_-2px_-2px_5px_rgba(255,_255,_255,_1),inset_2px_2px_4px_rgba(0,_0,_0,_0.3)]
+    `}                  
+                >
+                  <Search className="w-full  text-slate-900 stroke-[2.5] " />
+                </button>
+              </div>
+
+            </div>
           </div>
-
-          {/* Dates et Passagers */}
-          <div className="grid grid-cols-3 gap-4 mb-6">
-            
-            
-            
-          </div>
-
-          
         </div>
       </div>
     </section>
