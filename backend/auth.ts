@@ -21,7 +21,6 @@ export const auth = betterAuth({
 
     // BaseURL pointe vers la racine
     baseURL: getBaseURL(),
-    // Ajouter le secret (CRITIQUE pour la sécurité)
     secret: process.env.BETTER_AUTH_SECRET || "dev-secret-change-in-production",
 
     trustedOrigins: [
