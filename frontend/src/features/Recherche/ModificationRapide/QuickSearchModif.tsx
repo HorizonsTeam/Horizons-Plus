@@ -2,6 +2,8 @@ import React, { useMemo, useState, type ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import AutocompleteInput from "../../../components/autocomplete/AutocompleteInput";
 import type { Suggestion } from "../../../components/autocomplete/types";
+import { ArrowDownUp } from 'lucide-react';
+
 
 type Props = React.InputHTMLAttributes<HTMLInputElement> & {
     label: string;
@@ -65,6 +67,8 @@ export default function QuickModificationOverlay({
     const today = useMemo(() => new Date().toISOString().split("T")[0], []);
     const [departureDate, setDepartureDate] = useState<string>(dateSearch || today);
     const [passagerCount, setPassagerCount] = useState<number>(Passagers);
+    const [rotation, setRotation] = useState<number>(0);
+
 
     const validateDepartureDate = (value: string) => {
         if (value.length < 10) {
@@ -82,6 +86,13 @@ export default function QuickModificationOverlay({
 
         setDepartureDate(value);
     };
+    const handleSwap = () => {
+        const oldDeparture = departure;
+        setDeparture(arrival);
+        setArrival(oldDeparture);
+        setRotation((prev) => prev + 180);
+    };
+
 
     const handleDateChange = (e: ChangeEvent<HTMLInputElement>) => {
         validateDepartureDate(e.target.value);
@@ -119,14 +130,15 @@ export default function QuickModificationOverlay({
 
     return (
         <div
-            className={`
-        fixed bottom-0 left-0 w-full bg-[#133A40] rounded-t-4xl 
+            className={` 
+        fixed bottom-0 left-0 w-full bg-[#103035] border-2 border-[#4A6367] rounded-t-4xl 
         transition-all duration-500 h-95 p-4 max-w-150
         ${BoxIsOn ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"}
       `}
         >
             <div className="grid justify-center gap-2 mt-4">
                 <div className="flex justify-center gap-5">
+                    
                     <AutocompleteInput
                         label=""
                         value={departure?.name || ""}
@@ -142,6 +154,11 @@ export default function QuickModificationOverlay({
                         className="search-input w-full bg-[#2C474B] text-white placeholder-slate-400 rounded-xl px-4 py-3.5 text-sm outline-none border-none focus:ring-2 focus:ring-cyan-400/30"
                         AutocompleteListClassname="absolute autocomplete-suggestions left-0 right-0 z-50 mt-15 rounded-xl bg-[#0f2628] border border-[#1b3a3d] shadow-xl backdrop-blur-md max-h-60 mx-18 overflow-y-auto text-left divide-y divide-[#1e3c3f] overflow-x-hidden "
                     />
+                    
+                    
+                                      
+                                    
+                    
 
                     <AutocompleteInput
                         label=""
@@ -160,22 +177,9 @@ export default function QuickModificationOverlay({
 
                     />
                 </div>
+                
 
-                <FloatingInput
-                    label="Nombre de passagers"
-                    type="number"
-                    min={1}
-                    inputMode="numeric"
-                    inputValue={passagerCount}
-                    onChange={(e) => setPassagerCount(Number(e.target.value))}
-                />
-
-                <FloatingInput
-                    label="Date de départ"
-                    type="date"
-                    inputValue={departureDate}
-                    onChange={handleDateChange}
-                />
+                
 
                 <button
                     className="w-full h-15 bg-[#98EAF3] rounded-xl mt-4 disabled:opacity-50"
