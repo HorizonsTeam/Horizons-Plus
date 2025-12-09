@@ -12,6 +12,7 @@ import Productcard from './ProductCard/ProductCard.tsx';
 import BestPrice from './ProductCard/bestPrice.tsx';
 import Date_String from './Date.tsx';
 import type { Journey } from './ProductCard/types.ts';
+import NoResultsImage from '../../assets/LogoNotFound.png';
 
 
 import QouickModificationOverlay from './ModificationRapide/QuickSearchModif.tsx';
@@ -126,6 +127,7 @@ export default function Resultats() {
             // Si c'est aujourd'hui → on compare l'heure
             return departure >= now;
         })
+
         
     const lowestPrice = useMemo(() => {
         if (!journeyList?.length) return null;
@@ -151,9 +153,9 @@ export default function Resultats() {
     };
 
     return (
-        <>
+        < >
             {/* Header */}
-            <div>
+            <div >
                 <button onClick={handleRetour}>
                 <img
                     src={ReturnBtn}
@@ -161,9 +163,9 @@ export default function Resultats() {
                     className="absolute left-4 mt-10 transform -translate-y-1/2"
                 />
             </button>
-            <div className="flex items-center justify-center mt-6" onClick={ () => setBoxIsOn(true)}>
+            <div className="flex items-center justify-center mt-6" onClick={ () => setBoxIsOn(!BoxIsOn)}>
                 
-                <div className="flex flex-col items-center">
+                    <div className="flex flex-col items-center" onClick={() => BoxIsOn && setBoxIsOn(false)}>
                     <h3 className="font-bold text-primary text-xl truncate max-w-[200px]">
                         {fromName} - {toName}
                     </h3>
@@ -224,10 +226,26 @@ export default function Resultats() {
             </div>
 
             {/* Results */}
-            <div className="bg-[#133A40] px-2 pt-5 -mt-10 w-full h-300">
+                <div className="bg-[#133A40] px-2 pt-5 -mt-10 w-full h-300" onClick={() => BoxIsOn && setBoxIsOn(false)} >
             {errorMessage ? (
                 <div className="text-center text-red-400 font-bold py-10">
-                {errorMessage}
+                
+
+                    <div className='flex justify-center'>
+                        <div className=' p-6 rounded-2xl mt-4'>
+                            <div className='flex justify-center'>
+                                    <img src={NoResultsImage} alt="" className=' relative  h-30 w-30 ' />
+                            </div>
+                            <h2 className='text-white font-bold text-2xl mt-4'>Oups...</h2>
+                            <p className='text-white mt-5'>Désolé, aucun résultat ne correspond à votre recherche. Veuillez modifier vos critères et réessayer.</p>
+
+                            <div className='flex w-full justify-between mt-10'>
+                                        <button className='text-white bg-[#115E66] p-4 rounded-xl hover:bg-[#115E56] hover:cursor-pointer' onClick={() => { setBoxIsOn(!BoxIsOn); scrollTo({ top: 0, behavior: "smooth" }) }}>Modifier le trajet</button>
+                                        <button className='text-white bg-[#FFB856] p-4 rounded-xl hover:bg-[#FFB820] hover:cursor-pointer' onClick={() => { setTransport("plane"); scrollTo({ top: 0, behavior: "smooth" }) }}>Voir les vols</button>
+                            </div>
+
+                        </div>
+                    </div>
                 </div>
             ) : (
                 <>
