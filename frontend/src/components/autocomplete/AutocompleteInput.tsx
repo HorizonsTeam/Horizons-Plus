@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import type { AutocompleteInputProps, Suggestion, SuggestionType } from './types';
 import AutocompleteList from './AutocompleteList';
 
-function AutocompleteInput({ label, value, placeholder, onChange, onSelect, className }: AutocompleteInputProps) {
+function AutocompleteInput({ label, value, placeholder, onChange, onSelect, className , AutocompleteListClassname}: AutocompleteInputProps) {
     const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
     const [isFocused, setIsFocused] = useState<boolean>(false);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -129,7 +129,7 @@ function AutocompleteInput({ label, value, placeholder, onChange, onSelect, clas
         </div>
         {
         isFocused && suggestions.length > 0 && (
-            <AutocompleteList suggestions={suggestions} selectedIndex={selectedIndex} onSelect={handleSelect} />
+            <AutocompleteList suggestions={suggestions} selectedIndex={selectedIndex} onSelect={handleSelect}  className={AutocompleteListClassname}/>
         )
     }
         </>

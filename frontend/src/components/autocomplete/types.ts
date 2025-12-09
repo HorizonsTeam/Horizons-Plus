@@ -15,12 +15,14 @@ export type AutocompleteInputProps = {
     onChange: (newValue: string) => void;
     onSelect: (s: Suggestion) => void;
     className?: string;
+  AutocompleteListClassname?: string;
 }
 
 export type AutocompleteListProps = {
   suggestions: Suggestion[];
   selectedIndex: number;
   onSelect: (s: Suggestion) => void;
+  className?: string;
 }
 
 
