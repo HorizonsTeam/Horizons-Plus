@@ -23,7 +23,7 @@ export default function Resultats() {
 
     const navigate = useNavigate();
 
-    const [transport, setTransport] = useState<'plane' | 'train'>('train');
+    const [transport, setTransport] = useState<"plane" | "train">();
 
     const handleRetour = () => navigate(-1);
 
@@ -91,6 +91,8 @@ export default function Resultats() {
                     setErrorMessage(null);
                     setJourneyData(data);
                 }
+
+                setTransport(data[0].simulated ? "plane" : "train");
             })
             .catch(err => {
                 console.error('Fetch journeys error:', err);
@@ -187,72 +189,72 @@ export default function Resultats() {
 
             <div className="flex items-center justify-between w-full my-10 ">
                 <button
-                onClick={() => setTransport('train')}
-                className={`w-2/3 h-[68px] flex justify-center items-center border-b-4 border-b-white rounded-tr-3xl transition-colors duration-300 ${
-                transport === "train" ? "bg-[#133A40]" : "bg-transparent"
-                }`}
-            >
-                <div className="flex flex-col items-center">
-                <img src={Train_Ico} alt="Train" />
-                {transport === "train" && <BestPrice value={lowestPrice} />}
-                </div>
-            </button>
+                    onClick={() => setTransport("train")}
+                    className={`w-2/3 h-[68px] flex justify-center items-center border-b-4 border-b-white rounded-tr-3xl transition-colors duration-300 ${
+                    transport === "train" ? "bg-[#133A40]" : "bg-transparent"
+                    }`}
+                >
+                    <div className="flex flex-col items-center">
+                    <img src={Train_Ico} alt="Train" />
+                    {transport === "train" && <BestPrice value={lowestPrice} />}
+                    </div>
+                </button>
 
-            <button
-                onClick={() => setTransport("plane")}
-                className={`w-2/3 h-[68px] flex justify-center items-center border-b-4 border-b-white rounded-tl-3xl transition-colors duration-300 ${
-                transport === "plane" ? "bg-[#133A40]" : "bg-transparent"
-                }`}
-            >
-                <div className="flex flex-col items-center">
-                <img src={Plane_Ico} alt="Avion" />
-                {transport === "plane" && <BestPrice value={lowestPrice} />}
-                </div>
-            </button>
+                <button
+                    onClick={() => setTransport("plane")}
+                    className={`w-2/3 h-[68px] flex justify-center items-center border-b-4 border-b-white rounded-tl-3xl transition-colors duration-300 ${
+                    transport === "plane" ? "bg-[#133A40]" : "bg-transparent"
+                    }`}
+                >
+                    <div className="flex flex-col items-center">
+                    <img src={Plane_Ico} alt="Avion" />
+                    {transport === "plane" && <BestPrice value={lowestPrice} />}
+                    </div>
+                </button>
             </div>
 
             {/* Results */}
             <div className="bg-[#133A40] px-2 pt-5 -mt-10 w-full h-300">
-            {errorMessage ? (
-                <div className="text-center text-red-400 font-bold py-10">
-                {errorMessage}
-                </div>
-            ) : (
-                <>
-                {/* Filters */}
-                <div className="flex gap-2 -ml-3">
-                    <button className="flex items-center gap-1 border-primary border-2 px-4 py-2 rounded-full text-primary text-sm w-24">
-                    <span className="-ml-1">Horaires</span>
-                    <span className="text-primary">▼</span>
-                    </button>
+                {errorMessage ? (
+                    <div className="text-center text-red-400 font-bold py-10">
+                    {errorMessage}
+                    </div>
+                ) : (
+                    <>
+                    {/* Filters */}
+                    <div className="flex gap-2 -ml-3">
+                        <button className="flex items-center gap-1 border-primary border-2 px-4 py-2 rounded-full text-primary text-sm w-24">
+                        <span className="-ml-1">Horaires</span>
+                        <span className="text-primary">▼</span>
+                        </button>
 
-                    <button className="flex items-left gap-1 border-primary border-2 px-4 py-2 rounded-full text-primary text-sm w-20">
-                    <span className="-ml-1">Gares</span>
-                    <span className="text-primary">▼</span>
-                    </button>
+                        <button className="flex items-left gap-1 border-primary border-2 px-4 py-2 rounded-full text-primary text-sm w-20">
+                        <span className="-ml-1">Gares</span>
+                        <span className="text-primary">▼</span>
+                        </button>
 
-                    <button className="flex items-center gap-1 border-primary border-2 px-4 py-2 rounded-full text-primary text-sm w-24">
-                    <span className="-ml-1">Départs</span>
-                    <span className="text-primary">▼</span>
-                    </button>
+                        <button className="flex items-center gap-1 border-primary border-2 px-4 py-2 rounded-full text-primary text-sm w-24">
+                        <span className="-ml-1">Départs</span>
+                        <span className="text-primary">▼</span>
+                        </button>
 
-                    <button className="flex items-center gap-2 text-[#133A40] bg-primary px-4 py-2 rounded-full text-sm w-20">
-                    <span className="-ml-1">Direct</span>
-                    <span className="text-[#133A40]">▼</span>
-                    </button>
-                </div>
+                        <button className="flex items-center gap-2 text-[#133A40] bg-primary px-4 py-2 rounded-full text-sm w-20">
+                        <span className="-ml-1">Direct</span>
+                        <span className="text-[#133A40]">▼</span>
+                        </button>
+                    </div>
 
-                {/* Product cards */}
-                {journeyList.map((journey, idx) => (
-                    <Productcard
-                        key={idx}
-                        journey={journey}
-                        passagersCount={passagerCount}
-                        formattedDepartureDate={formattedDepartureDate}
-                    />
-                ))}
-                </>
-            )}
+                    {/* Product cards */}
+                    {journeyList.map((journey, idx) => (
+                        <Productcard
+                            key={idx}
+                            journey={journey}
+                            passagersCount={passagerCount}
+                            formattedDepartureDate={formattedDepartureDate}
+                        />
+                    ))}
+                    </>
+                )}
             </div>
             <QouickModificationOverlay villeDepart={fromName} villeArrive={toName} Passagers={passagerCount} dateSearch={departureDate} BoxIsOn={BoxIsOn} setBoxIsOn={setBoxIsOn} />
         </div>
