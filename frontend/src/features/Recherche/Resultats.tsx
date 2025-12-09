@@ -13,15 +13,11 @@ import BestPrice from './ProductCard/bestPrice.tsx';
 import Date_String from './Date.tsx';
 import type { Journey } from './ProductCard/types.ts';
 
-
 import QouickModificationOverlay from './ModificationRapide/QuickSearchModif.tsx';
 
 
 export default function Resultats() {
-
-
     const [BoxIsOn, setBoxIsOn] = useState(false);
-
 
     const base = `${import.meta.env.VITE_API_URL || "http://localhost:3005"}`;
 
@@ -37,6 +33,10 @@ export default function Resultats() {
     const toId = searchParams.get("toId") || '';
     const toName = searchParams.get("toName") || '';
     const passagerCount = Number(searchParams.get("passagers") || 1);
+    const fromLat = searchParams.get("fromLat") || '';
+    const fromLon = searchParams.get("fromLon") || '';
+    const toLat = searchParams.get("toLat") || '';
+    const toLon = searchParams.get("toLon") || '';
 
     const [departureDate, setDepartureDate] = useState<string>(
         searchParams.get("departureDate") || new Date().toISOString().split('T')[0]
@@ -79,7 +79,7 @@ export default function Resultats() {
     useEffect(() => {
         if (!fromId || !toId || !departureDate) return;
 
-        fetch(`${base}/api/search/journeys?from=${encodeURIComponent(fromId)}&to=${encodeURIComponent(toId)}&datetime=${encodeURIComponent(departureDate)}`)
+        fetch(`${base}/api/search/journeys?fromId=${encodeURIComponent(fromId)}&fromName=${encodeURIComponent(fromName)}&fromLat=${encodeURIComponent(fromLat)}&fromLon=${encodeURIComponent(fromLon)}&toId=${encodeURIComponent(toId)}&toName=${encodeURIComponent(toName)}&toLat=${encodeURIComponent(toLat)}&toLon=${encodeURIComponent(toLon)}&datetime=${encodeURIComponent(departureDate)}`)
             .then(res => res.json())
             .then(data => {
                 console.log('API journeys response:', data);
@@ -99,8 +99,14 @@ export default function Resultats() {
             });
     }, [fromId, toId, departureDate, arrivalDate]);
 
-    const journeyList: Journey[] = journeyData
-        .filter((journey) => {
+    const uniqueJourneys = journeyData.filter((journey, index, self) => {
+        const id = `${journey.departureName}-${journey.arrivalName}-${journey.departureTime}-${journey.arrivalTime}`;
+        return self.findIndex(j =>
+            `${j.departureName}-${j.arrivalName}-${j.departureTime}-${j.arrivalTime}` === id
+        ) === index;
+    });
+
+    const journeyList: Journey[] = uniqueJourneys.filter((journey) => {
             const now = new Date();
 
             // Combine departureDate (YYYY-MM-DD) + departureTime (HH:mm)

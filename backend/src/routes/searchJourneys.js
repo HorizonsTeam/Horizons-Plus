@@ -3,13 +3,30 @@ import express from "express";
 const searchJourneys = express.Router();
 
 searchJourneys.get("/journeys", async (req, res) => {
-    const departure = req.query.from;
-    const arrival = req.query.to;
+    const departureId = req.query.fromId;
+    const departureName = req.query.fromName;
+    const arrivalId = req.query.toId;
+    const arrivalName = req.query.toName;
     const datetime = req.query.datetime;
-    // const count = req.query.count || 6; // Faudra gérer ça plus tard pour la pagination
+    const fromLat = req.query.fromLat;
+    const toLat = req.query.toLat;
+    const fromLon = req.query.fromLon;
+    const toLon = req.query.toLon;
 
-    if (!departure || !arrival || !datetime) {
-        return res.status(400).json({ error: "Missing parameters ?from=&to=&datetime=" });
+    // console.log("Params received:", {
+    //     departureId,
+    //     departureName,
+    //     arrivalId,
+    //     arrivalName,
+    //     datetime,
+    //     fromLat,
+    //     toLat,
+    //     fromLon,
+    //     toLon
+    // });
+
+    if (!departureId || !departureName || !arrivalId || !arrivalName || !datetime || !fromLat || !toLat || !fromLon || !toLon) {
+        return res.status(400).json({ error: "Missing parameters ?fromId=&toId=&datetime=..." });
     }
 
     function formatDuration(seconds) {
@@ -52,11 +69,101 @@ searchJourneys.get("/journeys", async (req, res) => {
         return Math.round(prix * 100) / 100; // Arrondi à 2 décimales
     };
 
+    function toRadians(deg) {
+    return deg * Math.PI / 180;
+    }
+
+    function haversineDistance(fromLat, fromLon, toLat, toLon) {
+    const R = 6371; // rayon Terre en km
+
+    const dLat = toRadians(toLat - fromLat);
+    const dLon = toRadians(toLon - fromLon);
+
+    const a =
+        Math.sin(dLat / 2) ** 2 +
+        Math.cos(toRadians(fromLat)) *
+        Math.cos(toRadians(toLat)) *
+        Math.sin(dLon / 2) ** 2;
+
+    const c = 2 * Math.asin(Math.sqrt(a));
+
+    return R * c; // distance en km
+    }
+
+    function minutesToHHMM(totalMinutes) {
+        const h = Math.floor(totalMinutes / 60) % 24;
+        const m = totalMinutes % 60;
+        return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`;
+    }
+
+    function randInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function randomDepartureTime() {
+        const hour = randInt(7, 8);
+        const minute = randInt(0, 59);
+        return hour * 60 + minute; // en minutes depuis 00:00
+    }
+
+    function generationJourneysFictif({ from, to }) {
+        const distanceKm = haversineDistance(
+            from.lat,
+            from.lon,
+            to.lat,
+            to.lon
+        );
+
+        const baseDurationMinutes = Math.round(distanceKm / 800 * 60);
+        const numberOfTransfers = distanceKm > 400 ? 1 : 0;
+        const transferPenalty = numberOfTransfers * 20;
+
+        // 1er départ
+        let currentDeparture = randomDepartureTime(); // entre 07h et 08h59
+
+        const journeys = [];
+        const lastDepartureAllowed = 20 * 60; // 20h00
+        const intervalMinutes = 120; // toutes les 2h
+
+        while (currentDeparture <= lastDepartureAllowed) {
+            // Petite variation réaliste par trajet
+            const variation = randInt(-5, 5);
+
+            const totalDurationMinutes = Math.max(
+                30,
+                baseDurationMinutes + transferPenalty + variation
+            );
+
+            const arrivalMinutes = currentDeparture + totalDurationMinutes;
+
+            console.log(currentDeparture, arrivalMinutes);
+
+            journeys.push({
+                departureName,
+                arrivalName,
+                departureTime: minutesToHHMM(currentDeparture),
+                arrivalTime: minutesToHHMM(arrivalMinutes),
+                duration: `${Math.floor(totalDurationMinutes / 60)}h${(totalDurationMinutes % 60)
+                    .toString()
+                    .padStart(2, "0")}`,
+                price: (distanceKm * 0.12 + randInt(-30, 30)).toFixed(2),
+                numberOfTransfers,
+                simulated: true,
+                distanceKm: Math.round(distanceKm)
+            });
+
+            // prochain départ
+            currentDeparture += intervalMinutes;
+        }
+
+        return journeys;
+    }
+
     try {
-        console.log("Requête SNCF :", departure, "→", arrival);
+        console.log("Requête SNCF :", departureName, "→", arrivalName);
 
         const response = await fetch(
-            `https://api.sncf.com/v1/coverage/sncf/journeys?from=${encodeURIComponent(departure)}&to=${encodeURIComponent(arrival)}&datetime=${encodeURIComponent(datetime)}&count=10`,
+            `https://api.sncf.com/v1/coverage/sncf/journeys?from=${encodeURIComponent(departureId)}&to=${encodeURIComponent(arrivalId)}&datetime=${encodeURIComponent(datetime)}&count=20`,
             {
                 headers: {
                     "Authorization":
@@ -66,20 +173,25 @@ searchJourneys.get("/journeys", async (req, res) => {
             }
         );
 
-
-
         const data = await response.json();
         
-        if (data.error) { // On regarde si le retour API est pas "out of bounds"
-            console.warn("Erreur API SNCF :", data.error);
-            return res.status(404).json({
-                error: data.error.message || "No journeys found",
-                code: data.error.id
-            });
-        }
+        if (data.error || !data.journeys || data.journeys.length === 0) {
+            console.warn("SNCF indisponible → fallback fictif");
 
-        if (!data.journeys || data.journeys.length === 0) {
-            return res.status(404).json({ error: "No journeys available" });
+            return res.json(
+                generationJourneysFictif({
+                    from: {
+                        name: departureName,
+                        lat: Number(fromLat),
+                        lon: Number(fromLon)
+                    },
+                    to: {
+                        name: arrivalName,
+                        lat: Number(toLat),
+                        lon: Number(toLon)
+                    }
+                })
+            );
         }
 
         const JourneyList = data.journeys.map((journey) => 
@@ -139,6 +251,7 @@ searchJourneys.get("/journeys", async (req, res) => {
                 arrivalTime,
                 duration,
                 numberOfTransfers,
+                simulated: false
             }
         });
 

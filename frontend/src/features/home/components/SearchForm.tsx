@@ -90,6 +90,7 @@ export default function SearchForm() {
                           source: "sncf",
                           lat: 0,
                           lon: 0,
+                          simulated: false,
                         }
                   );
                 }}
@@ -114,6 +115,7 @@ export default function SearchForm() {
                           source: "sncf",
                           lat: 0,
                           lon: 0,
+                          simulated: false,
                         }
                   );
                 }}
@@ -183,7 +185,7 @@ export default function SearchForm() {
               if (isDisabled) return;
 
               Navigate(
-                `/Recherche?fromId=${encodeURIComponent(departure.id)}&fromName=${encodeURIComponent(departure.name)}&toId=${encodeURIComponent(arrival.id)}&toName=${encodeURIComponent(arrival.name)}&departureDate=${encodeURIComponent(departureDate)}&arrivalDate=${encodeURIComponent(arrivalDate || "")}&passagers=${encodeURIComponent(passagerCount)}`
+                `/Recherche?fromId=${encodeURIComponent(departure.id)}&fromName=${encodeURIComponent(departure.name)}&fromLat=${encodeURIComponent(departure.lat)}&fromLon=${encodeURIComponent(departure.lon)}&toId=${encodeURIComponent(arrival.id)}&toName=${encodeURIComponent(arrival.name)}&toLat=${encodeURIComponent(arrival.lat)}&toLon=${encodeURIComponent(arrival.lon)}&departureDate=${encodeURIComponent(departureDate)}&arrivalDate=${encodeURIComponent(arrivalDate || "")}&passagers=${encodeURIComponent(passagerCount)}`
               );
             }}
           >
@@ -211,6 +213,7 @@ export default function SearchForm() {
                           source: "sncf",
                           lat: 0,
                           lon: 0,
+                          simulated: false,
                         }
                   );
                 }}
@@ -233,6 +236,7 @@ export default function SearchForm() {
                           source: "sncf",
                           lat: 0,
                           lon: 0,
+                          simulated: false,
                         }
                   );
                 }}
@@ -285,7 +289,7 @@ export default function SearchForm() {
               if (isDisabled) return;
 
               Navigate(
-                `/Recherche?fromId=${encodeURIComponent(departure.id)}&fromName=${encodeURIComponent(departure.name)}&toId=${encodeURIComponent(arrival.id)}&toName=${encodeURIComponent(arrival.name)}&departureDate=${encodeURIComponent(departureDate)}&arrivalDate=${encodeURIComponent(arrivalDate || "")}&passagers=${encodeURIComponent(passagerCount)}`
+                `/Recherche?fromId=${encodeURIComponent(departure.id)}&fromName=${encodeURIComponent(departure.name)}&fromLat=${encodeURIComponent(departure.lat)}&fromLon=${encodeURIComponent(departure.lon)}&toId=${encodeURIComponent(arrival.id)}&toName=${encodeURIComponent(arrival.name)}&toLat=${encodeURIComponent(arrival.lat)}&toLon=${encodeURIComponent(arrival.lon)}&departureDate=${encodeURIComponent(departureDate)}&arrivalDate=${encodeURIComponent(arrivalDate || "")}&passagers=${encodeURIComponent(passagerCount)}`
               );
             }}
           >

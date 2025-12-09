@@ -26,8 +26,6 @@ function AutocompleteInput({ label, value, placeholder, onChange, onSelect, clas
                 const sncfResults: Suggestion[] = sncfData.status === 'fulfilled' ? sncfData.value : [];
                 const amadeusResults: Suggestion[] = amadeusData.status === 'fulfilled' ? amadeusData.value : [];
 
-                console.log("amadeusResults", amadeusResults);
-
                 // Combiner les deux résultats
                 const combined = [...sncfResults, ...amadeusResults];
 
@@ -52,6 +50,8 @@ function AutocompleteInput({ label, value, placeholder, onChange, onSelect, clas
                     return typeOrder[typeA] - typeOrder[typeB];
                 });
 
+                console.log("Le tout sorté ca donne : ", sorted);
+                
                 setSuggestions(sorted);
             } catch (err) {
                 console.error(err);
