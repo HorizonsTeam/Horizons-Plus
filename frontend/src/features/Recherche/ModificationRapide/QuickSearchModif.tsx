@@ -3,13 +3,11 @@ import { useNavigate } from "react-router-dom";
 import AutocompleteInput from "../../../components/autocomplete/AutocompleteInput";
 import type { Suggestion } from "../../../components/autocomplete/types";
 import { ArrowDownUp } from 'lucide-react';
+import { DateBtn } from '../../home/components/Date';
+import TripTypeSwitch from "../ModificationRapide/TripTypeSwitch";
 
 
-type Props = React.InputHTMLAttributes<HTMLInputElement> & {
-    label: string;
-    containerClassName?: string;
-    inputValue?: string | number;
-};
+type TripType = "oneway" | "roundtrip";
 
 type ModificationProps = {
     Passagers: number;
@@ -18,40 +16,6 @@ type ModificationProps = {
     setBoxIsOn: (value: boolean) => void;
 };
 
-function FloatingInput({
-    label,
-    containerClassName = "",
-    className = "",
-    inputValue,
-    ...props
-}: Props) {
-    return (
-        <div className={`relative ${containerClassName}`}>
-            <input
-                {...props}
-                placeholder=" "
-                value={inputValue}
-                className={[
-                    "peer h-18 w-full rounded-xl bg-[#103035] px-4 mt-2 text-white outline-none",
-                    "placeholder-transparent ring-1 ring-transparent",
-                    "focus:ring-2 focus:ring-cyan-400",
-                    className,
-                ].join(" ")}
-            />
-            <label
-                className={[
-                    "pointer-events-none absolute left-4 top-1 -translate-y-1/2",
-                    "text-gray-400 transition-all duration-150",
-                    "peer-focus:top-2 peer-focus:-translate-y-0 peer-focus:text-xs peer-focus:text-cyan-300",
-                    "peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-base",
-                    "peer-[:not(:placeholder-shown)]:top-2 peer-[:not(:placeholder-shown)]:-translate-y-0 peer-[:not(:placeholder-shown)]:text-xs mt-2",
-                ].join(" ")}
-            >
-                {label}
-            </label>
-        </div>
-    );
-}
 
 export default function QuickModificationOverlay({
     Passagers,
@@ -68,7 +32,7 @@ export default function QuickModificationOverlay({
     const [departureDate, setDepartureDate] = useState<string>(dateSearch || today);
     const [passagerCount, setPassagerCount] = useState<number>(Passagers);
     const [rotation, setRotation] = useState<number>(0);
-
+    const [tripType, setTripType] = useState<TripType>("oneway");
 
     const validateDepartureDate = (value: string) => {
         if (value.length < 10) {
@@ -154,7 +118,16 @@ export default function QuickModificationOverlay({
                         className="search-input w-full bg-[#2C474B] text-white placeholder-slate-400 rounded-xl px-4 py-3.5 text-sm outline-none border-none focus:ring-2 focus:ring-cyan-400/30"
                         AutocompleteListClassname="absolute autocomplete-suggestions left-0 right-0 z-50 mt-15 rounded-xl bg-[#0f2628] border border-[#1b3a3d] shadow-xl backdrop-blur-md max-h-60 mx-18 overflow-y-auto text-left divide-y divide-[#1e3c3f] overflow-x-hidden "
                     />
-                    
+                    <div>
+                        <button className=" hover:bg-[#2C474B] p-2 rounded-xl w-10 h-10 mt-1 tansition-colors duration-300 flex items-center justify-center" >
+                            <ArrowDownUp
+                                size={24}
+                                className="text-white  rotate-90 transition-transform duration-500 rounded-full "
+                                style={{ transform: `rotate(${rotation}deg)` }}
+                                onClick={handleSwap}
+                            />
+                        </button>
+                    </div>
                     
                                       
                                     
@@ -177,12 +150,45 @@ export default function QuickModificationOverlay({
 
                     />
                 </div>
+                <div className="flex justify-between items-center w-full py-4 mb-6   rounded-xl ">
+                    <div className="max-h-15 w-10 mt-2 flex justify-start gap-4  w-full">
+
+                        <DateBtn
+                            label="Date de départ"
+                            value={departureDate}
+                            min={today}
+                            onChange={validateDepartureDate}
+                            size="sm"
+                            className=""
+                        />
+                        {tripType === "roundtrip" && (
+                            <DateBtn
+                                label="Date de retour"
+                                value={departureDate}
+                                min={today}
+                                onChange={validateDepartureDate}
+                                size="sm"
+                                className=""
+                            />
+                        )}
+                    </div>
+                    <div className="flex justify-center relative w-full max-w-80 ">
+                        <TripTypeSwitch value={tripType} onChange={setTripType} className="max-w-52 " />
+                    </div>
+                </div>
+
+                
+
+               
+            </div>
+            
+                
                 
 
                 
 
                 <button
-                    className="w-full h-15 bg-[#98EAF3] rounded-xl mt-4 disabled:opacity-50"
+                    className="w-full h-15 bg-[#98EAF3] rounded-xl mt-4 disabled:opacity-50 relative bottom-0 top-10"
                     onClick={handleValidation}
                     disabled={isDisabled}
                 >
@@ -191,6 +197,6 @@ export default function QuickModificationOverlay({
                     </span>
                 </button>
             </div>
-        </div>
+            
     );
 }

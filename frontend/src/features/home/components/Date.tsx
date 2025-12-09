@@ -45,7 +45,7 @@ export function DateBtn({ label, value, onChange, min, disabled }: DateTileProps
     return (
         <div className="flex flex-col  h-full">
             {label ? (
-                <label htmlFor={id} className="block text-sm text-slate-400">
+                <label htmlFor={id} className="block font-semibold text-[10px] mb-2 ml-1 text-slate-400">
                     {label}
                 </label>
             ) : null}
@@ -56,7 +56,7 @@ export function DateBtn({ label, value, onChange, min, disabled }: DateTileProps
                 onClick={openPicker}
                 disabled={disabled}
                 className={[
-                    "relative w-24 h-22 rounded-xl shadow",
+                    "relative w-24 h-24 rounded-xl shadow",
                     "flex flex-col items-center justify-center leading-none",
                     "transition",
                     disabled ? "bg-white/70 cursor-not-allowed" : "bg-white hover:brightness-95",
@@ -68,7 +68,6 @@ export function DateBtn({ label, value, onChange, min, disabled }: DateTileProps
                     {month}
                 </span>
 
-                {/* Le vrai input date, invisible mais cliquable/accessible */}
                 <input
                     id={id}
                     ref={inputRef}
@@ -77,7 +76,7 @@ export function DateBtn({ label, value, onChange, min, disabled }: DateTileProps
                     min={min}
                     disabled={disabled}
                     onChange={(e) => onChange(e.target.value)}
-                    className=" opacity-0 cursor-pointer absolute top-0 left-0"
+                    className=" opacity-0 cursor-pointer absolute top-0 left-0 "
                 />
             </button>
         </div>

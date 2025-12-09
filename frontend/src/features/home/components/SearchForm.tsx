@@ -244,7 +244,7 @@ export default function SearchForm() {
 
 
         {/* ========== DESKTOP ========== */}
-        <div className="hidden lg:block w-full  mt-40">
+        <div className="hidden lg:block w-full  mt-20">
           
 
           {/* Barre de recherche */}
@@ -285,8 +285,8 @@ export default function SearchForm() {
                   value={departureDate}
                   min={today}
                   onChange={validateDepartureDate}
-                  size="sm"
-                  className=""
+                  
+                  
                 />
               </div>
               {tripType === 'roundtrip' && (

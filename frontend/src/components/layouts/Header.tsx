@@ -62,7 +62,7 @@ export default function Header() {
     { label: "Destinations", icon: Destinations_Ico, path: "/" },
     { label: "Promotions", icon: Promotions_Ico, path: "/" },
     { label: "Évènements", icon: Evenements_Ico, path: "/" },
-    { label: "Panier", icon: Panier_Ico, path: "/panier" },
+
   ];
 
   const menuItemsPrivate = [
