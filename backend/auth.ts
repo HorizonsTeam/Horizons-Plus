@@ -20,8 +20,16 @@ const prisma = new PrismaClient({
 });
 
 const getBaseURL = () => {
-  if (process.env.BETTER_AUTH_URL) return process.env.BETTER_AUTH_URL;
+  if (process.env.BETTER_AUTH_URL) {
+    return process.env.BETTER_AUTH_URL;
+  }
 
+  //
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+
+  //  sur localhost
   if (process.env.NODE_ENV !== "production") {
     return "http://localhost:3005";
   }
