@@ -103,15 +103,25 @@ export default function SearchForm() {
         departure.id
       )}&fromName=${encodeURIComponent(
         departure.name
+      )}&fromLat=${encodeURIComponent(
+        departure.lat
+      )}&fromLon=${encodeURIComponent(
+        departure.lon
       )}&toId=${encodeURIComponent(
         arrival.id
       )}&toName=${encodeURIComponent(
         arrival.name
+      )}&toLat=${encodeURIComponent(
+        arrival.lat
+      )}&toLon=${encodeURIComponent(
+        arrival.lon
       )}&departureDate=${encodeURIComponent(
         departureDate
       )}&arrivalDate=${encodeURIComponent(
         tripType === 'roundtrip' ? arrivalDate || '' : ''
-      )}&passagers=${encodeURIComponent(passagerCount)}`
+      )}&passagers=${encodeURIComponent(
+        passagerCount
+      )}`
     );
   };
 
@@ -137,12 +147,13 @@ export default function SearchForm() {
                     departure
                       ? { ...departure, name: text }
                       : {
-                        id: '',
-                        name: text,
-                        source: 'sncf',
-                        lat: 0,
-                        lon: 0,
-                      }
+                          id: "",
+                          name: text,
+                          source: "sncf",
+                          lat: 0,
+                          lon: 0,
+                          simulated: false,
+                        }
                   );
                 }}
                 onSelect={(obj) => setDeparture(obj)}
@@ -161,12 +172,13 @@ export default function SearchForm() {
                     arrival
                       ? { ...arrival, name: text }
                       : {
-                        id: '',
-                        name: text,
-                        source: 'sncf',
-                        lat: 0,
-                        lon: 0,
-                      }
+                          id: "",
+                          name: text,
+                          source: "sncf",
+                          lat: 0,
+                          lon: 0,
+                          simulated: false,
+                        }
                   );
                 }}
                 onSelect={(obj) => setArrival(obj)}
@@ -245,8 +257,6 @@ export default function SearchForm() {
 
         {/* ========== DESKTOP ========== */}
         <div className="hidden lg:block w-full  mt-20">
-          
-
           {/* Barre de recherche */}
           <div className=" grid grid-cols justify-center">
             <div className="flex justify-start mb-6">
@@ -297,8 +307,6 @@ export default function SearchForm() {
                   value={departureDate}
                   min={today}
                   onChange={validateDepartureDate}
-                  size="sm"
-                  className=""
                 />
               </div>
               )
@@ -324,6 +332,7 @@ export default function SearchForm() {
                             source: 'sncf',
                             lat: 0,
                             lon: 0,
+                            simulated: false,
                           }
                       );
                     }}
@@ -363,6 +372,7 @@ export default function SearchForm() {
                             source: 'sncf',
                             lat: 0,
                             lon: 0,
+                            simulated: false,
                           }
                       );
                     }}

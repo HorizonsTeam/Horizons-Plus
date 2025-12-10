@@ -14,21 +14,17 @@ import Date_String from './Date.tsx';
 import type { Journey } from './ProductCard/types.ts';
 import NoResultsImage from '../../assets/LogoNotFound.png';
 
-
 import QouickModificationOverlay from './ModificationRapide/QuickSearchModif.tsx';
 
 
 export default function Resultats() {
-
-
     const [BoxIsOn, setBoxIsOn] = useState(false);
-
 
     const base = `${import.meta.env.VITE_API_URL || "http://localhost:3005"}`;
 
     const navigate = useNavigate();
 
-    const [transport, setTransport] = useState<'plane' | 'train'>('train');
+    const [transport, setTransport] = useState<"plane" | "train">();
 
     const handleRetour = () => navigate(-1);
 
@@ -38,6 +34,10 @@ export default function Resultats() {
     const toId = searchParams.get("toId") || '';
     const toName = searchParams.get("toName") || '';
     const passagerCount = Number(searchParams.get("passagers") || 1);
+    const fromLat = searchParams.get("fromLat") || '';
+    const fromLon = searchParams.get("fromLon") || '';
+    const toLat = searchParams.get("toLat") || '';
+    const toLon = searchParams.get("toLon") || '';
 
     const [departureDate, setDepartureDate] = useState<string>(
         searchParams.get("departureDate") || new Date().toISOString().split('T')[0]
@@ -80,7 +80,7 @@ export default function Resultats() {
     useEffect(() => {
         if (!fromId || !toId || !departureDate) return;
 
-        fetch(`${base}/api/search/journeys?from=${encodeURIComponent(fromId)}&to=${encodeURIComponent(toId)}&datetime=${encodeURIComponent(departureDate)}`)
+        fetch(`${base}/api/search/journeys?fromId=${encodeURIComponent(fromId)}&fromName=${encodeURIComponent(fromName)}&fromLat=${encodeURIComponent(fromLat)}&fromLon=${encodeURIComponent(fromLon)}&toId=${encodeURIComponent(toId)}&toName=${encodeURIComponent(toName)}&toLat=${encodeURIComponent(toLat)}&toLon=${encodeURIComponent(toLon)}&datetime=${encodeURIComponent(departureDate)}`)
             .then(res => res.json())
             .then(data => {
                 console.log('API journeys response:', data);
@@ -92,6 +92,8 @@ export default function Resultats() {
                     setErrorMessage(null);
                     setJourneyData(data);
                 }
+
+                setTransport(data[0].simulated ? "plane" : "train");
             })
             .catch(err => {
                 console.error('Fetch journeys error:', err);
@@ -100,8 +102,14 @@ export default function Resultats() {
             });
     }, [fromId, toId, departureDate, arrivalDate]);
 
-    const journeyList: Journey[] = journeyData
-        .filter((journey) => {
+    const uniqueJourneys = journeyData.filter((journey, index, self) => {
+        const id = `${journey.departureName}-${journey.arrivalName}-${journey.departureTime}-${journey.arrivalTime}`;
+        return self.findIndex(j =>
+            `${j.departureName}-${j.arrivalName}-${j.departureTime}-${j.arrivalTime}` === id
+        ) === index;
+    });
+
+    const journeyList: Journey[] = uniqueJourneys.filter((journey) => {
             const now = new Date();
 
             // Combine departureDate (YYYY-MM-DD) + departureTime (HH:mm)
@@ -257,33 +265,33 @@ export default function Resultats() {
                     <span className="text-primary">▼</span>
                     </button>
 
-                    <button className="flex items-left gap-1 border-primary border-2 px-4 py-2 rounded-full text-primary text-sm w-20">
-                    <span className="-ml-1">Gares</span>
-                    <span className="text-primary">▼</span>
-                    </button>
+                        <button className="flex items-left gap-1 border-primary border-2 px-4 py-2 rounded-full text-primary text-sm w-20">
+                        <span className="-ml-1">Gares</span>
+                        <span className="text-primary">▼</span>
+                        </button>
 
-                    <button className="flex items-center gap-1 border-primary border-2 px-4 py-2 rounded-full text-primary text-sm w-24">
-                    <span className="-ml-1">Départs</span>
-                    <span className="text-primary">▼</span>
-                    </button>
+                        <button className="flex items-center gap-1 border-primary border-2 px-4 py-2 rounded-full text-primary text-sm w-24">
+                        <span className="-ml-1">Départs</span>
+                        <span className="text-primary">▼</span>
+                        </button>
 
-                    <button className="flex items-center gap-2 text-[#133A40] bg-primary px-4 py-2 rounded-full text-sm w-20">
-                    <span className="-ml-1">Direct</span>
-                    <span className="text-[#133A40]">▼</span>
-                    </button>
-                </div>
+                        <button className="flex items-center gap-2 text-[#133A40] bg-primary px-4 py-2 rounded-full text-sm w-20">
+                        <span className="-ml-1">Direct</span>
+                        <span className="text-[#133A40]">▼</span>
+                        </button>
+                    </div>
 
-                {/* Product cards */}
-                {journeyList.map((journey, idx) => (
-                    <Productcard
-                        key={idx}
-                        journey={journey}
-                        passagersCount={passagerCount}
-                        formattedDepartureDate={formattedDepartureDate}
-                    />
-                ))}
-                </>
-            )}
+                    {/* Product cards */}
+                    {journeyList.map((journey, idx) => (
+                        <Productcard
+                            key={idx}
+                            journey={journey}
+                            passagersCount={passagerCount}
+                            formattedDepartureDate={formattedDepartureDate}
+                        />
+                    ))}
+                    </>
+                )}
             </div>
                 <QouickModificationOverlay
                     villeDepart={fromName}

@@ -64,7 +64,7 @@ export default function ProductCard({ journey, passagersCount, formattedDepartur
                         </div>
 
                         <span className="text-xl sm:text-2xl font-extrabold">
-                            {Number((journey.price * passagersCount).toFixed(2))} €
+                            {(journey.price * passagersCount).toFixed(2)} €
                         </span>
 
                         <span className="text-[11px] sm:text-xs text-emerald-300">
