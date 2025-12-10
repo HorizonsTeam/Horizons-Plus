@@ -2,26 +2,39 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { PrismaClient } from "@prisma/client";
 import { sendMail } from "./server/mailer.js";
+import { PrismaPg } from "@prisma/adapter-pg";
+import pg from "pg";
 
-const prisma = new PrismaClient();
+const { Pool } = pg;
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  
+});
+
+
+const adapter = new PrismaPg(pool);
+
+const prisma = new PrismaClient({
+  adapter,
+});
 
 const getBaseURL = () => {
-    if (process.env.BETTER_AUTH_URL) {
-        return process.env.BETTER_AUTH_URL;
-    }
-    // En dev, utilise localhost
-    return process.env.NODE_ENV === "production"
-        ? "https://horizons-plus-production.up.railway.app"
-        : "http://localhost:3005";
+  if (process.env.BETTER_AUTH_URL) return process.env.BETTER_AUTH_URL;
+
+  if (process.env.NODE_ENV !== "production") {
+    return "http://localhost:3005";
+  }
+
+  throw new Error("BETTER_AUTH_URL must be set in production");
 };
 
 
 export const auth = betterAuth({
-    database: prismaAdapter(prisma, { provider: "mysql" }),
+    database: prismaAdapter(prisma, { provider: "postgresql" }),
 
     // BaseURL pointe vers la racine
     baseURL: getBaseURL(),
-    // Ajouter le secret (CRITIQUE pour la sécurité)
     secret: process.env.BETTER_AUTH_SECRET || "dev-secret-change-in-production",
 
     trustedOrigins: [
