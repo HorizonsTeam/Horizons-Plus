@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "npx prisma generate && tsc",
+    "build": "npx prisma generate && tsc && pnpm install",
     "dev": "npm run build && node --watch server.js",
     "start": "node server.js",
     "prisma:generate": "prisma generate",
