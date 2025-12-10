@@ -110,217 +110,178 @@ export default function Resultats() {
     });
 
     const journeyList: Journey[] = uniqueJourneys.filter((journey) => {
-            const now = new Date();
+        const now = new Date();
 
-            // Combine departureDate (YYYY-MM-DD) + departureTime (HH:mm)
-            const [hours, minutes] = journey.departureTime
-                .split(":")
-                .map(Number);
-            const [year, month, day] = departureDate.split("-").map(Number);
+        // Combine departureDate (YYYY-MM-DD) + departureTime (HH:mm)
+        const [hours, minutes] = journey.departureTime
+            .split(":")
+            .map(Number);
+        const [year, month, day] = departureDate.split("-").map(Number);
 
-            const departure = new Date(year, month - 1, day, hours, minutes);
+        const departure = new Date(year, month - 1, day, hours, minutes);
 
-            // Si la date est différente d'aujourd'hui → on garde toujours
-            const today = new Date(
-                now.getFullYear(),
-                now.getMonth(),
-                now.getDate()
-            );
-            const journeyDay = new Date(year, month - 1, day);
+        // Si la date est différente d'aujourd'hui → on garde toujours
+        const today = new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            now.getDate()
+        );
+        const journeyDay = new Date(year, month - 1, day);
 
-            if (journeyDay.getTime() !== today.getTime()) {
-                return true;
-            }
+        if (journeyDay.getTime() !== today.getTime()) {
+            return true;
+        }
 
-            // Si c'est aujourd'hui → on compare l'heure
-            return departure >= now;
-        })
+        // Si c'est aujourd'hui → on compare l'heure
+        return departure >= now;
+    })
 
-        
+
     const lowestPrice = useMemo(() => {
         if (!journeyList?.length) return null;
         return Math.min(...journeyList.map(j => j.price));
     }, [journeyList]);
-    console.log('journeyData:', journeyData);
-    const handleApplyModifications = (values: {
-        fromName: string;
-        toName: string;
-        passagers: number;
-        departureDate: string;
-    }) => {
-        const params = new URLSearchParams({
-            fromName: values.fromName,
-            toName: values.toName,
-            passagers: String(values.passagers),
-            departureDate: values.departureDate,
-            fromId,
-            toId
-        });
-
-        navigate(`/resultats?${params.toString()}`);
-    };
 
     return (
         < >
             {/* Header */}
-            <div onClick={() => BoxIsOn && setBoxIsOn(false)} >
+            <div>
                 <button onClick={handleRetour}>
-                <img
-                    src={ReturnBtn}
-                    alt="Return Button"
-                    className="absolute left-4 mt-10 transform -translate-y-1/2"
-                />
-            </button>
-            <div className="flex items-center justify-center mt-6" onClick={ () => setBoxIsOn(!BoxIsOn)}>
-                
+                    <img
+                        src={ReturnBtn}
+                        alt="Return Button"
+                        className="absolute left-4 mt-10 transform -translate-y-1/2"
+                    />
+                </button>
+                <div className="flex items-center justify-center mt-6" onClick={() => setBoxIsOn(!BoxIsOn)}>
+
                     <div className="flex flex-col items-center" onClick={() => BoxIsOn && setBoxIsOn(false)}>
-                    <h3 className="font-bold text-primary text-xl truncate max-w-[200px]">
-                        {fromName} - {toName}
-                    </h3>
-                    <h4 className="text-primary">
-                        {passagerCount} passager{passagerCount > 1 ? "s" : ""}
-                    </h4>
-                </div>
-            </div>
-
-            {/* Date navigation */}
-            <div className="flex items-center justify-center space-x-4 bg-dark p-4" onClick={() => BoxIsOn && setBoxIsOn(false)} >
-                <button
-                    onClick={() => { changeDate(-1); BoxIsOn && setBoxIsOn(false) }}
-                    disabled={isPrevDisabled}
-                    className={`border-4 rounded-xl p-2 w-13 ${
-                    isPrevDisabled
-                        ? "border-gray-400 opacity-50 cursor-not-allowed"
-                        : "border-primary"
-                    }`}
-                >
-                    <img src={Left_ico} alt="Previous Day" className="ml-2" />
-                </button>
-
-                <Date_String date={new Date(departureDate)} />
-
-                <button
-                    className="border-4 border-primary rounded-xl p-2 w-13"
-                    onClick={() => changeDate(1)}
-                >
-                    <img src={Right_ico} alt="Next Day" className="ml-2" />
-                </button>
-            </div>
-
-                <div className="flex items-center justify-between w-full my-10 " onClick={() => BoxIsOn && setBoxIsOn(false)}>
-                <button
-                onClick={() => setTransport('train')}
-                className={`w-2/3 h-[68px] flex justify-center items-center border-b-4  rounded-tr-3xl transition-colors duration-300 ${
-                    transport === "train" ? "bg-[#133A40] border-[#98EAF3]" : "bg-transparent border-b-white"
-                }`}
-            >
-                        <div className="flex flex-col items-center" onClick={() => BoxIsOn && setBoxIsOn(false)}>
-                <img src={Train_Ico} alt="Train" />
-                {transport === "train" && <BestPrice value={lowestPrice} />}
-                </div>
-            </button>
-
-            <button
-                onClick={() => setTransport("plane")}
-                className={`w-2/3 h-[68px] flex justify-center items-center border-b-4  rounded-tl-3xl transition-colors duration-300 ${
-                    transport === "plane" ? "bg-[#133A40] border-[#98EAF3]" : "bg-transparent border-b-white"
-                }`}
-            >
-                <div className="flex flex-col items-center">
-                <img src={Plane_Ico} alt="Avion" />
-
-                {transport === "plane" && <BestPrice value={lowestPrice} />}
-                </div>
-            </button>
-            </div>
-
-            {/* Results */}
-                <div className="bg-[#133A40] px-2 pt-5 -mt-10 w-full h-300" onClick={() => BoxIsOn && setBoxIsOn(false)} >
-                    {errorMessage || lowestPrice === null ? (
-                <div className="text-center text-red-400 font-bold py-10">
-                
-
-                    <div className='flex justify-center'>
-                        <div className=' p-6 rounded-2xl mt-4'>
-                            <div className='flex justify-center'>
-                                    <img src={NoResultsImage} alt="" className=' relative  h-30 w-30 ' />
-                            </div>
-                            <h2 className='text-white font-bold text-2xl mt-4'>Oups...</h2>
-                            <p className='text-white mt-5'>Désolé, aucun résultat ne correspond à votre recherche. Veuillez modifier vos critères et réessayer.</p>
-
-                            <div className='flex w-full justify-between mt-10'>
-                                        <button className='text-white bg-[#115E66] p-4 rounded-xl hover:bg-[#115E56] hover:cursor-pointer' onClick={() => { setBoxIsOn(!BoxIsOn); scrollTo({ top: 0, behavior: "smooth" }) }}>Modifier le trajet</button>
-                                        <button className='text-white bg-[#FFB856] p-4 rounded-xl hover:bg-[#FFB820] hover:cursor-pointer' onClick={() => { setTransport("plane"); scrollTo({ top: 0, behavior: "smooth" }) }}>Voir les vols</button>
-                            </div>
-
-                        </div>
+                        <h3 className="font-bold text-primary text-xl truncate max-w-[200px]">
+                            {fromName} - {toName}
+                        </h3>
+                        <h4 className="text-primary">
+                            {passagerCount} passager{passagerCount > 1 ? "s" : ""}
+                        </h4>
                     </div>
                 </div>
-            ) : (
-                <>
-                {/* Filters */}
-                <div className="flex gap-2 -ml-3">
-                    <button className="flex items-center gap-1 border-primary border-2 px-4 py-2 rounded-full text-primary text-sm w-24">
-                    <span className="-ml-1">Horaires</span>
-                    <span className="text-primary">▼</span>
+
+                {/* Date navigation */}
+                <div className="flex items-center justify-center space-x-4 bg-dark p-4" onClick={() => BoxIsOn && setBoxIsOn(false)} >
+                    <button
+                        onClick={() => { changeDate(-1); BoxIsOn && setBoxIsOn(false) }}
+                        disabled={isPrevDisabled}
+                        className={`border-4 rounded-xl p-2 w-13 ${isPrevDisabled
+                                ? "border-gray-400 opacity-50 cursor-not-allowed"
+                                : "border-primary"
+                            }`}
+                    >
+                        <img src={Left_ico} alt="Previous Day" className="ml-2" />
                     </button>
 
-                        <button className="flex items-left gap-1 border-primary border-2 px-4 py-2 rounded-full text-primary text-sm w-20">
-                        <span className="-ml-1">Gares</span>
-                        <span className="text-primary">▼</span>
-                        </button>
+                    <Date_String date={new Date(departureDate)} />
 
-                        <button className="flex items-center gap-1 border-primary border-2 px-4 py-2 rounded-full text-primary text-sm w-24">
-                        <span className="-ml-1">Départs</span>
-                        <span className="text-primary">▼</span>
-                        </button>
+                    <button
+                        className="border-4 border-primary rounded-xl p-2 w-13"
+                        onClick={() => changeDate(1)}
+                    >
+                        <img src={Right_ico} alt="Next Day" className="ml-2" />
+                    </button>
+                </div>
 
-                        <button className="flex items-center gap-2 text-[#133A40] bg-primary px-4 py-2 rounded-full text-sm w-20">
-                        <span className="-ml-1">Direct</span>
-                        <span className="text-[#133A40]">▼</span>
-                        </button>
-                    </div>
+                <div className="flex items-center justify-between w-full my-10 " onClick={() => BoxIsOn && setBoxIsOn(false)}>
+                    <button
+                        onClick={() => setTransport('train')}
+                        className={`w-2/3 h-[68px] flex justify-center items-center border-b-4  rounded-tr-3xl transition-colors duration-300 ${transport === "train" ? "bg-[#133A40] border-[#98EAF3]" : "bg-transparent border-b-white"
+                            }`}
+                    >
+                        <div className="flex flex-col items-center" onClick={() => BoxIsOn && setBoxIsOn(false)}>
+                            <img src={Train_Ico} alt="Train" />
+                            {transport === "train" && <BestPrice value={lowestPrice} />}
+                        </div>
+                    </button>
 
-<<<<<<< Updated upstream
-                    {/* Product cards */}
-                    {journeyList.map((journey, idx) => (
-                        <Productcard
-                            key={idx}
-                            journey={journey}
-                            passagersCount={passagerCount}
-                            formattedDepartureDate={formattedDepartureDate}
-                        />
-                    ))}
-                    </>
-                )}
-            </div>
-=======
-                {/* Product cards */}
-                {journeyList.map((journey, idx) => (
-                    <Productcard
-                        key={idx}
-                        journey={journey}
-                        passagersCount={passagerCount}
-                        formattedDepartureDate={formattedDepartureDate}
-                    />
-                ))}
+                    <button
+                        onClick={() => setTransport("plane")}
+                        className={`w-2/3 h-[68px] flex justify-center items-center border-b-4  rounded-tl-3xl transition-colors duration-300 ${transport === "plane" ? "bg-[#133A40] border-[#98EAF3]" : "bg-transparent border-b-white"
+                            }`}
+                    >
+                        <div className="flex flex-col items-center">
+                            <img src={Plane_Ico} alt="Avion" />
 
-                </>
-            )}
-        </div>
-    </div>
+                            {transport === "plane" && <BestPrice value={lowestPrice} />}
+                        </div>
+                    </button>
+                </div>
 
->>>>>>> Stashed changes
+                {/* Results */}
+                <div className="bg-[#133A40] px-2 pt-5 -mt-10 w-full h-300" onClick={() => BoxIsOn && setBoxIsOn(false)} >
+                    {errorMessage || lowestPrice === null ? (
+                        <div className="text-center text-red-400 font-bold py-10">
+
+
+                            <div className='flex justify-center'>
+                                <div className=' p-6 rounded-2xl mt-4'>
+                                    <div className='flex justify-center'>
+                                        <img src={NoResultsImage} alt="" className=' relative  h-30 w-30 ' />
+                                    </div>
+                                    <h2 className='text-white font-bold text-2xl mt-4'>Oups...</h2>
+                                    <p className='text-white mt-5'>Désolé, aucun résultat ne correspond à votre recherche. Veuillez modifier vos critères et réessayer.</p>
+
+                                    <div className='flex w-full justify-between mt-10'>
+                                        <button className='text-white bg-[#115E66] p-4 rounded-xl hover:bg-[#115E56] hover:cursor-pointer' onClick={() => { setBoxIsOn(!BoxIsOn); scrollTo({ top: 0, behavior: "smooth" }) }}>Modifier le trajet</button>
+                                        <button className='text-white bg-[#FFB856] p-4 rounded-xl hover:bg-[#FFB820] hover:cursor-pointer' onClick={() => { setTransport("plane"); scrollTo({ top: 0, behavior: "smooth" }) }}>Voir les vols</button>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    ) : (
+                        <>
+                            {/* Filters */}
+                            <div className="flex gap-2 -ml-3">
+                                <button className="flex items-center gap-1 border-primary border-2 px-4 py-2 rounded-full text-primary text-sm w-24">
+                                    <span className="-ml-1">Horaires</span>
+                                    <span className="text-primary">▼</span>
+                                </button>
+
+                                <button className="flex items-left gap-1 border-primary border-2 px-4 py-2 rounded-full text-primary text-sm w-20">
+                                    <span className="-ml-1">Gares</span>
+                                    <span className="text-primary">▼</span>
+                                </button>
+
+                                <button className="flex items-center gap-1 border-primary border-2 px-4 py-2 rounded-full text-primary text-sm w-24">
+                                    <span className="-ml-1">Départs</span>
+                                    <span className="text-primary">▼</span>
+                                </button>
+
+                                <button className="flex items-center gap-2 text-[#133A40] bg-primary px-4 py-2 rounded-full text-sm w-20">
+                                    <span className="-ml-1">Direct</span>
+                                    <span className="text-[#133A40]">▼</span>
+                                </button>
+                            </div>
+
+                            {/* Product cards */}
+                            {journeyList.map((journey, idx) => (
+                                <Productcard
+                                    key={idx}
+                                    journey={journey}
+                                    passagersCount={passagerCount}
+                                    formattedDepartureDate={formattedDepartureDate}
+                                />
+                            ))}
+                        </>
+                    )}
+                </div>
                 <QouickModificationOverlay
                     villeDepart={fromName}
-                    villeArrive={toName}
+                    villeArrivee={toName}
                     Passagers={passagerCount}
                     dateSearch={departureDate}
                     BoxIsOn={BoxIsOn}
                     setBoxIsOn={setBoxIsOn}
-                    onValidate={handleApplyModifications}
                 />
-        
+            </div>
+
         </>
     );
 }
