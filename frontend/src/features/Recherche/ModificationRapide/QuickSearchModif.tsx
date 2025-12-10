@@ -16,14 +16,13 @@ type ModificationProps = {
     setBoxIsOn: (value: boolean) => void;
 };
 
-
 export default function QuickModificationOverlay({
     Passagers,
     dateSearch,
     BoxIsOn,
     setBoxIsOn,
 }: ModificationProps) {
-    const navigate = useNavigate();
+    const Navigate = useNavigate();
 
     const [departure, setDeparture] = useState<Suggestion | null>(null);
     const [arrival, setArrival] = useState<Suggestion | null>(null);
@@ -57,11 +56,6 @@ export default function QuickModificationOverlay({
         setRotation((prev) => prev + 180);
     };
 
-
-    const handleDateChange = (e: ChangeEvent<HTMLInputElement>) => {
-        validateDepartureDate(e.target.value);
-    };
-
     const isDisabled = useMemo(() => {
         return (
             !departure?.id ||
@@ -73,18 +67,34 @@ export default function QuickModificationOverlay({
     }, [departure, arrival, departureDate]);
 
     const goSearch = () => {
-        if (isDisabled || !departure || !arrival) return;
+    if (isDisabled || !departure || !arrival) return;
 
-        navigate(
-            `/Recherche?fromId=${encodeURIComponent(departure.id)}` +
-            `&fromName=${encodeURIComponent(departure.name)}` +
-            `&toId=${encodeURIComponent(arrival.id)}` +
-            `&toName=${encodeURIComponent(arrival.name)}` +
-            `&departureDate=${encodeURIComponent(departureDate)}` +
-            `&arrivalDate=` +
-            `&passagers=${encodeURIComponent(passagerCount)}`
-        );
-    };
+    Navigate(
+      `/Recherche?fromId=${encodeURIComponent(
+        departure.id
+      )}&fromName=${encodeURIComponent(
+        departure.name
+      )}&fromLat=${encodeURIComponent(
+        departure.lat
+      )}&fromLon=${encodeURIComponent(
+        departure.lon
+      )}&toId=${encodeURIComponent(
+        arrival.id
+      )}&toName=${encodeURIComponent(
+        arrival.name
+      )}&toLat=${encodeURIComponent(
+        arrival.lat
+      )}&toLon=${encodeURIComponent(
+        arrival.lon
+      )}&departureDate=${encodeURIComponent(
+        departureDate
+      )}&arrivalDate=${encodeURIComponent(
+        tripType === 'roundtrip' ? arrivalDate || '' : ''
+      )}&passagers=${encodeURIComponent(
+        passagerCount
+      )}`
+    );
+  };
 
     const handleValidation = () => {
         goSearch();
@@ -111,7 +121,7 @@ export default function QuickModificationOverlay({
                             setDeparture(
                                 departure
                                     ? { ...departure, name: text }
-                                    : { id: "", name: text, source: "sncf", lat: 0, lon: 0 }
+                                    : { id: "", name: text, source: "sncf", lat: 0, lon: 0, simulated: false }
                             )
                         }
                         onSelect={(obj) => setDeparture(obj)}
@@ -141,7 +151,7 @@ export default function QuickModificationOverlay({
                             setArrival(
                                 arrival
                                     ? { ...arrival, name: text }
-                                    : { id: "", name: text, source: "sncf", lat: 0, lon: 0 }
+                                    : { id: "", name: text, source: "sncf", lat: 0, lon: 0, simulated: false }
                             )
                         }
                         onSelect={(obj) => setArrival(obj)}
@@ -158,8 +168,6 @@ export default function QuickModificationOverlay({
                             value={departureDate}
                             min={today}
                             onChange={validateDepartureDate}
-                            size="sm"
-                            className=""
                         />
                         {tripType === "roundtrip" && (
                             <DateBtn
@@ -167,8 +175,6 @@ export default function QuickModificationOverlay({
                                 value={departureDate}
                                 min={today}
                                 onChange={validateDepartureDate}
-                                size="sm"
-                                className=""
                             />
                         )}
                     </div>
