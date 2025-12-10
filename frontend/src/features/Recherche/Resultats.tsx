@@ -276,7 +276,6 @@ export default function Resultats() {
                 <QouickModificationOverlay
                     villeDepart={fromName}
                     villeArrivee={toName}
-                    Passagers={passagerCount}
                     dateSearch={departureDate}
                     BoxIsOn={BoxIsOn}
                     setBoxIsOn={setBoxIsOn}
