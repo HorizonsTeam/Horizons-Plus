@@ -2,80 +2,46 @@ import express from "express";
 
 const searchJourneys = express.Router();
 
-searchJourneys.get("/journeys", async (req, res) => {
-    const departureId = req.query.fromId;
-    const departureName = req.query.fromName;
-    const arrivalId = req.query.toId;
-    const arrivalName = req.query.toName;
-    const datetime = req.query.datetime;
-    const fromLat = req.query.fromLat;
-    const toLat = req.query.toLat;
-    const fromLon = req.query.fromLon;
-    const toLon = req.query.toLon;
+// -------------------- Helpers --------------------
 
-    // console.log("Params received:", {
-    //     departureId,
-    //     departureName,
-    //     arrivalId,
-    //     arrivalName,
-    //     datetime,
-    //     fromLat,
-    //     toLat,
-    //     fromLon,
-    //     toLon
-    // });
+function formatDuration(seconds) {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    return `${hours}h${minutes.toString().padStart(2, "0")}`;
+}
 
-    if (!departureId || !departureName || !arrivalId || !arrivalName || !datetime || !fromLat || !toLat || !fromLon || !toLon) {
-        return res.status(400).json({ error: "Missing parameters ?fromId=&toId=&datetime=..." });
-    }
+function analyzeJourney(journey) {
+    const transportSections = journey.sections.filter(
+        (section) => section.type === "public_transport"
+    );
+    return transportSections.length - 1;
+}
 
-    function formatDuration(seconds) {
-        const hours = Math.floor(seconds / 3600);
-        const minutes = Math.floor((seconds % 3600) / 60);
-        return `${hours}h${minutes.toString().padStart(2, '0')}`;
-    }
-
-    function analyzeJourney(journey) {
-        const transportSections = journey.sections.filter(
-            section => section.type === "public_transport"
-        );
-
-        const numberOfTransfers = transportSections.length - 1;
-
-        return numberOfTransfers
-    }
-
-    const calculerPrixFictif = (
-        distanceM,
-        nbTransfers,
-        trainType
-    ) => {
-        const distanceKm = distanceM / 1000;
-        const base = 5;
-        const coeffDistance = 0.05;
-        const coeffTransfert = 2;
-        const coeffType = {
-            "TER / Intercités": 1,
-            "Train grande vitesse": 4,
-            
-        };
-
-        let prix =
-            base +
-            distanceKm * coeffDistance +
-            nbTransfers * coeffTransfert +
-            (coeffType[trainType] || 1) * 5;
-
-        return Math.round(prix * 100) / 100; // Arrondi à 2 décimales
+function calculerPrixFictif(distanceM, nbTransfers, trainType) {
+    const distanceKm = distanceM / 1000;
+    const base = 5;
+    const coeffDistance = 0.05;
+    const coeffTransfert = 4;
+    const coeffType = {
+        "TER / Intercités": 1,
+        "Train grande vitesse": 2,
     };
 
-    function toRadians(deg) {
+    let prix =
+        base +
+        distanceKm * coeffDistance +
+        nbTransfers * coeffTransfert +
+        (coeffType[trainType] || 1) * 5;
+
+    return (Math.ceil(prix * 10) / 10).toFixed(2);
+}
+
+function toRadians(deg) {
     return deg * Math.PI / 180;
-    }
+}
 
-    function haversineDistance(fromLat, fromLon, toLat, toLon) {
-    const R = 6371; // rayon Terre en km
-
+function haversineDistance(fromLat, fromLon, toLat, toLon) {
+    const R = 6371;
     const dLat = toRadians(toLat - fromLat);
     const dLon = toRadians(toLon - fromLon);
 
@@ -86,162 +52,180 @@ searchJourneys.get("/journeys", async (req, res) => {
         Math.sin(dLon / 2) ** 2;
 
     const c = 2 * Math.asin(Math.sqrt(a));
+    return R * c;
+}
 
-    return R * c; // distance en km
-    }
+function minutesToHHMM(totalMinutes) {
+    const h = Math.floor(totalMinutes / 60) % 24;
+    const m = totalMinutes % 60;
+    return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`;
+}
 
-    function minutesToHHMM(totalMinutes) {
-        const h = Math.floor(totalMinutes / 60) % 24;
-        const m = totalMinutes % 60;
-        return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`;
-    }
+function randInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
-    function randInt(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
+function randomDepartureTime() {
+    const hour = randInt(7, 8);
+    const minute = randInt(0, 59);
+    return hour * 60 + minute;
+}
 
-    function randomDepartureTime() {
-        const hour = randInt(7, 8);
-        const minute = randInt(0, 59);
-        return hour * 60 + minute; // en minutes depuis 00:00
-    }
+function generationJourneysFictif({ from, to }) {
+    const distanceKm = haversineDistance(from.lat, from.lon, to.lat, to.lon);
+    const baseDurationMinutes = Math.round((distanceKm / 800) * 60);
+    const numberOfTransfers = distanceKm > 400 ? 1 : 0;
+    const transferPenalty = numberOfTransfers * 20;
 
-    function generationJourneysFictif({ from, to }) {
-        const distanceKm = haversineDistance(
-            from.lat,
-            from.lon,
-            to.lat,
-            to.lon
+    let currentDeparture = randomDepartureTime();
+    const journeys = [];
+    const lastDepartureAllowed = 20 * 60;
+    const intervalMinutes = 120;
+
+    while (currentDeparture <= lastDepartureAllowed) {
+        const variation = randInt(-5, 5);
+        const totalDurationMinutes = Math.max(
+        30,
+        baseDurationMinutes + transferPenalty + variation
         );
+        const arrivalMinutes = currentDeparture + totalDurationMinutes;
 
-        const baseDurationMinutes = Math.round(distanceKm / 800 * 60);
-        const numberOfTransfers = distanceKm > 400 ? 1 : 0;
-        const transferPenalty = numberOfTransfers * 20;
+        journeys.push({
+            departureName: from.name,
+            arrivalName: to.name,
+            departureTime: minutesToHHMM(currentDeparture),
+            arrivalTime: minutesToHHMM(arrivalMinutes),
+            duration: `${Math.floor(totalDurationMinutes / 60)}h${(
+                totalDurationMinutes % 60
+            )
+                .toString()
+                .padStart(2, "0")}`,
+            price: (distanceKm * 0.12 + randInt(-30, 30)).toFixed(2),
+            numberOfTransfers,
+            simulated: true,
+            distanceKm: Math.round(distanceKm),
+        });
 
-        // 1er départ
-        let currentDeparture = randomDepartureTime(); // entre 07h et 08h59
+        currentDeparture += intervalMinutes;
+    }
 
-        const journeys = [];
-        const lastDepartureAllowed = 20 * 60; // 20h00
-        const intervalMinutes = 120; // toutes les 2h
+    return journeys;
+}
 
-        while (currentDeparture <= lastDepartureAllowed) {
-            // Petite variation réaliste par trajet
-            const variation = randInt(-5, 5);
+function computeJourneyDistanceMeters(journey) {
+  return journey.sections.reduce((total, section) => {
+    // On ne prend que les sections qui ont un geojson avec des propriétés
+    if (section.geojson?.properties) {
+      const sumSection = section.geojson.properties.reduce(
+        (sum, prop) => sum + (prop.length || 0),
+        0
+      );
+      return total + sumSection;
+    }
+    return total;
+  }, 0);
+}
 
-            const totalDurationMinutes = Math.max(
-                30,
-                baseDurationMinutes + transferPenalty + variation
-            );
+// -------------------- Route --------------------
 
-            const arrivalMinutes = currentDeparture + totalDurationMinutes;
+searchJourneys.get("/journeys", async (req, res) => {
+    const {
+        fromId,
+        fromName,
+        toId,
+        toName,
+        datetime,
+        fromLat,
+        toLat,
+        fromLon,
+        toLon,
+    } = req.query;
 
-            console.log(currentDeparture, arrivalMinutes);
-
-            journeys.push({
-                departureName,
-                arrivalName,
-                departureTime: minutesToHHMM(currentDeparture),
-                arrivalTime: minutesToHHMM(arrivalMinutes),
-                duration: `${Math.floor(totalDurationMinutes / 60)}h${(totalDurationMinutes % 60)
-                    .toString()
-                    .padStart(2, "0")}`,
-                price: (distanceKm * 0.12 + randInt(-30, 30)).toFixed(2),
-                numberOfTransfers,
-                simulated: true,
-                distanceKm: Math.round(distanceKm)
-            });
-
-            // prochain départ
-            currentDeparture += intervalMinutes;
-        }
-
-        return journeys;
+    if (
+        !fromId ||
+        !fromName ||
+        !toId ||
+        !toName ||
+        !datetime ||
+        !fromLat ||
+        !toLat ||
+        !fromLon ||
+        !toLon
+    ) {
+        return res
+        .status(400)
+        .json({ error: "Missing parameters ?fromId=&toId=&datetime=..." });
     }
 
     try {
-        console.log("Requête SNCF :", departureName, "→", arrivalName);
-
         const response = await fetch(
-            `https://api.sncf.com/v1/coverage/sncf/journeys?from=${encodeURIComponent(departureId)}&to=${encodeURIComponent(arrivalId)}&datetime=${encodeURIComponent(datetime)}&count=20`,
-            {
-                headers: {
-                    "Authorization":
-                        "Basic " +
-                        Buffer.from(process.env.NAVITIA_API_KEY + ":").toString("base64")
-                }
-            }
+        `https://api.sncf.com/v1/coverage/sncf/journeys?from=${encodeURIComponent(
+            fromId
+        )}&to=${encodeURIComponent(
+            toId
+        )}&datetime=${encodeURIComponent(
+            datetime
+        )}&count=20`,
+        {
+            headers: {
+            Authorization:
+                "Basic " +
+                Buffer.from(process.env.NAVITIA_API_KEY + ":").toString("base64"),
+            },
+        }
         );
 
         const data = await response.json();
-        
-        if (data.error || !data.journeys || data.journeys.length === 0) {
-            console.warn("SNCF indisponible → fallback fictif");
 
-            return res.json(
-                generationJourneysFictif({
-                    from: {
-                        name: departureName,
-                        lat: Number(fromLat),
-                        lon: Number(fromLon)
-                    },
-                    to: {
-                        name: arrivalName,
-                        lat: Number(toLat),
-                        lon: Number(toLon)
-                    }
-                })
-            );
+        if (data.error || !data.journeys || data.journeys.length === 0) {
+        return res.json(
+            generationJourneysFictif({
+            from: { name: fromName, lat: Number(fromLat), lon: Number(fromLon) },
+            to: { name: toName, lat: Number(toLat), lon: Number(toLon) },
+            })
+        );
         }
 
-        const JourneyList = data.journeys.map((journey) => 
-        {
-            let departureName;
-            if (journey.sections[0].from.embedded_type === "administrative_region") {
-                departureName = journey.sections[0].from.administrative_region.name;
-            }
-            else if (journey.sections[0].from.embedded_type === "stop_area") {
-                departureName = journey.sections[0].from.stop_area.name;
-            }
-            else if (journey.sections[0].from.embedded_type === "stop_point") {
-                departureName = journey.sections[0].from.stop_point.name;
-            }
-            else {
-                departureName = journey.sections[0].from.name;
-            }
-            
-            let arrivalName;
-            if (journey.sections[journey.sections.length - 1].to.embedded_type === "administrative_region") {
-                arrivalName = journey.sections[journey.sections.length - 1].to.administrative_region.name;
-            }
-            else if (journey.sections[journey.sections.length - 1].to.embedded_type === "stop_area") {
-                arrivalName = journey.sections[journey.sections.length - 1].to.stop_area.name;
-            }
-            else if (journey.sections[journey.sections.length - 1].to.embedded_type === "stop_point") {
-                arrivalName = journey.sections[journey.sections.length - 1].to.stop_point.name;
-            }
-            else {
-                arrivalName = journey.sections[journey.sections.length - 1].to.name;
-            }
+        const JourneyList = data.journeys.map((journey) => {
+            const firstSection = journey.sections[0].from;
+            const lastSection = journey.sections[journey.sections.length - 1].to;
+
+            const departureName =
+                firstSection.administrative_region?.name ||
+                firstSection.stop_area?.name ||
+                firstSection.stop_point?.name ||
+                firstSection.name;
+
+            const arrivalName =
+                lastSection.administrative_region?.name ||
+                lastSection.stop_area?.name ||
+                lastSection.stop_point?.name ||
+                lastSection.name;
 
             const transportSection = journey.sections.find(
                 (section) => section.type === "public_transport"
             );
-            const distanceM = transportSection?.geojson?.properties?.[0]?.length || 0;
+            
+            const distanceM = computeJourneyDistanceMeters(journey);
             const trainType = transportSection?.display_informations?.physical_mode || "TER";
             const numberOfTransfers = analyzeJourney(journey);
 
-            let price = journey.fare?.total.value != 0 ? (journey.fare.total.value / 100).toFixed(2) : calculerPrixFictif(distanceM, numberOfTransfers, trainType);
-            let departureTime = journey.departure_date_time.split('T')[1].slice(0, 4);
-            departureTime = departureTime.slice(0,2) + ":" + departureTime.slice(2,4);
-            let arrivalTime = journey.arrival_date_time.split('T')[1].slice(0, 4);
-            arrivalTime = arrivalTime.slice(0, 2) + ":" + arrivalTime.slice(2, 4);
-            let duration = journey.duration;
-            duration = formatDuration(duration);
+            const price =
+                journey.fare?.total.value != 0
+                ? (journey.fare.total.value / 100).toFixed(2)
+                : calculerPrixFictif(distanceM, numberOfTransfers, trainType);
 
-            console.log("Nombre de correspondances :", numberOfTransfers);
+            const departureTime = journey.departure_date_time
+                .split("T")[1]
+                .slice(0, 4)
+                .replace(/(\d{2})(\d{2})/, "$1:$2");
 
-            console.log(`Trajet : ${departureName} → ${arrivalName}, Prix : ${price}, Départ : ${departureTime}, Arrivée : ${arrivalTime}, Durée : ${duration}, Nombre de correspondances : ${numberOfTransfers}`);
+            const arrivalTime = journey.arrival_date_time
+                .split("T")[1]
+                .slice(0, 4)
+                .replace(/(\d{2})(\d{2})/, "$1:$2");
+
+            const duration = formatDuration(journey.duration);
 
             return {
                 departureName,
@@ -251,8 +235,8 @@ searchJourneys.get("/journeys", async (req, res) => {
                 arrivalTime,
                 duration,
                 numberOfTransfers,
-                simulated: false
-            }
+                simulated: false,
+            };
         });
 
         return res.json(JourneyList);
