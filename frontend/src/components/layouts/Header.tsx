@@ -19,13 +19,13 @@ export default function Header() {
   const [QuickprofileDesktopIsOpen, setQuickprofileDesktopIsOpen] = useState(false);
   const isMobile = useIsMobile();
 
-  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3005";
+  const API_BASE = import.meta.env.VITE_API_URL || "";
   
   // --- session /api/me ---
   // Récupération session
   useEffect(() => {
     console.log("API URL:", import.meta.env.VITE_API_URL);
-    fetch(`${API_URL}/api/me`, { credentials: "include" })
+    fetch(`${API_BASE}/api/me`, { credentials: "include" })
       .then((res) => (res.status === 401 ? null : res.json()))
       .then((data) => setUser(data?.user ?? null))
       .catch(() => setUser(null))

@@ -35,8 +35,9 @@ export default function PaiementForm({ clientSecret, onSuccess, onReady, passage
         if (result.error) {
             alert(result.error.message);
         } else if (result.paymentIntent.status === "succeeded") {
+            const API_BASE = import.meta.env.VITE_API_URL || "";
 
-            await fetch(`${import.meta.env.VITE_API_URL}/api/payments/send-confirmation`, {
+            await fetch(`${API_BASE}/api/payments/send-confirmation`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
