@@ -8,9 +8,13 @@ const transporter = nodemailer.createTransport({
         pass: process.env.SMTP_PASS,
     },
 });
-export async function sendMail({ to, subject, html, }) {
-    const from = process.env.SMTP_FROM || "no-reply@horizonsplus.com";
-    const info = await transporter.sendMail({ from, to, subject, html });
-    console.log("[MAIL SENT]", info.messageId);
-    return info;
+export async function sendMail({ to, subject, html }) {
+  const defaultFrom = `"Horizons+ Tickets" <${process.env.SMTP_USER}>`;
+  const from = process.env.SMTP_FROM || defaultFrom;
+
+  console.log("[MAIL DEBUG FROM]", { from });
+
+  const info = await transporter.sendMail({ from, to, subject, html });
+  console.log("[MAIL SENT]", info.messageId, info.envelope);
+  return info;
 }
