@@ -32,7 +32,7 @@ function AutocompleteInput({ label, value, placeholder, onChange, onSelect, clas
                 // Supprimer les doublons
                 const seen = new Set<string>();
                 const unique = combined.filter(v => {
-                    const key = `${v.name.toLowerCase()}|${v.id}`;
+                    const key = `${v.name.toLowerCase()}|${v.name}`;
                     if (seen.has(key)) return false;
                     seen.add(key);
                     return true;
