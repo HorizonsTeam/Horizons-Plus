@@ -6,5 +6,7 @@ export async function generateTicketPDF(info) {
 
     const pdfBytes = await generatePDF(info, qrBase64);
 
+    await generatePDF(info, qrBase64, outputPath);
+
     return pdfBytes;
 }
