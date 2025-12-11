@@ -38,8 +38,8 @@ export default function Setings ()
         <>
             <div className={` ${isMobile ? 'w-full flex justify-center' : 'w-full flex justify-start gap-5 p-4  '}`}>
                 <div className={`w-full ${!isMobile && 'max-w-100'  }`   }>
-                    <div className='relative mt-4 display flex justify-center items-center '>
-                        <button onClick={handleretour}><img src={ReturnBtn} alt="Return Button" className='absolute left-1 mt-5 transform -translate-y-1/2' /></button>
+                    <div className='relative mt-4 display flex justify-center items-center m-2'>
+                        <button onClick={handleretour}><img src={ReturnBtn} alt="Return Button" className={`absolute left-1 mt-5 transform -translate-y-1/2 ${isMobile && 'max-w-10 '  }`  }/></button>
                         < h1 className='text-3xl text-[#98EAF3] font-medium text-center'>Paramètres</h1>
                     </div>
 
@@ -48,7 +48,7 @@ export default function Setings ()
                             <button className='  border-b-2 border-[#2C474B] h-20 w-full'>
                                 <button className='w-full flex justify-start gap-4' onClick={() => { if (isMobile) {navigate("/UserInfoPageMobile") }}}>
                                 <img src={UserIco} alt="" className='h-6 w-8' />
-                                    <p className={`text-xl font-bold ${informationProfile && 'text-[#98EAF3]'}`}>Informations du profil</p>
+                                    <p className={`text-xl font-bold ${informationProfile && !isMobile && 'text-[#98EAF3]'}`}>Informations du profil</p>
                                 </button>
                             </button>
                             <button className='  w-full border-b-2 border-[#2C474B] h-20  '>

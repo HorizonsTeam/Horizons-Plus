@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
-import type { AutocompleteInputProps, Suggestion } from './types';
+import type { AutocompleteInputProps, Suggestion, SuggestionType } from './types';
 import AutocompleteList from './AutocompleteList';
 
-function AutocompleteInput({ label, value, placeholder, onChange, onSelect, className }: AutocompleteInputProps) {
+function AutocompleteInput({ label, value, placeholder, onChange, onSelect, className , AutocompleteListClassname}: AutocompleteInputProps) {
     const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
     const [isFocused, setIsFocused] = useState<boolean>(false);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -16,15 +16,52 @@ function AutocompleteInput({ label, value, placeholder, onChange, onSelect, clas
             return;
         }
 
-        const timeout = setTimeout(() => {
-            fetch(`${base}/api/search/stations?q=${value}`)
-            .then(res => res.json())
-            .then(data => setSuggestions(data))
-            .catch(() => setSuggestions([]));
-        }, 300);
+        const timeout = setTimeout(async () => {
+            try {
+                const [sncfData, amadeusData] = await Promise.allSettled([
+                    fetch(`${base}/api/search/stations?q=${encodeURIComponent(value)}`).then(r => r.json()),
+                    fetch(`${base}/api/search/airports?q=${encodeURIComponent(value)}`).then(r => r.json()),
+                ]);
 
-        return () => clearTimeout(timeout);
+                const sncfResults: Suggestion[] = sncfData.status === 'fulfilled' ? sncfData.value : [];
+                const amadeusResults: Suggestion[] = amadeusData.status === 'fulfilled' ? amadeusData.value : [];
+
+                // Combiner les deux résultats
+                const combined = [...sncfResults, ...amadeusResults];
+
+                // Supprimer les doublons
+                const seen = new Set<string>();
+                const unique = combined.filter(v => {
+                    const key = `${v.name.toLowerCase()}|${v.id}`;
+                    if (seen.has(key)) return false;
+                    seen.add(key);
+                    return true;
+                });
+
+                const typeOrder: Record<SuggestionType, number> = {
+                    city: 0,
+                    stop_area: 1,
+                    airport: 2
+                };
+
+                const sorted = unique.sort((a, b) => {
+                    const typeA = a.type ?? "city";
+                    const typeB = b.type ?? "city";
+                    return typeOrder[typeA] - typeOrder[typeB];
+                });
+
+                console.log("Le tout sorté ca donne : ", sorted);
+                
+                setSuggestions(sorted);
+            } catch (err) {
+                console.error(err);
+                setSuggestions([]);
+            }
+    }, 300);
+
+    return () => clearTimeout(timeout);
     }, [value]);
+
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -68,6 +105,7 @@ function AutocompleteInput({ label, value, placeholder, onChange, onSelect, clas
     }
 
     return (
+        <>
         <div ref={containerRef} className="autocomplete relative">
             {
             !label || label.length === 0 
@@ -86,11 +124,15 @@ function AutocompleteInput({ label, value, placeholder, onChange, onSelect, clas
                 onKeyDown={handleKeyDown}
             />
 
-            {isFocused && suggestions.length > 0 && (
-                <AutocompleteList suggestions={suggestions} selectedIndex={selectedIndex} onSelect={handleSelect} />
-            )}
+            
             
         </div>
+        {
+        isFocused && suggestions.length > 0 && (
+            <AutocompleteList suggestions={suggestions} selectedIndex={selectedIndex} onSelect={handleSelect}  className={AutocompleteListClassname}/>
+        )
+    }
+        </>
     );
 }
 
