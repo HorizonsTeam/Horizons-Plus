@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import AutocompleteInput from "../../../components/autocomplete/AutocompleteInput";
 import type { Suggestion } from "../../../components/autocomplete/types";
 import { ArrowDownUp } from "lucide-react";
@@ -37,7 +36,6 @@ export default function QuickModificationOverlay({
     setJourneyData,
     setTransport
 }: ModificationProps) {
-    const navigate = useNavigate();
 
     const [passagers, setPassagers] = useState<number>(
         Passagers ? Passagers : 1
