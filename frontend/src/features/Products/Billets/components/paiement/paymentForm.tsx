@@ -60,7 +60,6 @@ export default function PaiementForm({ clientSecret, onSuccess, onReady, passage
     }, [stripe, elements]);
 
 
-    console.log("stripe", stripe, "elements", elements);
     return (
 
         <form onSubmit={(e) => { e.preventDefault(); handlePayment(); }} className="mt-4 w-full grid gap-4">

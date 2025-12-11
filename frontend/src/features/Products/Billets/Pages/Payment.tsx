@@ -62,11 +62,6 @@ export default function PaymentPage() {
     }, []);
 
     // const options = { clientSecret };
-
-    console.log("clientSecret =", clientSecret);
-    console.log("loadingStripe =", loadingStripe);
-    console.log("PUBLIC KEY =", import.meta.env.VITE_STRIPE_PUBLIC_KEY);
-
     return (
         <>
             <div className={`relative w-full ${isMobile ? "px-4" : " py-10"}`}>
