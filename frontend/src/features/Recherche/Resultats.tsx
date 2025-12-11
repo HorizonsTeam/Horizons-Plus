@@ -13,9 +13,12 @@ import BestPrice from './ProductCard/bestPrice.tsx';
 import Date_String from './Date.tsx';
 import type { Journey } from './ProductCard/types.ts';
 import NoResultsImage from '../../assets/LogoNotFound.png';
-/* Test */
 
 import QouickModificationOverlay from './ModificationRapide/QuickSearchModif.tsx';
+
+import { ClipLoader } from 'react-spinners';
+
+
 
 
 export default function Resultats() {
@@ -59,6 +62,7 @@ export default function Resultats() {
 
     const [journeyData, setJourneyData] = useState<Journey[]>([]);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [IsLoading, setIsLoading] = useState<boolean>(false);
 
     function formatDateToFrench(dateString: string): string {
         const date = new Date(dateString);
@@ -80,6 +84,8 @@ export default function Resultats() {
 
     useEffect(() => {
         if (!fromId || !toId || !departureDate) return;
+        setIsLoading(true);         
+        setErrorMessage(null); 
 
         fetch(`${base}/api/search/journeys?fromId=${encodeURIComponent(fromId)}&fromName=${encodeURIComponent(fromName)}&fromLat=${encodeURIComponent(fromLat)}&fromLon=${encodeURIComponent(fromLon)}&toId=${encodeURIComponent(toId)}&toName=${encodeURIComponent(toName)}&toLat=${encodeURIComponent(toLat)}&toLon=${encodeURIComponent(toLon)}&datetime=${encodeURIComponent(departureDate)}`)
             .then(res => res.json())
@@ -87,7 +93,7 @@ export default function Resultats() {
                 console.log('API journeys response:', data);
 
                 if (data.error) {
-                    setErrorMessage(data.error); // ou data.error.message
+                    setErrorMessage(data.error); 
                     setJourneyData([]);
                 } else {
                     setErrorMessage(null);
@@ -100,6 +106,11 @@ export default function Resultats() {
                 console.error('Fetch journeys error:', err);
                 setErrorMessage("Erreur serveur, réessayez plus tard");
                 setJourneyData([]);
+            })
+            .finally(() => {
+                setTimeout(() => {
+                    setIsLoading(false);
+                }, 1000);    
             });
     }, [fromId, toId, departureDate, arrivalDate]);
 
@@ -213,10 +224,38 @@ export default function Resultats() {
                         </div>
                     </button>
                 </div>
+                
+
 
                 {/* Results */}
                 <div className="bg-[#133A40] px-2 pt-5 -mt-10 w-full h-300" onClick={() => BoxIsOn && setBoxIsOn(false)} >
-                    {errorMessage || lowestPrice === null ? (
+
+                    {IsLoading &&
+                        <div className="text-center text-red-400 font-bold py-10">
+
+
+                            <div className='flex justify-center'>
+                                <div className=' p-6 rounded-2xl mt-4'>
+                                    <div className='flex justify-center mb-4'>
+                                        <ClipLoader
+                                            color="#92dad9"
+                                            size={50}
+                                            className='flex justify-center'
+                                        />
+                                    </div>
+                                    <div className='grid grid-cols  '>
+                                    <h2 className='text-white font-bold text-2xl mt-4 mb-4 '> Chargement</h2>
+
+                                    
+                                    </div>
+                                    
+
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    {
+                     lowestPrice === null && !IsLoading ? (
                         <div className="text-center text-red-400 font-bold py-10">
 
 
@@ -236,9 +275,9 @@ export default function Resultats() {
                                 </div>
                             </div>
                         </div>
-                    ) : (
+                    ) : !IsLoading && (
                         <>
-                            {/* Filters */}
+                            {/* Filters 
                             <div className="flex gap-2 -ml-3">
                                 <button className="flex items-center gap-1 border-primary border-2 px-4 py-2 rounded-full text-primary text-sm w-24">
                                     <span className="-ml-1">Horaires</span>
@@ -260,6 +299,7 @@ export default function Resultats() {
                                     <span className="text-[#133A40]">▼</span>
                                 </button>
                             </div>
+                            */}
 
                             {/* Product cards */}
                             {journeyList.map((journey, idx) => (
@@ -276,10 +316,16 @@ export default function Resultats() {
                 <QouickModificationOverlay
                     villeDepart={fromName}
                     villeArrivee={toName}
+                    Passagers={passagerCount}
                     dateSearch={departureDate}
                     BoxIsOn={BoxIsOn}
                     setBoxIsOn={setBoxIsOn}
+                    setIsLoading={setIsLoading}
+                    setErrorMessage={setErrorMessage}
+                    setJourneyData={setJourneyData}
+                    setTransport={setTransport}
                 />
+
             </div>
 
         </>
