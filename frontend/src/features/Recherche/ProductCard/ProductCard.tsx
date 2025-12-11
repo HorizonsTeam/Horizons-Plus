@@ -1,13 +1,25 @@
 import ClockIco from '../../../assets/clock.svg';
 import type { ProductCardProps } from './types.ts';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
-export default function ProductCard({ journey, passagersCount, formattedDepartureDate }: ProductCardProps) {
+
+export default function ProductCard({ journey, passagersCount, formattedDepartureDate, index = 0 }: ProductCardProps) {
 
     const hasNoTransfer = journey.numberOfTransfers === 0;
     
     return (
-        <Link to="/Recap" className="block" state={{ journey, passagersCount, formattedDepartureDate }}>
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{
+                duration: 0.4,
+                delay: index * 0.05, // petit décalage entre les cartes
+                ease: 'easeOut',
+            }}
+        >
+            <Link to="/Recap" className="block" state={{ journey, passagersCount, formattedDepartureDate }} onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
             <article className="mt-4 rounded-3xl bg-[#0C2529] border border-[#2C474B] px-4 py-3 sm:px-5 sm:py-4 text-white mx-2 cursor-pointer">
                 <div className="flex flex-col gap-8 sm:flex-row sm:items-stretch sm:justify-between">
                     <div className="flex flex-1 gap-8 min-w-0">
@@ -82,5 +94,6 @@ export default function ProductCard({ journey, passagersCount, formattedDepartur
                 </div>
             </article>
         </Link>
+        </motion.div>
     );
 }

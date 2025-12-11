@@ -228,7 +228,10 @@ export default function Resultats() {
 
 
                 {/* Results */}
-                <div className="bg-[#133A40] px-2 pt-5 -mt-10 w-full h-300" onClick={() => BoxIsOn && setBoxIsOn(false)} >
+                <div
+                    className="bg-[#133A40] px-2 pt-5 -mt-10 w-full pb-10"
+                    onClick={() => BoxIsOn && setBoxIsOn(false)}
+                >
 
                     {IsLoading &&
                         <div className="text-center text-red-400 font-bold py-10">
@@ -309,6 +312,7 @@ export default function Resultats() {
                                     journey={journey}
                                     passagersCount={passagerCount}
                                     formattedDepartureDate={formattedDepartureDate}
+                                    index={idx}
                                 />
                             ))}
                         </>
