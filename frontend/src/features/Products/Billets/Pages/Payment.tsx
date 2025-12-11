@@ -44,7 +44,8 @@ export default function PaymentPage() {
 
     useEffect(() => {
         console.log("FRONT → URL utilisée :", `${import.meta.env.VITE_API_URL}/api/payments/create-payment-intent`);
-        fetch(`${import.meta.env.VITE_API_URL}/api/payments/create-payment-intent`, {
+        const API_BASE = import.meta.env.VITE_API_URL || "";
+        fetch(`${API_BASE}/api/payments/create-payment-intent`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
