@@ -2,7 +2,6 @@ import express from "express";
 import Stripe from "stripe";
 import { sendMail } from "../server/mailer.js";  // le même que reset password
 import { generateTicketPDF } from "../services/ticketService.js";
-import fs from "fs";
 
 const router = express.Router();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
