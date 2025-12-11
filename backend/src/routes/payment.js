@@ -37,7 +37,7 @@ router.post("/send-confirmation", async (req, res) => {
     
     const ticketId = "TICKET-" + Date.now();
 
-    const pdfPath = await generateTicketPDF({
+    const ticketInfo = await generateTicketPDF({
       ticketId,
       customerName,
       journey,
@@ -61,6 +61,8 @@ router.post("/send-confirmation", async (req, res) => {
       </ul>
     `;
 
+    const pdfBytes = await generateTicketPDF(ticketInfo);
+
     await sendMail({
       to: email,
       subject: "Confirmation de votre billet Horizons+",
@@ -68,7 +70,8 @@ router.post("/send-confirmation", async (req, res) => {
       attachments: [
         {
           filename: `Billet-${ticketId}.pdf`,
-          path: pdfPath,
+          content: pdfBytes,
+          contentType: "application/pdf",
         },
       ],
     });

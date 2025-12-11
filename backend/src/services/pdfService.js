@@ -1,5 +1,4 @@
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
-import fs from "fs";
 
 export async function generatePDF(ticketInfo, qrBase64, outputPath) {
     console.log("tikcketinfo", ticketInfo.journey);
@@ -55,5 +54,6 @@ export async function generatePDF(ticketInfo, qrBase64, outputPath) {
     });
 
     const pdfBytes = await pdfDoc.save();
-    fs.writeFileSync(outputPath, pdfBytes);
+
+    return pdfBytes
 }
