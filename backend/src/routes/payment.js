@@ -1,6 +1,8 @@
 import express from "express";
 import Stripe from "stripe";
 import { sendMail } from "../server/mailer.js";  // le même que reset password
+import { generateTicketPDF } from "../services/ticketService.js";
+import fs from "fs";
 
 const router = express.Router();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -33,6 +35,18 @@ router.post("/send-confirmation", async (req, res) => {
     if (!email) {
       return res.status(400).json({ error: "Email obligatoire" });
     }
+    
+    const ticketId = "TICKET-" + Date.now();
+
+    const pdfPath = await generateTicketPDF({
+      ticketId,
+      customerName,
+      journey,
+      date,
+      time,
+      price,
+      passengers,
+    });
 
     const html = `
       <h2>Votre billet Horizons+ est confirmé !</h2>
@@ -52,6 +66,12 @@ router.post("/send-confirmation", async (req, res) => {
       to: email,
       subject: "Confirmation de votre billet Horizons+",
       html,
+      attachments: [
+        {
+          filename: `Billet-${ticketId}.pdf`,
+          path: pdfPath,
+        },
+      ],
     });
 
     res.json({ success: true });
