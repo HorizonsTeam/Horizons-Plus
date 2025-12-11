@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import AutocompleteInput from "../../../components/autocomplete/AutocompleteInput";
 import type { Suggestion } from "../../../components/autocomplete/types";
 import { ArrowDownUp } from "lucide-react";
@@ -16,20 +15,31 @@ type ModificationProps = {
     dateSearch: string;
     BoxIsOn: boolean;
     setBoxIsOn: (value: boolean) => void;
+    Passagers?: number;
+    trip?: TripType;
+    setIsLoading: (value: boolean) => void;
+    setErrorMessage: (value: string | null) => void;
+    setJourneyData: (value: any[]) => void;
+    setTransport: (value: "train" | "plane" | undefined) => void;
 };
 
 export default function QuickModificationOverlay({
     villeDepart,
     villeArrivee,
+    Passagers,
     dateSearch,
+    trip,
     BoxIsOn,
     setBoxIsOn,
+    setIsLoading,
+    setErrorMessage,
+    setJourneyData,
+    setTransport
 }: ModificationProps) {
-    const navigate = useNavigate();
 
-    // --- Etats ---
-
-    const [passagers, setPassagers] = useState<number>(1);
+    const [passagers, setPassagers] = useState<number>(
+        Passagers ? Passagers : 1
+    );
 
     const [departure, setDeparture] = useState<Suggestion | null>(
         villeDepart
@@ -56,6 +66,7 @@ export default function QuickModificationOverlay({
             }
             : null
     );
+
     const IsMobile = useIsMobile();
     const today = useMemo(() => new Date().toISOString().split("T")[0], []);
     const [departureDate, setDepartureDate] = useState<string>(
@@ -64,9 +75,11 @@ export default function QuickModificationOverlay({
     const [returnDate, setReturnDate] = useState<string>("");
 
     const [rotation, setRotation] = useState<number>(0);
-    const [tripType, setTripType] = useState<TripType>("oneway");
+    const [tripType, setTripType] = useState<TripType>(
+        trip ? trip : "oneway"
+    );
 
-    // --- Fonctions utilitaires ---
+    // -- utils --
 
     const createSuggestionFromText = (text: string): Suggestion => ({
         id: "",
@@ -104,29 +117,61 @@ export default function QuickModificationOverlay({
     };
 
     const isDisabled =
-        !departure?.name || !arrival?.name || !departureDate || (tripType === "roundtrip" && !returnDate);
+        !departure?.name ||
+        !arrival?.name ||
+        !departureDate ||
+        (tripType === "roundtrip" && !returnDate);
 
     const goSearch = () => {
-        if (isDisabled || !departure || !arrival) return;
+        if (!departure || !arrival || !departureDate) return;
 
-        navigate(
-            `/Recherche?fromId=${encodeURIComponent(departure.id)}` +
+        const base = import.meta.env.VITE_API_URL || "http://localhost:3005";
+
+        setIsLoading(true);
+        setErrorMessage(null);
+
+        fetch(
+            `${base}/api/search/journeys?` +
+            `fromId=${encodeURIComponent(departure.id)}` +
             `&fromName=${encodeURIComponent(departure.name)}` +
+            `&fromLat=${encodeURIComponent(String(departure.lat))}` +
+            `&fromLon=${encodeURIComponent(String(departure.lon))}` +
             `&toId=${encodeURIComponent(arrival.id)}` +
             `&toName=${encodeURIComponent(arrival.name)}` +
-            `&departureDate=${encodeURIComponent(departureDate)}` +
-            `&arrivalDate=${encodeURIComponent(returnDate || "")}` +
-            `&passengers=${encodeURIComponent(String(passagers))}`
-        );
-    };
+            `&toLat=${encodeURIComponent(String(arrival.lat))}` +
+            `&toLon=${encodeURIComponent(String(arrival.lon))}` +
+            `&datetime=${encodeURIComponent(departureDate)}`
+        )
+            .then(res => res.json())
+            .then(data => {
+                console.log("Overlay search response:", data);
 
+                if (data.error) {
+                    setErrorMessage(data.error);
+                    setJourneyData([]);
+                    setTransport(undefined);
+                } else {
+                    setJourneyData(data);
+                    setTransport(data[0]?.simulated ? "plane" : "train");
+                    setErrorMessage(null);
+                }
+            })
+            .catch((err) => {
+                console.error("Overlay fetch error:", err);
+                setErrorMessage("Erreur serveur, réessayez plus tard");
+                setJourneyData([]);
+                setTransport(undefined);
+            })
+            .finally(() => {
+                setTimeout(() => setIsLoading(false), 800);
+            });
+    };
     const handleValidation = () => {
         goSearch();
         setBoxIsOn(false);
         window.scrollTo({ top: 0, behavior: "smooth" });
     };
 
-    // --- Rendu ---
 
     return (
         <div
@@ -137,7 +182,6 @@ export default function QuickModificationOverlay({
       `}
         >
             <div className="grid justify-center gap-2 mt-4">
-                {/* Lignes villes */}
                 <div className="flex justify-center gap-5">
                     <AutocompleteInput
                         label=""
@@ -248,7 +292,6 @@ export default function QuickModificationOverlay({
                 </div>
             </div>
 
-            {/* Bouton de validation */}
             <button
                 className="w-full h-15 bg-[#98EAF3] rounded-xl disabled:opacity-50 relative bottom-0 top-0"
                 onClick={handleValidation}
