@@ -132,7 +132,7 @@ export default function Billet_Train_recap()
             </div>
             <div className='grid grid-cols gap-2 m-4 justify-center items-center '>
             <AjouterPanierBtn/>
-                <Link to="/Infos_Passagers" state={{ journey, selectedClass, passagersCount, formattedDepartureDate }}>
+                <Link to="/Infos_Passagers" state={{ journey, selectedClass, passagersCount, formattedDepartureDate }} onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} >
                     <button className="w-80  h-15 bg-[#98EAF3] rounded-xl mt-4">
                         <span className="text-[#115E66] font-bold text-xl">Continuer</span>
                     </button>

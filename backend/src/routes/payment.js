@@ -37,7 +37,7 @@ router.post("/send-confirmation", async (req, res) => {
     
     const ticketId = "TICKET-" + Date.now();
 
-    const pdfPath = await generateTicketPDF({
+    const ticketInfo = await generateTicketPDF({
       ticketId,
       customerName,
       journey,

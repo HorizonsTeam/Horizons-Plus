@@ -15,6 +15,7 @@ import Infos_Passagers from './features/Products/Billets/Pages/Infos_Passagers.t
 import Settings from './features/Settings/setingsPage.tsx';
 import UserInfoPageMobile from './features/Settings/components/UserInfoMobilePage.tsx';
 import ResetPassword from './features/connexion/ResetPassword/resetpassword.tsx';
+import Counter from './components/AdditionalsComponents/Counter.tsx';
 
 
 
@@ -37,6 +38,16 @@ function App() {
           <Route path="Infos_Passagers" element={<Infos_Passagers />} />
           <Route path="Settings" element={<Settings/>} />
           <Route path="UserInfoPageMobile" element={<UserInfoPageMobile />} />
+          <Route path="Counter" element={<Counter
+            value={1}
+            places={[50, 10, 1]}
+            fontSize={15}
+            padding={5}
+            gap={10}
+            textColor="white"
+            fontWeight={500}
+          />} />
+
 
            
 
