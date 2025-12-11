@@ -20,7 +20,8 @@ export default function MdpOublie() {
 
     setIsLoading(true);
     try {
-      const base = `${import.meta.env.VITE_API_URL || "http://localhost:3005"}/api/auth`;
+      const API_BASE = import.meta.env.VITE_API_URL || "";
+      const base = `${API_BASE}/api/auth`;
 
       const redirectTo = `${window.location.origin}/reset-password`;
 
@@ -31,9 +32,7 @@ export default function MdpOublie() {
         credentials: "include",
       });
 
-      // Peu importe la réponse (anti-énumération), on affiche un message neutre :
       if (!r.ok) {
-        // on tente de lire un éventuel message mais on ne l’affiche pas pour la sécurité
         try { await r.json(); } catch { }
       }
 
@@ -41,7 +40,7 @@ export default function MdpOublie() {
       setEmail("");
     } catch (err) {
       console.error(err);
-      // Même message neutre pour ne pas donner d’info
+
       setSuccessMsg("Si un compte existe pour cet e-mail, un lien de réinitialisation a été envoyé.");
     } finally {
       setIsLoading(false);

@@ -126,7 +126,6 @@ export default function Passagers_Data_From({ passagerIndex, suprimer_Passager, 
                 }
             </div>
 
-
         </>
     );
 }

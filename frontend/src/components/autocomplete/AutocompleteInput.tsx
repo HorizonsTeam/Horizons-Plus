@@ -8,7 +8,7 @@ function AutocompleteInput({ label, value, placeholder, onChange, onSelect, clas
     const containerRef = useRef<HTMLDivElement>(null);
     const [selectedIndex, setSelectedIndex] = useState<number>(0);
 
-    const base = `${import.meta.env.VITE_API_URL || "http://localhost:3005"}`;
+    const API_BASE_ = import.meta.env.VITE_API_URL || "";
 
     useEffect(() => {
         if (!value) {
@@ -19,8 +19,8 @@ function AutocompleteInput({ label, value, placeholder, onChange, onSelect, clas
         const timeout = setTimeout(async () => {
             try {
                 const [sncfData, amadeusData] = await Promise.allSettled([
-                    fetch(`${base}/api/search/stations?q=${encodeURIComponent(value)}`).then(r => r.json()),
-                    fetch(`${base}/api/search/airports?q=${encodeURIComponent(value)}`).then(r => r.json()),
+                    fetch(`${API_BASE_}/api/search/stations?q=${encodeURIComponent(value)}`).then(r => r.json()),
+                    fetch(`${API_BASE_}/api/search/airports?q=${encodeURIComponent(value)}`).then(r => r.json()),
                 ]);
 
                 const sncfResults: Suggestion[] = sncfData.status === 'fulfilled' ? sncfData.value : [];
@@ -32,7 +32,7 @@ function AutocompleteInput({ label, value, placeholder, onChange, onSelect, clas
                 // Supprimer les doublons
                 const seen = new Set<string>();
                 const unique = combined.filter(v => {
-                    const key = `${v.name.toLowerCase()}|${v.id}`;
+                    const key = `${v.name.toLowerCase()}|${v.name}`;
                     if (seen.has(key)) return false;
                     seen.add(key);
                     return true;
@@ -105,7 +105,6 @@ function AutocompleteInput({ label, value, placeholder, onChange, onSelect, clas
     }
 
     return (
-        <>
         <div ref={containerRef} className="autocomplete relative">
             {
             !label || label.length === 0 
@@ -124,15 +123,10 @@ function AutocompleteInput({ label, value, placeholder, onChange, onSelect, clas
                 onKeyDown={handleKeyDown}
             />
 
-            
-            
-        </div>
-        {
-        isFocused && suggestions.length > 0 && (
-            <AutocompleteList suggestions={suggestions} selectedIndex={selectedIndex} onSelect={handleSelect}  className={AutocompleteListClassname}/>
-        )
-    }
-        </>
+            {isFocused && suggestions.length > 0 && (
+                <AutocompleteList suggestions={suggestions} selectedIndex={selectedIndex} onSelect={handleSelect} className={AutocompleteListClassname}/>
+            )}
+        </div> 
     );
 }
 

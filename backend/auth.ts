@@ -20,8 +20,16 @@ const prisma = new PrismaClient({
 });
 
 const getBaseURL = () => {
-  if (process.env.BETTER_AUTH_URL) return process.env.BETTER_AUTH_URL;
+  if (process.env.BETTER_AUTH_URL) {
+    return process.env.BETTER_AUTH_URL;
+  }
 
+  //
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+
+  //  sur localhost
   if (process.env.NODE_ENV !== "production") {
     return "http://localhost:3005";
   }
@@ -29,6 +37,7 @@ const getBaseURL = () => {
   throw new Error("BETTER_AUTH_URL must be set in production");
 };
 
+const isProd = process.env.NODE_ENV === "production";
 
 export const auth = betterAuth({
     database: prismaAdapter(prisma, { provider: "postgresql" }),
@@ -50,12 +59,28 @@ export const auth = betterAuth({
     
     // Configuration cookies adaptée dev/prod
     advanced: {
-        useSecureCookies: process.env.NODE_ENV === "production",
-        cookieName: "better-auth.session_token",
-        crossSubDomainCookies: {
-            enabled: false, // Désactivé car frontend/backend sur domaines différents
-        },
+      
+    useSecureCookies: isProd,
+
+    defaultCookieAttributes: {
+      sameSite: isProd ? "none" : "lax",
+      secure: isProd,
+      // partitioned: isProd, // optionnel, mais recommandé pour le futur
     },
+
+    cookies: {
+      session_token: {
+        name: "better-auth.session_token",
+        attributes: {
+          sameSite: isProd ? "none" : "lax",
+          secure: isProd,
+          httpOnly: true,
+        },
+      },
+    },
+
+  
+  },
 
 
     emailAndPassword: {
