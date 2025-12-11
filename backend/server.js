@@ -113,4 +113,13 @@ app.use("/api/payments", paymentRoutes);
 // Health
 app.get("/api/health", (_req, res) => res.json({ ok: true }));
 
+// Débug cookie mobile et desktop
+app.get("/api/debug-cookies", (req, res) => {
+  res.json({
+    cookieHeader: req.headers.cookie || null,
+    cookies: req.cookies || {},
+  });
+});
+
+
 app.listen(PORT, () => console.log(`API ready → http://localhost:${PORT}`));
