@@ -5,20 +5,10 @@ import { Link } from 'react-router-dom';
 export default function ProductCard({ journey, passagersCount, formattedDepartureDate }: ProductCardProps) {
 
     const hasNoTransfer = journey.numberOfTransfers === 0;
-
-    const formatDuration = (duration: any) => {
-        if (typeof duration === 'number') {
-            const hours = Math.floor(duration / 60);
-            const minutes = duration % 60;
-            return `${hours}h${minutes.toString().padStart(2, '0')} min`;
-        }
-        return duration;
-    };
-
     
     return (
         <Link to="/Recap" className="block" state={{ journey, passagersCount, formattedDepartureDate }}>
-            <article className="mt-4 rounded-3xl bg-[#0C2529] border border-[#2C474B] px-4 py-3 sm:px-5 sm:py-4 text-white mx-2">
+            <article className="mt-4 rounded-3xl bg-[#0C2529] border border-[#2C474B] px-4 py-3 sm:px-5 sm:py-4 text-white mx-2 cursor-pointer">
                 <div className="flex flex-col gap-8 sm:flex-row sm:items-stretch sm:justify-between">
                     <div className="flex flex-1 gap-8 min-w-0">
                         <div className='flex flex-col gap-4 min-w-0'>
@@ -34,7 +24,7 @@ export default function ProductCard({ journey, passagersCount, formattedDepartur
                         <div className="flex flex-col gap-2 min-w-0">
                             <div className="mt-2 flex items-center gap-2 text-xs sm:text-sm opacity-80">
                                 <img src={ClockIco} alt="" className="h-4 w-4" />
-                                <span>{formatDuration(journey.duration)}</span>
+                                <span>{journey.duration}</span>
                             </div>
                             <div className="flex items-baseline gap-2 min-w-0">
                                 
@@ -74,7 +64,7 @@ export default function ProductCard({ journey, passagersCount, formattedDepartur
                         </div>
 
                         <span className="text-xl sm:text-2xl font-extrabold">
-                            {journey.price}
+                            {(journey.price * passagersCount).toFixed(2)} €
                         </span>
 
                         <span className="text-[11px] sm:text-xs text-emerald-300">

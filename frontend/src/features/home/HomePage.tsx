@@ -1,6 +1,6 @@
 import PlaneImage from '../../assets/avion-deco.png';
 import PlaneImageDesktop from '../../assets/flight.png';
-import TrainImage from '../../assets/train.png';
+import TrainImage from '../../assets/TrainImage.jpeg';
 import { Link } from 'react-router-dom';
 import SearchForm from './components/SearchForm';
 import PromotionSlider from './components/PromotionSlider';
@@ -91,13 +91,20 @@ export default function HomePage() {
                 Trouvez votre trajet en train, simplement et rapidement.
               </p>
             </div>
-            <div className="relative overflow-hidden mb-6 w-full h-[472px]">
-              <img 
-                src={TrainImage} 
-                alt="Avion dans les nuages"
-                className="absolute inset-0 w-full h-full object-cover"
+            <div className="relative mb-6 w-full h-[472px] overflow-hidden rounded-xl">
+              <img
+                src={TrainImage}
+                alt="Train en voyage"
+                className="absolute inset-0 h-full w-full object-cover"
+                loading="lazy"
+                decoding="async"
+                style={{
+                  border: "2px solid #e2e8f0",
+                  borderRadius: "12px" } }
               />
             </div>
+
+
 
             <p className="text-sm text-center text-primary font-medium mb-6 px-4">
               Paris → Lyon à partir de 25€
@@ -113,12 +120,10 @@ export default function HomePage() {
           {/* Version Desktop */}
           <div className="hidden lg:grid lg:grid-cols-2 lg:gap-16 lg:items-center lg:px-12">
             {/* Colonne gauche - Image */}
-            <div className="relative overflow-hidden h-[600px] lg:order-first">
-              <img 
-                src={TrainImage} 
-                alt="Train dans les nuages"
-                className="absolute inset-0 w-full h-full object-contain object-center"
-              />
+            <div
+              className="relative overflow-hidden  w-full h-[600px] lg:order-first p-4 bg-cover bg-center rounded-xl "
+              style={{ backgroundImage: `url(${TrainImage})` }}
+            >
             </div>
 
             {/* Colonne droite - Texte et CTA */}

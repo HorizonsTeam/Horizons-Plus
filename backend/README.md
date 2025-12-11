@@ -56,6 +56,11 @@ IMPORTANT : En production, modifiez BETTER_AUTH_SECRET avec une valeur aléatoir
 Il faut aussi remplir NAVITIA_API_KEY avec une clé générée avec ce lien : https://numerique.sncf.com/startup/api/
 Sinon, si vous avez accès à notre clé, veuillez la renseigner dans NAVITIA_API_KEY.
 
+Ensuite, pour que la partie avion du backend marche, il faut aussi récupérer les 2 clés (API Key et API Secret).
+- Soit vous avez les clés en interne
+- Soit il faudra vous en procurez en vous créant un compte sur ce site : https://developers.amadeus.com/
+Ces 2 clés vont servir à récupérer votre token qui sera mis à jour automatiquement par le code, donc récupérez vos 2 clés et le code se charge du reste ! ;)
+
 Initialisation de la base de données
 
 4. Préparer la base AUTH avec Prisma
