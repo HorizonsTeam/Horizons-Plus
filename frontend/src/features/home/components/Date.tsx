@@ -6,10 +6,12 @@ type DateTileProps = {
     onChange: (value: string) => void;
     min?: string;
     disabled?: boolean;
+    size?: number;
 };
 
-export function DateBtn({ label, value, onChange, min, disabled }: DateTileProps) {
+export function DateBtn({ label, value, onChange, size, min, disabled}: DateTileProps) {
     const id = useId();
+    const taille = size ?? 24;
     const inputRef = useRef<HTMLInputElement | null>(null);
 
     const { day, month } = useMemo(() => {
@@ -56,11 +58,12 @@ export function DateBtn({ label, value, onChange, min, disabled }: DateTileProps
                 onClick={openPicker}
                 disabled={disabled}
                 className={[
-                    "relative w-24 h-24 rounded-xl shadow",
+                    `relative w-${taille} h-${taille} rounded-xl shadow`,
                     "flex flex-col items-center justify-center leading-none",
                     "transition",
                     disabled ? "bg-white/70 cursor-not-allowed" : "bg-white hover:brightness-95",
                 ].join(" ")}
+
                 aria-label={label ?? "Choisir une date"}
             >
                 <span className="text-2xl font-semibold text-slate-900">{day}</span>
