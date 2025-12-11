@@ -13,7 +13,7 @@
     "@fontsource/sora": "^5.2.8",
     "@stripe/react-stripe-js": "^5.4.1",
     "@stripe/stripe-js": "^8.5.3",
-    "@tailwindcss/vite": "^4.1.14",
+    "@tailwindcss/vite": "^4.1.17",
     "axios": "^1.12.2",
     "better-auth": "^1.3.34",
     "framer-motion": "^12.23.24",
@@ -25,7 +25,7 @@
     "react-leaflet": "^5.0.0",
     "react-router-dom": "^7.9.4",
     "swiper": "^12.0.3",
-    "tailwindcss": "^4.1.14"
+    "tailwindcss": "^4.1.17"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",

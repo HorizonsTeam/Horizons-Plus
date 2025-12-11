@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import type { AutocompleteInputProps, Suggestion, SuggestionType } from './types';
 import AutocompleteList from './AutocompleteList';
 
-function AutocompleteInput({ label, value, placeholder, onChange, onSelect, className }: AutocompleteInputProps) {
+function AutocompleteInput({ label, value, placeholder, onChange, onSelect, className , AutocompleteListClassname}: AutocompleteInputProps) {
     const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
     const [isFocused, setIsFocused] = useState<boolean>(false);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -25,8 +25,6 @@ function AutocompleteInput({ label, value, placeholder, onChange, onSelect, clas
 
                 const sncfResults: Suggestion[] = sncfData.status === 'fulfilled' ? sncfData.value : [];
                 const amadeusResults: Suggestion[] = amadeusData.status === 'fulfilled' ? amadeusData.value : [];
-
-                console.log("amadeusResults", amadeusResults);
 
                 // Combiner les deux résultats
                 const combined = [...sncfResults, ...amadeusResults];
@@ -52,6 +50,8 @@ function AutocompleteInput({ label, value, placeholder, onChange, onSelect, clas
                     return typeOrder[typeA] - typeOrder[typeB];
                 });
 
+                console.log("Le tout sorté ca donne : ", sorted);
+                
                 setSuggestions(sorted);
             } catch (err) {
                 console.error(err);
@@ -105,6 +105,7 @@ function AutocompleteInput({ label, value, placeholder, onChange, onSelect, clas
     }
 
     return (
+        <>
         <div ref={containerRef} className="autocomplete relative">
             {
             !label || label.length === 0 
@@ -123,11 +124,15 @@ function AutocompleteInput({ label, value, placeholder, onChange, onSelect, clas
                 onKeyDown={handleKeyDown}
             />
 
-            {isFocused && suggestions.length > 0 && (
-                <AutocompleteList suggestions={suggestions} selectedIndex={selectedIndex} onSelect={handleSelect} />
-            )}
+            
             
         </div>
+        {
+        isFocused && suggestions.length > 0 && (
+            <AutocompleteList suggestions={suggestions} selectedIndex={selectedIndex} onSelect={handleSelect}  className={AutocompleteListClassname}/>
+        )
+    }
+        </>
     );
 }
 

@@ -1,26 +1,38 @@
 export type SuggestionType = "city" | "stop_area" | "airport";
 
-export type Suggestion = {
+export type Suggestion_ = {
   id: string;
   name: string;
   type?: SuggestionType;
   region?: string;
-  country?: string;
-}
+};
+
+export type Suggestion = {
+  id: string;           // "CDG" | "PAR" | "stop_area:SNCF:87271007"
+  name: string;         // "Paris", "Paris Gare de Lyon"
+  type?: SuggestionType;
+  region?: string;
+  source: "amadeus" | "sncf";
+  lat: number;
+  lon: number;
+  simulated: boolean;
+};
 
 export type AutocompleteInputProps = {
-    label: string;
-    value: string;
-    placeholder?: string;
-    onChange: (newValue: string) => void;
-    onSelect: (s: Suggestion) => void;
-    className?: string;
+  label: string;
+  value: string;
+  placeholder?: string;
+  onChange: (newValue: string) => void;
+  onSelect: (s: Suggestion) => void;
+  className?: string;
+  AutocompleteListClassname?: string;
 }
 
 export type AutocompleteListProps = {
   suggestions: Suggestion[];
   selectedIndex: number;
   onSelect: (s: Suggestion) => void;
+  className?: string;
 }
 
 
