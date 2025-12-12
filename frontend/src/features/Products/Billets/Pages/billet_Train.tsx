@@ -2,7 +2,7 @@ import ReturnBtn from '../../../../assets/ReturnBtn.svg';
 import clockIco from '../../../../assets/clock.svg';
 import checkMarck from '../../../../assets/checkMarck.svg';
 import ClassCard from '../components/Recap/Classcard.tsx';
-import { useState } from 'react';
+import {  useState } from 'react';
 import Inclus  from '../components/Recap/Inclus.tsx';
 import icoWifi from '../../../../assets/wifi.svg'
 import priseIco from'../../../../assets/Prises.svg'
@@ -17,6 +17,7 @@ import type { LocationState } from '../types.ts';
 
 export default function Billet_Train_recap()
 {
+    
     const { state } = useLocation();
     const { journey, passagersCount, formattedDepartureDate } = (state || {}) as LocationState;
     
@@ -24,6 +25,7 @@ export default function Billet_Train_recap()
     const handleretour = () =>
     {
         navigate(-1);
+        window.scrollTo({ top: 0, behavior: "smooth" }); 
     };
     const isMobile : boolean = useIsMobile();
     

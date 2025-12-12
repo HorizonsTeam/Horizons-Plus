@@ -11,7 +11,11 @@ export default function Infos_Passagers() {
   const { state } = useLocation();
   const { journey, selectedClass, passagersCount, formattedDepartureDate } = (state || {}) as LocationState;
 
-  const handleretour = () => navigate(-1);
+  const handleretour = () => 
+    {
+      navigate(-1);
+      window.scrollTo({ top: 0, behavior: "smooth" }); 
+    }
 
   const [passagers, setPassagers] = useState<number[]>(Array.from({ length: passagersCount || 1 }, (_, i) => i + 1));
 

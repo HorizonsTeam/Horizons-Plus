@@ -138,7 +138,7 @@ export default function QuickModificationOverlay({
             `&fromLon=${encodeURIComponent(String(departure.lon))}` +
             `&toId=${encodeURIComponent(arrival.id)}` +
             `&toName=${encodeURIComponent(arrival.name)}` +
-            `&toLat=${encodeURIComponent(String(arrival.lat))}` +
+            `&toLat=${encodeURIComponent(String(arrival.lat))}` +   
             `&toLon=${encodeURIComponent(String(arrival.lon))}` +
             `&datetime=${encodeURIComponent(departureDate)}`
         )
@@ -194,7 +194,7 @@ export default function QuickModificationOverlay({
                         }
                         onSelect={(obj) => setDeparture(obj)}
                         className="search-input w-full bg-[#2C474B] text-white placeholder-slate-400 rounded-xl px-4 py-3.5 text-sm outline-none border-none focus:ring-2 focus:ring-cyan-400/30"
-                        AutocompleteListClassname="absolute autocomplete-suggestions left-0 right-0 z-50 mt-15 rounded-xl bg-[#0f2628] border border-[#1b3a3d] shadow-xl backdrop-blur-md max-h-60 mx-18 overflow-y-auto text-left divide-y divide-[#1e3c3f] overflow-x-hidden "
+                        AutocompleteListClassname={`absolute ${IsMobile ?  'min-w-50' : 'min-w-100'} autocomplete-suggestions left-0 right-0 z-50 mt-5 rounded-xl bg-[#0f2628] border border-[#1b3a3d] shadow-xl backdrop-blur-md max-h-60  overflow-y-auto text-left divide-y divide-[#1e3c3f] overflow-x-hidden`}
                     />
 
                     <div>
@@ -222,7 +222,7 @@ export default function QuickModificationOverlay({
                         }
                         onSelect={(obj) => setArrival(obj)}
                         className="search-input w-full bg-[#2C474B] text-white placeholder-slate-400 rounded-xl px-4 py-3.5 text-sm outline-none border-none focus:ring-2 focus:ring-cyan-400/30"
-                        AutocompleteListClassname="absolute autocomplete-suggestions left-0 right-0 z-50 mt-15 rounded-xl bg-[#0f2628] border border-[#1b3a3d] shadow-xl backdrop-blur-md max-h-60 mx-18 overflow-y-auto text-left divide-y divide-[#1e3c3f] overflow-x-hidden "
+                        AutocompleteListClassname={`absolute ${IsMobile ? 'min-w-50' : 'min-w-100'} autocomplete-suggestions left-0 right-0 z-50 mt-5 rounded-xl bg-[#0f2628] border border-[#1b3a3d] shadow-xl backdrop-blur-md max-h-60  overflow-y-auto text-left divide-y divide-[#1e3c3f] overflow-x-hidden`}
                     />
                 </div>
 
