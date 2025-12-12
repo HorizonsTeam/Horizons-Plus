@@ -34,10 +34,10 @@ router.post("/send-confirmation", async (req, res) => {
     if (!email) {
       return res.status(400).json({ error: "Email obligatoire" });
     }
-    
+
     const ticketId = "TICKET-" + Date.now();
 
-    const ticketInfo = await generateTicketPDF({
+    const ticketInfo = {
       ticketId,
       customerName,
       journey,
@@ -45,7 +45,10 @@ router.post("/send-confirmation", async (req, res) => {
       time,
       price,
       passengers,
-    });
+    };
+
+    const pdfBytes = await generateTicketPDF(ticketInfo);
+
 
     const html = `
       <h2>Votre billet Horizons+ est confirmé !</h2>
@@ -61,7 +64,6 @@ router.post("/send-confirmation", async (req, res) => {
       </ul>
     `;
 
-    const pdfBytes = await generateTicketPDF(ticketInfo);
 
     await sendMail({
       to: email,
