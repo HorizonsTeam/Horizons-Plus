@@ -1,44 +1,84 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { motion, useMotionValue, useTransform, type Transition } from 'motion/react';
-import TrainNoel from '../../assets/TrainImage.jpeg'
-import TrainMontagne from '../../assets/TrainMontagne.jpg'
-import TrainStation from '../../assets/TrainStation.jpg'
+import { useEffect, useMemo, useRef, useState } from "react";
+import {
+    motion,
+    useMotionValue,
+    useTransform,
+    type Transition,
+    type PanInfo,
+} from "motion/react";
 
-const DEFAULT_ITEMS = [
-  {
-    id: 1,
-    title: "Nos trains",
-    description: "Respirez l'air frais des sommets...",
-    imageSrc: TrainMontagne,
-  },
-  {
-    id: 2,
-    title: "Coucher de soleil en bord de mer",
-    description: "Une soirée face à l’horizon...",
-    imageSrc: TrainNoel,
-  },
-  {
-    id: 3,
-    title: "Week-end urbain",
-    description: "Explorez une ville animée...",
-    imageSrc: TrainStation,
-  },
+import TrainNoel from "../../assets/TrainImage.jpeg";
+import TrainMontagne from "../../assets/TrainMontagne.jpg";
+import TrainStation from "../../assets/TrainStation.jpg";
+
+type CarouselDataItem = {
+    id: number;
+    title: string;
+    description: string;
+    imageSrc: string;
+};
+
+const DEFAULT_ITEMS: CarouselDataItem[] = [
+    {
+        id: 1,
+        title: "Nos trains",
+        description: "Respirez l'air frais des sommets...",
+        imageSrc: TrainMontagne,
+    },
+    {
+        id: 2,
+        title: "Coucher de soleil en bord de mer",
+        description: "Une soirée face à l’horizon...",
+        imageSrc: TrainNoel,
+    },
+    {
+        id: 3,
+        title: "Week-end urbain",
+        description: "Explorez une ville animée...",
+        imageSrc: TrainStation,
+    },
 ];
-
-
 
 const DRAG_BUFFER = 0;
 const VELOCITY_THRESHOLD = 500;
 const GAP = 16;
+
+// ✅ Transition typée (et type literal OK)
 const SPRING_OPTIONS: Transition = {
-    type: 'spring',
+    type: "spring",
     stiffness: 300,
     damping: 30,
 };
 
-function CarouselItem({ item, index, itemWidth, round, trackItemOffset, x, transition }: any) {
-    const range = [-(index + 1) * trackItemOffset, -index * trackItemOffset, -(index - 1) * trackItemOffset];
+// ✅ Transition typée
+const ZERO_DURATION: Transition = { duration: 0 };
+
+type CarouselItemProps = {
+    item: CarouselDataItem;
+    index: number;
+    itemWidth: number;
+    round: boolean;
+    trackItemOffset: number;
+    x: ReturnType<typeof useMotionValue<number>>;
+    transition: Transition;
+};
+
+function CarouselItem({
+    item,
+    index,
+    itemWidth,
+    round,
+    trackItemOffset,
+    x,
+    transition,
+}: CarouselItemProps) {
+    const range = [
+        -(index + 1) * trackItemOffset,
+        -index * trackItemOffset,
+        -(index - 1) * trackItemOffset,
+    ];
     const outputRange = [90, 0, -90];
+
     const rotateY = useTransform(x, range, outputRange, { clamp: false });
 
     return (
@@ -53,13 +93,13 @@ function CarouselItem({ item, index, itemWidth, round, trackItemOffset, x, trans
       `}
             style={{
                 width: itemWidth,
-                height: itemWidth - 150 ,
+                height: itemWidth - 150,
                 rotateY,
                 ...(round && { borderRadius: "50%" }),
             }}
             transition={transition}
         >
-            <div className="absolute inset-0 bg-black/40" >
+            <div className="absolute inset-0 bg-black/40">
                 <img
                     src={item.imageSrc}
                     alt={item.title}
@@ -77,6 +117,16 @@ function CarouselItem({ item, index, itemWidth, round, trackItemOffset, x, trans
     );
 }
 
+type ImagesSwiperProps = {
+    items?: CarouselDataItem[];
+    baseWidth?: number;
+    autoplay?: boolean;
+    autoplayDelay?: number;
+    pauseOnHover?: boolean;
+    loop?: boolean;
+    round?: boolean;
+};
+
 export default function ImagesSwiper({
     items = DEFAULT_ITEMS,
     baseWidth = 300,
@@ -84,11 +134,12 @@ export default function ImagesSwiper({
     autoplayDelay = 3000,
     pauseOnHover = false,
     loop = false,
-    round = false
-}) {
+    round = false,
+}: ImagesSwiperProps) {
     const containerPadding = 16;
     const itemWidth = baseWidth - containerPadding * 2;
     const trackItemOffset = itemWidth + GAP;
+
     const itemsForRender = useMemo(() => {
         if (!loop) return items;
         if (items.length === 0) return [];
@@ -97,11 +148,15 @@ export default function ImagesSwiper({
 
     const [position, setPosition] = useState(loop ? 1 : 0);
     const x = useMotionValue(0);
+
     const [isHovered, setIsHovered] = useState(false);
     const [isJumping, setIsJumping] = useState(false);
     const [isAnimating, setIsAnimating] = useState(false);
 
     const containerRef = useRef<HTMLDivElement | null>(null);
+
+    // ✅ Transition typée => plus d'erreur TS
+    const effectiveTransition: Transition = isJumping ? ZERO_DURATION : SPRING_OPTIONS;
 
     useEffect(() => {
         if (!pauseOnHover) return;
@@ -121,14 +176,12 @@ export default function ImagesSwiper({
         };
     }, [pauseOnHover]);
 
-
-
     useEffect(() => {
-        if (!autoplay || itemsForRender.length <= 1) return undefined;
-        if (pauseOnHover && isHovered) return undefined;
+        if (!autoplay || itemsForRender.length <= 1) return;
+        if (pauseOnHover && isHovered) return;
 
         const timer = setInterval(() => {
-            setPosition(prev => Math.min(prev + 1, itemsForRender.length - 1));
+            setPosition((prev) => Math.min(prev + 1, itemsForRender.length - 1));
         }, autoplayDelay);
 
         return () => clearInterval(timer);
@@ -146,19 +199,14 @@ export default function ImagesSwiper({
         }
     }, [itemsForRender.length, loop, position]);
 
-    const effectiveTransition: Transition = isJumping
-        ? { duration: 0 }
-        : SPRING_OPTIONS;
-
-    const handleAnimationStart = () => {
-        setIsAnimating(true);
-    };
+    const handleAnimationStart = () => setIsAnimating(true);
 
     const handleAnimationComplete = () => {
         if (!loop || itemsForRender.length <= 1) {
             setIsAnimating(false);
             return;
         }
+
         const lastCloneIndex = itemsForRender.length - 1;
 
         if (position === lastCloneIndex) {
@@ -188,8 +236,9 @@ export default function ImagesSwiper({
         setIsAnimating(false);
     };
 
-    const handleDragEnd = (_: any, info: { offset: any; velocity: any; }) => {
+    const handleDragEnd = (_: unknown, info: PanInfo) => {
         const { offset, velocity } = info;
+
         const direction =
             offset.x < -DRAG_BUFFER || velocity.x < -VELOCITY_THRESHOLD
                 ? 1
@@ -199,7 +248,7 @@ export default function ImagesSwiper({
 
         if (direction === 0) return;
 
-        setPosition(prev => {
+        setPosition((prev) => {
             const next = prev + direction;
             const max = itemsForRender.length - 1;
             return Math.max(0, Math.min(next, max));
@@ -211,33 +260,37 @@ export default function ImagesSwiper({
         : {
             dragConstraints: {
                 left: -trackItemOffset * Math.max(itemsForRender.length - 1, 0),
-                right: 0
-            }
+                right: 0,
+            },
         };
 
     const activeIndex =
-        items.length === 0 ? 0 : loop ? (position - 1 + items.length) % items.length : Math.min(position, items.length - 1);
+        items.length === 0
+            ? 0
+            : loop
+                ? (position - 1 + items.length) % items.length
+                : Math.min(position, items.length - 1);
 
     return (
         <div
             ref={containerRef}
-            className={`relative overflow-hidden p-4 ${round ? 'rounded-full border border-white' : 'rounded-2xl '
+            className={`relative overflow-hidden p-4 ${round ? "rounded-full border border-white" : "rounded-2xl"
                 }`}
             style={{
                 width: `${baseWidth}px`,
-                height: `${baseWidth-150}px` 
+                height: `${baseWidth - 150}px`,
             }}
         >
             <motion.div
                 className="flex"
-                drag={isAnimating ? false : 'x'}
+                drag={isAnimating ? false : "x"}
                 {...dragProps}
                 style={{
                     width: itemWidth,
                     gap: `${GAP}px`,
                     perspective: 1000,
                     perspectiveOrigin: `${position * trackItemOffset + itemWidth / 2}px 50%`,
-                    x
+                    x,
                 }}
                 onDragEnd={handleDragEnd}
                 animate={{ x: -(position * trackItemOffset) }}
@@ -258,22 +311,24 @@ export default function ImagesSwiper({
                     />
                 ))}
             </motion.div>
-            <div className={`flex w-full justify-center ${round ? 'absolute z-20 bottom-12 left-1/2 -translate-x-1/2' : ''}`}>
+
+            <div
+                className={`flex w-full justify-center ${round ? "absolute z-20 bottom-12 left-1/2 -translate-x-1/2" : ""
+                    }`}
+            >
                 <div className="mt-4 flex w-[150px] justify-between px-8">
                     {items.map((_, index) => (
                         <motion.div
                             key={index}
                             className={`h-2 w-2 rounded-full cursor-pointer transition-colors duration-150 ${activeIndex === index
-                                    ? round
-                                        ? 'bg-white'
-                                        : 'bg-[#333333]'
-                                    : round
-                                        ? 'bg-[#555]'
-                                        : 'bg-[rgba(51,51,51,0.4)]'
+                                ? round
+                                    ? "bg-white"
+                                    : "bg-[#333333]"
+                                : round
+                                    ? "bg-[#555]"
+                                    : "bg-[rgba(51,51,51,0.4)]"
                                 }`}
-                            animate={{
-                                scale: activeIndex === index ? 1.2 : 1
-                            }}
+                            animate={{ scale: activeIndex === index ? 1.2 : 1 }}
                             onClick={() => setPosition(loop ? index + 1 : index)}
                             transition={{ duration: 0.15 }}
                         />
