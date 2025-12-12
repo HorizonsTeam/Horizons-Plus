@@ -3,41 +3,25 @@ import { motion, useMotionValue, useTransform } from 'motion/react';
 import TrainNoel from '../../assets/TrainImage.jpeg'
 import TrainMontagne from '../../assets/TrainMontagne.jpg'
 import TrainStation from '../../assets/TrainStation.jpg'
-import type { Transition } from "framer-motion";
-
-
-const springTransition: Transition = {
-    type: "spring",
-    stiffness: 120,
-    damping: 20,
-};
-
-const slideTransition: Transition = {
-    duration: 0.5,
-    ease: "easeInOut",
-};
-
-
-
 const DEFAULT_ITEMS = [
-    {
-        id: 1,
-        title: "Nos trains",
-        description: "Respirez l'air frais des sommets...",
-        imageSrc: TrainMontagne,
-    },
-    {
-        id: 2,
-        title: "Coucher de soleil en bord de mer",
-        description: "Une soirée face à l’horizon...",
-        imageSrc: TrainNoel,
-    },
-    {
-        id: 3,
-        title: "Week-end urbain",
-        description: "Explorez une ville animée...",
-        imageSrc: TrainStation,
-    },
+  {
+    id: 1,
+    title: "Nos trains",
+    description: "Respirez l'air frais des sommets...",
+    imageSrc: TrainMontagne,
+  },
+  {
+    id: 2,
+    title: "Coucher de soleil en bord de mer",
+    description: "Une soirée face à l’horizon...",
+    imageSrc: TrainNoel,
+  },
+  {
+    id: 3,
+    title: "Week-end urbain",
+    description: "Explorez une ville animée...",
+    imageSrc: TrainStation,
+  },
 ];
 
 
@@ -51,7 +35,6 @@ function CarouselItem({ item, index, itemWidth, round, trackItemOffset, x, trans
     const range = [-(index + 1) * trackItemOffset, -index * trackItemOffset, -(index - 1) * trackItemOffset];
     const outputRange = [90, 0, -90];
     const rotateY = useTransform(x, range, outputRange, { clamp: false });
-    
 
     return (
         <motion.div
@@ -198,7 +181,7 @@ export default function ImagesSwiper({
         setIsAnimating(false);
     };
 
-    const handleDragEnd = (_: any, info: { offset: any; velocity: any; }) => {
+    const handleDragEnd = (_, info) => {
         const { offset, velocity } = info;
         const direction =
             offset.x < -DRAG_BUFFER || velocity.x < -VELOCITY_THRESHOLD
@@ -251,7 +234,7 @@ export default function ImagesSwiper({
                 }}
                 onDragEnd={handleDragEnd}
                 animate={{ x: -(position * trackItemOffset) }}
-                transition={effectiveTransition} a
+                transition={effectiveTransition}
                 onAnimationStart={handleAnimationStart}
                 onAnimationComplete={handleAnimationComplete}
             >
