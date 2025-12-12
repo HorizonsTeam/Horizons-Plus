@@ -35,9 +35,7 @@ const SPRING_OPTIONS: Transition = {
     stiffness: 300,
     damping: 30,
 };
-const effectiveTransition: Transition = {
-    duration: 0,
-};
+
 function CarouselItem({ item, index, itemWidth, round, trackItemOffset, x, transition }: any) {
     const range = [-(index + 1) * trackItemOffset, -index * trackItemOffset, -(index - 1) * trackItemOffset];
     const outputRange = [90, 0, -90];
