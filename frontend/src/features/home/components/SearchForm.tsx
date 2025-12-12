@@ -8,7 +8,18 @@ import Avatar from '../../../assets/Avatar.svg'
 
 type TripType = 'oneway' | 'roundtrip';
 
-export default function SearchForm() {
+type SearchFormProps = {
+  onPlaneAnimation: (value: boolean) => void;
+  planeAnimDurationMs: number;
+};
+
+
+export default function SearchForm({ 
+
+  onPlaneAnimation,
+  planeAnimDurationMs,
+}: SearchFormProps) 
+{
   const [departure, setDeparture] = useState<Suggestion | null>(null);
   const [arrival, setArrival] = useState<Suggestion | null>(null);
 
@@ -21,8 +32,8 @@ export default function SearchForm() {
   const [tripType, setTripType] = useState<TripType>('oneway');
 
   const Navigate = useNavigate();
+  
 
-  // --- validation dates réutilisable (mobile + desktop)
   const validateDepartureDate = (value: string) => {
     if (value.length < 10) {
       setDepartureDate(value);
@@ -39,7 +50,6 @@ export default function SearchForm() {
 
     setDepartureDate(value);
 
-    // si l'arrivée existe et devient invalide -> reset
     if (arrivalDate) {
       const arr = new Date(arrivalDate);
       if (arr < selectedDate) {
@@ -74,7 +84,6 @@ export default function SearchForm() {
     else validateArrivalDate(value);
   };
 
-  // --- bouton swap
   const handleSwap = () => {
     const oldDeparture = departure;
     setDeparture(arrival);
@@ -98,33 +107,30 @@ export default function SearchForm() {
   const goSearch = () => {
     if (isDisabled || !departure || !arrival) return;
 
+    
+    
+
+
+
+    setTimeout(() => {  
     Navigate(
       `/Recherche?fromId=${encodeURIComponent(
         departure.id
       )}&fromName=${encodeURIComponent(
         departure.name
-      )}&fromLat=${encodeURIComponent(
-        departure.lat
-      )}&fromLon=${encodeURIComponent(
-        departure.lon
       )}&toId=${encodeURIComponent(
         arrival.id
       )}&toName=${encodeURIComponent(
         arrival.name
-      )}&toLat=${encodeURIComponent(
-        arrival.lat
-      )}&toLon=${encodeURIComponent(
-        arrival.lon
       )}&departureDate=${encodeURIComponent(
         departureDate
       )}&arrivalDate=${encodeURIComponent(
         tripType === 'roundtrip' ? arrivalDate || '' : ''
-      )}&passagers=${encodeURIComponent(
-        passagerCount
-      )}`
+      )}&passagers=${encodeURIComponent(passagerCount)}`
     );
+      onPlaneAnimation(false);
+    }, planeAnimDurationMs);
   };
-
   return (
     <section className="px-4 py-8 lg:py-16">
       <div>
@@ -147,13 +153,13 @@ export default function SearchForm() {
                     departure
                       ? { ...departure, name: text }
                       : {
-                          id: "",
-                          name: text,
-                          source: "sncf",
-                          lat: 0,
-                          lon: 0,
-                          simulated: false,
-                        }
+                        id: '',
+                        name: text,
+                        source: 'sncf',
+                        lat: 0,
+                        lon: 0,
+                        simulated: false,
+                      }
                   );
                 }}
                 onSelect={(obj) => setDeparture(obj)}
@@ -172,13 +178,13 @@ export default function SearchForm() {
                     arrival
                       ? { ...arrival, name: text }
                       : {
-                          id: "",
-                          name: text,
-                          source: "sncf",
-                          lat: 0,
-                          lon: 0,
-                          simulated: false,
-                        }
+                        id: '',
+                        name: text,
+                        source: 'sncf',
+                        lat: 0,
+                        lon: 0,
+                        simulated: false,
+                      }
                   );
                 }}
                 onSelect={(obj) => setArrival(obj)}
@@ -257,6 +263,8 @@ export default function SearchForm() {
 
         {/* ========== DESKTOP ========== */}
         <div className="hidden lg:block w-full  mt-20">
+          
+
           {/* Barre de recherche */}
           <div className=" grid grid-cols justify-center">
             <div className="flex justify-start mb-6">
@@ -338,6 +346,8 @@ export default function SearchForm() {
                     }}
                     onSelect={(obj) => setDeparture(obj)}
                     className="min-h-22 w-full text-black bg-white rounded-l-xl px-4 outline-none border-none"
+                    AutocompleteListClassname={`absolute min-w-150 autocomplete-suggestions left-0 right-0 z-50 mt-5 rounded-xl bg-[#0f2628] border border-[#1b3a3d] shadow-xl backdrop-blur-md max-h-60  overflow-y-auto text-left divide-y divide-[#1e3c3f] overflow-x-hidden`}
+
                   />
                 </div>
 
@@ -378,6 +388,8 @@ export default function SearchForm() {
                     }}
                     onSelect={(obj) => setArrival(obj)}
                     className="min-h-22 text-black bg-white px-4 outline-none border-none"
+                    AutocompleteListClassname={`absolute 'min-w-100' autocomplete-suggestions left-0 right-0 z-50 mt-5 rounded-xl bg-[#0f2628] border border-[#1b3a3d] shadow-xl backdrop-blur-md max-h-60  overflow-y-auto text-left divide-y divide-[#1e3c3f] overflow-x-hidden`}
+
                   />
                 </div>
               </div>
@@ -403,7 +415,9 @@ export default function SearchForm() {
               <div className='p-1  bg-gradient-to-r from-[#7ADFEA] via-[#98EAF3] to-[#C7F7FB] bg-200  rounded-2xl shadow-md '>
                 <button
                   type="button"
-                  onClick={goSearch}
+                  onClick={() => {
+                    onPlaneAnimation(true);
+                    goSearch () ; }}
                   className={`
         px-4 py-4
         flex items-center 

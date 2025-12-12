@@ -40,7 +40,10 @@ export default function PaymentPage() {
     }, [ValidatePayment]);
 
     const onClick = () => setIsSelected(!IsSelected);
-    const handleRetour = () => navigate(-1);
+    const handleRetour = () => {
+        navigate(-1); 
+        
+    };
 
     useEffect(() => {
         console.log("FRONT → URL utilisée :", `${import.meta.env.VITE_API_URL}/api/payments/create-payment-intent`);
