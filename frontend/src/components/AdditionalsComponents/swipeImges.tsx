@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { motion, useMotionValue, useTransform } from 'motion/react';
+import { motion, useMotionValue, useTransform, type Transition } from 'motion/react';
 import TrainNoel from '../../assets/TrainImage.jpeg'
 import TrainMontagne from '../../assets/TrainMontagne.jpg'
 import TrainStation from '../../assets/TrainStation.jpg'
+
 const DEFAULT_ITEMS = [
   {
     id: 1,
@@ -29,8 +30,14 @@ const DEFAULT_ITEMS = [
 const DRAG_BUFFER = 0;
 const VELOCITY_THRESHOLD = 500;
 const GAP = 16;
-const SPRING_OPTIONS = { type: 'spring', stiffness: 300, damping: 30 };
-
+const SPRING_OPTIONS: Transition = {
+    type: 'spring',
+    stiffness: 300,
+    damping: 30,
+};
+const effectiveTransition: Transition = {
+    duration: 0,
+};
 function CarouselItem({ item, index, itemWidth, round, trackItemOffset, x, transition }: any) {
     const range = [-(index + 1) * trackItemOffset, -index * trackItemOffset, -(index - 1) * trackItemOffset];
     const outputRange = [90, 0, -90];
@@ -141,7 +148,9 @@ export default function ImagesSwiper({
         }
     }, [itemsForRender.length, loop, position]);
 
-    const effectiveTransition = isJumping ? { duration: 0 } : SPRING_OPTIONS;
+    const effectiveTransition: Transition = isJumping
+        ? { duration: 0 }
+        : SPRING_OPTIONS;
 
     const handleAnimationStart = () => {
         setIsAnimating(true);
@@ -181,7 +190,7 @@ export default function ImagesSwiper({
         setIsAnimating(false);
     };
 
-    const handleDragEnd = (_, info) => {
+    const handleDragEnd = (_: any, info: { offset: any; velocity: any; }) => {
         const { offset, velocity } = info;
         const direction =
             offset.x < -DRAG_BUFFER || velocity.x < -VELOCITY_THRESHOLD
