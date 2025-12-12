@@ -315,6 +315,7 @@ export default function SearchForm({
                   onChange={validateDepartureDate}
                   
                   
+                  
                 />
               </div>
               {tripType === 'roundtrip' && (
