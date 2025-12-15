@@ -68,8 +68,8 @@ npm run dev
 ## 📅 Avancement
 
 * [x] Définition des fonctionnalités principales
-* [ ] Choix définitif du backend
-* [ ] Début du développement frontend
-* [ ] Développement backend
+* [x] Choix définitif du backend
+* [x] Début du développement frontend (pas encore fini)
+* [x] Développement backend (doucement mais sûrement)
 * [ ] Intégration & tests
 
