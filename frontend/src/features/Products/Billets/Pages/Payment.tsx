@@ -35,6 +35,8 @@ export default function PaymentPage() {
     const [promoType, setPromoType] = useState(null);
     const [promoApplied, setPromoApplied] = useState<boolean>(false);
 
+    console.log(selectedClass);
+    
     // Affichage dès le payement validé    
     useEffect(() => {
         if (ValidatePayment) {
@@ -75,7 +77,12 @@ export default function PaymentPage() {
             const res = await fetch(`${API_BASE}/api/promo/validate`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ code }),
+                body: JSON.stringify({ 
+                    code,
+                    transport: "train",
+                    price: priceTotal,
+                    class: selectedClass,
+                }),
             });
 
             const data = await res.json();
