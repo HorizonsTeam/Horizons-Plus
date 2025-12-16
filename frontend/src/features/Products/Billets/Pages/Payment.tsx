@@ -47,7 +47,7 @@ export default function PaymentPage() {
     const [triggerPayment, setTriggerPayment] = useState<(() => void) | null>(null);
 
     const [code, setCode] = useState("");
-    const basePrice = journey.price * (passagersCount ?? 1);
+    const basePrice = journey.price * passagersCount;
     const [priceTotal, setPriceTotal] = useState<number>(basePrice);
     const [promoValue, setPromoValue] = useState(0);
     const [promoType, setPromoType] = useState(null);
@@ -173,7 +173,7 @@ export default function PaymentPage() {
                         <li><p>Trajet : <span className="font-semibold">{journey.departureName} → {journey.arrivalName}</span></p></li>
                         <li><p>Date : <span className="font-semibold">{formattedDepartureDate} • {journey.departureTime} - {journey.arrivalTime}</span></p></li>
                         <li><p>Classe : <span className="font-semibold">{selectedClass}</span></p></li>
-                        <li><p>Passager : <span className="font-semibold">{passagersCount} passager{(passagersCount ?? 1) > 1 ? "s" : ""}</span></p></li>
+                        <li><p>Passager : <span className="font-semibold">{passagersCount} passager{passagersCount > 1 ? "s" : ""}</span></p></li>
                         <li><p>Prix Total : <span className="font-bold text-xl">{priceTotal.toFixed(2)} €</span></p></li>
                     </ul>
                 </div>
@@ -279,7 +279,7 @@ export default function PaymentPage() {
                                     {/* Montant retiré */}
                                     <p className="text-green-400 font-semibold text-sm mt-1">
                                     – {promoType === "%" 
-                                        ? Number((basePrice * promoValue) / 100).toFixed(2)
+                                        ? ((basePrice * promoValue) / 100).toFixed(2)
                                         : promoValue
                                         } €
                                     </p>
