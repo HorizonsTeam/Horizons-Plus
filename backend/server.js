@@ -12,6 +12,7 @@ import searchJourneys from "./src/routes/searchJourneys.js";
 import amadeusPlaces from "./src/routes/amadeusPlaces.js";
 import { loadGeoData } from "./src/utils/geoData.js";
 import paymentRoutes from "./src/routes/payment.js"
+import promoRoutes from "./src/routes/promo.js"
 
 const app = express();
 const PORT = Number(process.env.PORT || 3005);
@@ -107,7 +108,9 @@ app.use("/api/search", amadeusPlaces);
 app.use("/api/search", searchJourneys);
 app.use("/api/search", searchPlaces);
 
-// Feat : Payement 
+app.use("/api/promo", promoRoutes);
+
+// Feat : Payement  
 app.use("/api/payments", paymentRoutes);
 
 // Health
@@ -120,6 +123,5 @@ app.get("/api/debug-cookies", (req, res) => {
     cookies: req.cookies || {},
   });
 });
-
 
 app.listen(PORT, () => console.log(`API ready → http://localhost:${PORT}`));

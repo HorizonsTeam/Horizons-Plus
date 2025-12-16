@@ -8,8 +8,6 @@ export default function PaiementForm({ clientSecret, onSuccess, onReady, passage
     const stripe = useStripe();
     const elements = useElements();
 
-    console.log("stripe", stripe);
-    console.log("elements", elements);
     // Style 
     const styleInput = {
         style: {

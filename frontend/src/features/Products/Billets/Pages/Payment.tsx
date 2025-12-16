@@ -12,13 +12,31 @@ import { Elements } from '@stripe/react-stripe-js';
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 import type { LocationState } from '../types.ts';
 
+const API_BASE = import.meta.env.VITE_API_URL || "";
 
+function getBaseInsurancePrice(ticketClass: string) {
+    switch (ticketClass) {
+        case "Économie":
+            return 3.50;
+        case "Confort":
+            return 5.00;
+        case "Business":
+            return 7.50;
+        case "Première":
+            return 10.00;
+        default:
+            return 3.50;
+    }
+}
+
+function getInsuranceTotal(ticketClass: string, passengersCount: number) {
+    return getBaseInsurancePrice(ticketClass) * passengersCount;
+}
 
 export default function PaymentPage() {
     const { state } = useLocation();
     const { journey, selectedClass, passagersCount, formattedDepartureDate, passagersData } = (state || {}) as LocationState & { passagersData: number[] };
 
-    const [IsSelected, setIsSelected] = useState(false);
     const navigate = useNavigate();
     const isMobile = useIsMobile();
 
@@ -27,7 +45,16 @@ export default function PaymentPage() {
     const [ValidatePayment, setValidatePaymentOverlay] = useState(false);
 
     const [triggerPayment, setTriggerPayment] = useState<(() => void) | null>(null);
-    const [assurance, setAssurance] = useState<boolean>(false);
+
+    const [code, setCode] = useState("");
+    const basePrice = journey.price * (passagersCount ?? 1);
+    const [priceTotal, setPriceTotal] = useState<number>(basePrice);
+    const [promoValue, setPromoValue] = useState(0);
+    const [promoType, setPromoType] = useState(null);
+    const [promoApplied, setPromoApplied] = useState<boolean>(false);
+
+    const insuranceUnitPrice = getBaseInsurancePrice(selectedClass); // Prix unitaire de l'assurance selon la classe
+    const [insurance, setInsurance] = useState<boolean>(false);
 
     // Affichage dès le payement validé    
     useEffect(() => {
@@ -39,15 +66,12 @@ export default function PaymentPage() {
         }
     }, [ValidatePayment]);
 
-    const onClick = () => setIsSelected(!IsSelected);
     const handleRetour = () => {
         navigate(-1); 
         
     };
 
     useEffect(() => {
-        console.log("FRONT → URL utilisée :", `${import.meta.env.VITE_API_URL}/api/payments/create-payment-intent`);
-        const API_BASE = import.meta.env.VITE_API_URL || "";
         fetch(`${API_BASE}/api/payments/create-payment-intent`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -64,6 +88,60 @@ export default function PaymentPage() {
             })
             .catch((err) => console.error("Erreur :", err));
     }, []);
+
+    async function handleValidatePromo() {
+        if (promoApplied || !code.trim()) return;
+
+        try {
+            const res = await fetch(`${API_BASE}/api/promo/validate`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ 
+                    code,
+                    transport: "avion",
+                    price: priceTotal,
+                    class: selectedClass,
+                }),
+            });
+
+            const data = await res.json();
+            console.log("Promo data reçue :", data);
+
+            if (!data.valid) {
+                console.error(data.message);
+                return;
+            }
+
+            setPromoValue(data.value);
+            setPromoType(data.type);
+            setPromoApplied(true);
+        } catch (err) {
+            console.error(err);
+            alert("Erreur serveur");
+        }
+    }
+
+    useEffect(() => {
+        let price = basePrice;
+
+        // Promo
+        if (promoApplied) {
+            if (promoType === "%") {
+                price = price * (1 - promoValue / 100);
+            } else if (promoType === "€") {
+                price -= promoValue;
+            }
+        }
+
+        // insurance
+        const insuranceTotal = insurance
+            ? getBaseInsurancePrice(selectedClass) * passagersCount
+            : 0;
+
+        price += insuranceTotal;
+
+        setPriceTotal(price);
+    }, [basePrice, insurance, promoApplied, promoValue, promoType]);
 
     // const options = { clientSecret };
     return (
@@ -96,7 +174,7 @@ export default function PaymentPage() {
                         <li><p>Date : <span className="font-semibold">{formattedDepartureDate} • {journey.departureTime} - {journey.arrivalTime}</span></p></li>
                         <li><p>Classe : <span className="font-semibold">{selectedClass}</span></p></li>
                         <li><p>Passager : <span className="font-semibold">{passagersCount} passager{(passagersCount ?? 1) > 1 ? "s" : ""}</span></p></li>
-                        <li><p>Prix Total : <span className="font-bold text-xl">{journey.price * (passagersCount ?? 1) + (assurance == true ? 3.50 : 0)} €</span></p></li>
+                        <li><p>Prix Total : <span className="font-bold text-xl">{priceTotal.toFixed(2)} €</span></p></li>
                     </ul>
                 </div>
 
@@ -128,15 +206,23 @@ export default function PaymentPage() {
                 <div className={` ${isMobile ? '' : 'm-20'} bg-[#133A40] border-2 border-[#2C474B] rounded-2xl p-5 mb-8 `}>
                     <p className="font-bold mb-4">Options supplémentaires</p>
 
-                    {/* Assurance */}
+                    {/* insurance */}
                     <button
-                        onClick={onClick}
+                        onClick={() => setInsurance(prev => !prev)}
                         className={`w-full flex justify-between items-center p-4 rounded-xl border-2 transition cursor-pointer
-                        ${IsSelected ? "border-[#98EAF3] text-[#98EAF3]" : "border-[#2C474B] text-white"}`}
+                        ${insurance ? "border-[#98EAF3] text-[#98EAF3]" : "border-[#2C474B] text-white"}`}
                     >
                         <img src={assurance_Ico} className="h-6 w-6"/>
-                        <p className="font-semibold text-sm flex-1 ml-4" onClick={() => setAssurance(!assurance)}>Assurance annulation (+3,50 €)</p>
-                        <div className={`h-6 w-6 rounded-full border-2 border-[#2C474B] ${IsSelected ? 'bg-[#98EAF3]' : ''}`} />
+
+                        <p className="font-semibold text-sm flex-1 ml-4">
+                            Assurance annulation (+{insuranceUnitPrice.toFixed(2)} € / passager)
+                        </p>
+
+                        <div 
+                            className={`h-6 w-6 rounded-full border-2 border-[#2C474B] ${
+                                insurance ? 'bg-[#98EAF3]' : ''
+                            }`} 
+                        />
                     </button>
 
                     {/* CODE PROMO */}
@@ -144,17 +230,69 @@ export default function PaymentPage() {
                         <p className="font-bold w-32">Code promo</p>
                         <input
                             type="text"
+                            value={code}
+                            onChange={(e) => setCode(e.target.value)}
+                            placeholder='EX: NOEL10'
                             className="flex-1 bg-[#103035] h-[45px] rounded-xl p-3 outline-none focus:ring-2 focus:ring-[#98EAF3] font-semibold"
                         />
+                        <button
+                            onClick={handleValidatePromo}
+                            className="bg-[#98EAF3] text-[#103035] font-bold px-5 h-[45px] rounded-xl hover:bg-[#7cdbe6] transition-colors cursor-pointer"
+                        >
+                            Valider
+                        </button>
                     </div>
                 </div>
 
                 {/* TOTAL */}
                 <div className={` ${isMobile ? '' : 'm-20'}  p-5 mb-8 `}>
 
-                    <div className="flex justify-between items-center mt-10">
+                    <div className="flex flex-col items-end mt-10">
                         <p className="text-2xl font-bold">Total :</p>
-                        <p className="text-2xl font-bold">{journey.price * (passagersCount ?? 1) + (assurance == true ? 3.50 : 0)} €</p>
+
+                        <div className="text-right">
+
+                            {/* Prix avant promo */}
+                            {promoApplied && (
+                                <p className="text-gray-400 text-sm line-through">
+                                    {basePrice} €
+                                </p>
+                            )}
+
+                            {/* insurance */}
+                            {insurance && (
+                                <p className="text-blue-300 font-semibold text-sm mt-1">
+                                    + {getInsuranceTotal(selectedClass, passagersCount).toFixed(2)} € d’assurance 
+                                    ({passagersCount} passager{passagersCount > 1 ? "s" : ""})
+                                </p>
+                            )}
+
+
+                            {/* Prix final */}
+                            <p className="text-4xl font-extrabold text-white">
+                                {priceTotal.toFixed(2)} €
+                            </p>
+
+                            {/* Réduction */}
+                            {promoApplied && (
+                                <>
+                                    {/* Montant retiré */}
+                                    <p className="text-green-400 font-semibold text-sm mt-1">
+                                    – {promoType === "%" 
+                                        ? Number((basePrice * promoValue) / 100).toFixed(2)
+                                        : promoValue
+                                        } €
+                                    </p>
+
+                                    {/* Si pourcentage, afficher aussi le % */}
+                                    {promoType === "%" && (
+                                    <p className="text-green-400 font-semibold text-xs">
+                                        ({promoValue}% appliqués)
+                                    </p>
+                                    )}
+                                </>
+                            )}
+                        </div>
                     </div>
                 </div>
 
