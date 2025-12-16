@@ -14,6 +14,25 @@ import type { LocationState } from '../types.ts';
 
 const API_BASE = import.meta.env.VITE_API_URL || "";
 
+function getBaseInsurancePrice(ticketClass: string) {
+    switch (ticketClass) {
+        case "Économie":
+            return 3.50;
+        case "Confort":
+            return 5.00;
+        case "Business":
+            return 7.50;
+        case "Première":
+            return 10.00;
+        default:
+            return 3.50;
+    }
+}
+
+function getInsuranceTotal(ticketClass: string, passengersCount: number) {
+    return getBaseInsurancePrice(ticketClass) * passengersCount;
+}
+
 export default function PaymentPage() {
     const { state } = useLocation();
     const { journey, selectedClass, passagersCount, formattedDepartureDate, passagersData } = (state || {}) as LocationState & { passagersData: number[] };
@@ -26,7 +45,6 @@ export default function PaymentPage() {
     const [ValidatePayment, setValidatePaymentOverlay] = useState(false);
 
     const [triggerPayment, setTriggerPayment] = useState<(() => void) | null>(null);
-    const [assurance, setAssurance] = useState<boolean>(false);
 
     const [code, setCode] = useState("");
     const basePrice = journey.price * (passagersCount ?? 1);
@@ -35,8 +53,9 @@ export default function PaymentPage() {
     const [promoType, setPromoType] = useState(null);
     const [promoApplied, setPromoApplied] = useState<boolean>(false);
 
-    console.log(selectedClass);
-    
+    const insuranceUnitPrice = getBaseInsurancePrice(selectedClass); // Prix unitaire de l'assurance selon la classe
+    const [insurance, setInsurance] = useState<boolean>(false);
+
     // Affichage dès le payement validé    
     useEffect(() => {
         if (ValidatePayment) {
@@ -79,14 +98,14 @@ export default function PaymentPage() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ 
                     code,
-                    transport: "train",
+                    transport: "avion",
                     price: priceTotal,
                     class: selectedClass,
                 }),
             });
 
             const data = await res.json();
-            // console.log("Promo data reçue :", data);
+            console.log("Promo data reçue :", data);
 
             if (!data.valid) {
                 console.error(data.message);
@@ -105,22 +124,24 @@ export default function PaymentPage() {
     useEffect(() => {
         let price = basePrice;
 
-        // Assurance
-        if (assurance) {
-            price += 3.50;
-        }
-
         // Promo
         if (promoApplied) {
             if (promoType === "%") {
-                price = Math.round(price * (1 - promoValue / 100) * 100) / 100;
+                price = price * (1 - promoValue / 100);
             } else if (promoType === "€") {
                 price -= promoValue;
             }
         }
 
+        // insurance
+        const insuranceTotal = insurance
+            ? getBaseInsurancePrice(selectedClass) * passagersCount
+            : 0;
+
+        price += insuranceTotal;
+
         setPriceTotal(price);
-    }, [basePrice, assurance, promoApplied, promoValue, promoType]);
+    }, [basePrice, insurance, promoApplied, promoValue, promoType]);
 
     // const options = { clientSecret };
     return (
@@ -153,7 +174,7 @@ export default function PaymentPage() {
                         <li><p>Date : <span className="font-semibold">{formattedDepartureDate} • {journey.departureTime} - {journey.arrivalTime}</span></p></li>
                         <li><p>Classe : <span className="font-semibold">{selectedClass}</span></p></li>
                         <li><p>Passager : <span className="font-semibold">{passagersCount} passager{(passagersCount ?? 1) > 1 ? "s" : ""}</span></p></li>
-                        <li><p>Prix Total : <span className="font-bold text-xl">{priceTotal} €</span></p></li>
+                        <li><p>Prix Total : <span className="font-bold text-xl">{priceTotal.toFixed(2)} €</span></p></li>
                     </ul>
                 </div>
 
@@ -185,21 +206,21 @@ export default function PaymentPage() {
                 <div className={` ${isMobile ? '' : 'm-20'} bg-[#133A40] border-2 border-[#2C474B] rounded-2xl p-5 mb-8 `}>
                     <p className="font-bold mb-4">Options supplémentaires</p>
 
-                    {/* Assurance */}
+                    {/* insurance */}
                     <button
-                        onClick={() => setAssurance(prev => !prev)}
+                        onClick={() => setInsurance(prev => !prev)}
                         className={`w-full flex justify-between items-center p-4 rounded-xl border-2 transition cursor-pointer
-                        ${assurance ? "border-[#98EAF3] text-[#98EAF3]" : "border-[#2C474B] text-white"}`}
+                        ${insurance ? "border-[#98EAF3] text-[#98EAF3]" : "border-[#2C474B] text-white"}`}
                     >
                         <img src={assurance_Ico} className="h-6 w-6"/>
 
                         <p className="font-semibold text-sm flex-1 ml-4">
-                            Assurance annulation (+3,50 €)
+                            Assurance annulation (+{insuranceUnitPrice.toFixed(2)} € / passager)
                         </p>
 
                         <div 
                             className={`h-6 w-6 rounded-full border-2 border-[#2C474B] ${
-                                assurance ? 'bg-[#98EAF3]' : ''
+                                insurance ? 'bg-[#98EAF3]' : ''
                             }`} 
                         />
                     </button>
@@ -226,9 +247,52 @@ export default function PaymentPage() {
                 {/* TOTAL */}
                 <div className={` ${isMobile ? '' : 'm-20'}  p-5 mb-8 `}>
 
-                    <div className="flex justify-between items-center mt-10">
+                    <div className="flex flex-col items-end mt-10">
                         <p className="text-2xl font-bold">Total :</p>
-                        <p className="text-2xl font-bold">{priceTotal} €</p>
+
+                        <div className="text-right">
+
+                            {/* Prix avant promo */}
+                            {promoApplied && (
+                                <p className="text-gray-400 text-sm line-through">
+                                    {basePrice} €
+                                </p>
+                            )}
+
+                            {/* insurance */}
+                            {insurance && (
+                                <p className="text-blue-300 font-semibold text-sm mt-1">
+                                    + {getInsuranceTotal(selectedClass, passagersCount).toFixed(2)} € d’assurance 
+                                    ({passagersCount} passager{passagersCount > 1 ? "s" : ""})
+                                </p>
+                            )}
+
+
+                            {/* Prix final */}
+                            <p className="text-4xl font-extrabold text-white">
+                                {priceTotal.toFixed(2)} €
+                            </p>
+
+                            {/* Réduction */}
+                            {promoApplied && (
+                                <>
+                                    {/* Montant retiré */}
+                                    <p className="text-green-400 font-semibold text-sm mt-1">
+                                    – {promoType === "%" 
+                                        ? Number((basePrice * promoValue) / 100).toFixed(2)
+                                        : promoValue
+                                        } €
+                                    </p>
+
+                                    {/* Si pourcentage, afficher aussi le % */}
+                                    {promoType === "%" && (
+                                    <p className="text-green-400 font-semibold text-xs">
+                                        ({promoValue}% appliqués)
+                                    </p>
+                                    )}
+                                </>
+                            )}
+                        </div>
                     </div>
                 </div>
 
