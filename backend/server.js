@@ -13,6 +13,7 @@ import amadeusPlaces from "./src/routes/amadeusPlaces.js";
 import { loadGeoData } from "./src/utils/geoData.js";
 import paymentRoutes from "./src/routes/payment.js"
 import promoRoutes from "./src/routes/promo.js"
+import panierRoutes from "./src/routes/panier.js";
 
 const app = express();
 const PORT = Number(process.env.PORT || 3005);
@@ -109,6 +110,8 @@ app.use("/api/search", searchJourneys);
 app.use("/api/search", searchPlaces);
 
 app.use("/api/promo", promoRoutes);
+
+app.use("/api/panier", panierRoutes);
 
 // Feat : Payement  
 app.use("/api/payments", paymentRoutes);
