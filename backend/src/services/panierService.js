@@ -1,17 +1,12 @@
 import sql from '../../db.js';
 
-function generateSessionId() {
-    return "session_" + Math.random().toString(36).substring(2) + Date.now().toString(36);
-}
+// function generateSessionId() {
+//     return "session_" + Math.random().toString(36).substring(2) + Date.now().toString(36);
+// }
 
-async function getOrCreatePanier(sessionId) {
-    if (!sessionId || sessionId === 'null' || sessionId === 'undefined') {
-        sessionId = generateSessionId();
-    }
-
-    // Chercher le panier
+async function getOrCreatePanier(userId) {
     let panier = await sql`
-        SELECT * FROM panier WHERE session_id = ${sessionId}
+        SELECT * FROM panier WHERE user_id = ${userId} AND statut = 'ACTIF'
     `;
 
     // Si pas trouvé, le créer
@@ -19,12 +14,22 @@ async function getOrCreatePanier(sessionId) {
         const expireDate = new Date();
         expireDate.setDate(expireDate.getDate() + 30);
 
+        const sessionId = 'user_' + userId + '_' + Date.now();
+
         await sql`
-            INSERT INTO panier (session_id, cree_le, expire_le, statut) 
-            VALUES (${sessionId}, NOW(), ${expireDate}, 'ACTIF')
+            INSERT INTO panier (user_id, session_id, cree_le, expire_le, statut) 
+            VALUES (
+                ${userId},
+                ${sessionId}, 
+                NOW(), 
+                ${expireDate}, 
+                'ACTIF'
+            )
         `;
 
-        return { sessionId, panier: null, items: [] };
+        panier = await sql`
+            SELECT * FROM panier WHERE user_id = ${userId} AND statut = 'ACTIF'
+        `;
     }
 
     const panierId = panier[0].panier_id;
@@ -33,16 +38,15 @@ async function getOrCreatePanier(sessionId) {
         SELECT * FROM panier_item WHERE panier_id = ${panierId}
     `;
 
-    return { 
-        sessionId, 
+    return {
         panier: panier[0],
-        items 
+        items
     };
 }
 
-async function getPanier(sessionId) {
+async function getPanier(userId) {
     const panier = await sql`
-        SELECT * FROM panier WHERE session_id = ${sessionId}
+        SELECT * FROM panier WHERE user_id = ${userId} AND statut = 'ACTIF'
     `;
 
     if (panier.length === 0) return null;
@@ -54,7 +58,6 @@ async function getPanier(sessionId) {
     `;
 
     return { 
-        sessionId, 
         panier: panier[0],
         items 
     };

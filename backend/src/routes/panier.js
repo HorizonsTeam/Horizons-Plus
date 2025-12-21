@@ -4,6 +4,6 @@ import { getPanier, getOrCreatePanier } from '../controllers/panierController.js
 const router = express.Router();
 
 router.post("/", getOrCreatePanier);
-router.get("/:sessionId", getPanier);
+router.get("/:userId", getPanier);
 
 export default router;
