@@ -113,21 +113,31 @@ export default function SearchForm({
 
 
     setTimeout(() => {  
-    Navigate(
-      `/Recherche?fromId=${encodeURIComponent(
-        departure.id
-      )}&fromName=${encodeURIComponent(
-        departure.name
-      )}&toId=${encodeURIComponent(
-        arrival.id
-      )}&toName=${encodeURIComponent(
-        arrival.name
-      )}&departureDate=${encodeURIComponent(
-        departureDate
-      )}&arrivalDate=${encodeURIComponent(
-        tripType === 'roundtrip' ? arrivalDate || '' : ''
-      )}&passagers=${encodeURIComponent(passagerCount)}`
-    );
+      Navigate(
+        `/Recherche?fromId=${encodeURIComponent(
+          departure.id
+        )}&fromName=${encodeURIComponent(
+          departure.name
+        )}&fromLat=${encodeURIComponent(
+          departure.lat
+        )}&fromLon=${encodeURIComponent(
+          departure.lon
+        )}&toId=${encodeURIComponent(
+          arrival.id
+        )}&toName=${encodeURIComponent(
+          arrival.name
+        )}&toLat=${encodeURIComponent(
+          arrival.lat
+        )}&toLon=${encodeURIComponent(
+          arrival.lon
+        )}&departureDate=${encodeURIComponent(
+          departureDate
+        )}&arrivalDate=${encodeURIComponent(
+          tripType === 'roundtrip' ? arrivalDate || '' : ''
+        )}&passagers=${encodeURIComponent(
+          passagerCount
+        )}`
+      );
       onPlaneAnimation(false);
     }, planeAnimDurationMs);
   };
@@ -303,6 +313,7 @@ export default function SearchForm({
                   value={departureDate}
                   min={today}
                   onChange={validateDepartureDate}
+                  
                   
                   
                 />

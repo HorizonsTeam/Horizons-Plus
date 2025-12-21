@@ -1,4 +1,6 @@
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import AutocompleteInput from "../../../components/autocomplete/AutocompleteInput";
 import type { Suggestion } from "../../../components/autocomplete/types";
 import { ArrowDownUp } from "lucide-react";
@@ -17,11 +19,23 @@ type ModificationProps = {
     setBoxIsOn: (value: boolean) => void;
     Passagers?: number;
     trip?: TripType;
+
     setIsLoading: (value: boolean) => void;
     setErrorMessage: (value: string | null) => void;
+
+    // si tu ne t’en sers pas ici, garde-les mais ignore-les (évite warnings)
     setJourneyData: (value: any[]) => void;
     setTransport: (value: "train" | "plane" | undefined) => void;
 };
+
+const makeSuggestion = (name: string): Suggestion => ({
+    id: "",
+    name,
+    source: "sncf",
+    lat: 0,
+    lon: 0,
+    simulated: false,
+});
 
 export default function QuickModificationOverlay({
     villeDepart,
@@ -33,145 +47,113 @@ export default function QuickModificationOverlay({
     setBoxIsOn,
     setIsLoading,
     setErrorMessage,
-    setJourneyData,
-    setTransport
+    setJourneyData: _setJourneyData,
+    setTransport: _setTransport,
 }: ModificationProps) {
+    const isMobile = useIsMobile();
+    const navigate = useNavigate();
 
-    const [passagers, setPassagers] = useState<number>(
-        Passagers ? Passagers : 1
-    );
+    const mountedRef = useRef(true);
+    useEffect(() => {
+        mountedRef.current = true;
+        return () => {
+            mountedRef.current = false;
+        };
+    }, []);
 
-    const [departure, setDeparture] = useState<Suggestion | null>(
-        villeDepart
-            ? {
-                id: "",
-                name: villeDepart,
-                source: "sncf",
-                lat: 0,
-                lon: 0,
-                simulated: false,
-            }
-            : null
-    );
-
-    const [arrival, setArrival] = useState<Suggestion | null>(
-        villeArrivee
-            ? {
-                id: "",
-                name: villeArrivee,
-                source: "sncf",
-                lat: 0,
-                lon: 0,
-                simulated: false,
-            }
-            : null
-    );
-
-    const IsMobile = useIsMobile();
-    const today = useMemo(() => new Date().toISOString().split("T")[0], []);
-    const [departureDate, setDepartureDate] = useState<string>(
-        dateSearch || today
-    );
+    const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
+    const [departureDate, setDepartureDate] = useState<string>(dateSearch || today);
     const [returnDate, setReturnDate] = useState<string>("");
 
-    const [rotation, setRotation] = useState<number>(0);
-    const [tripType, setTripType] = useState<TripType>(
-        trip ? trip : "oneway"
+    const [passagers, setPassagers] = useState<number>(Passagers ?? 1);
+
+    const [departure, setDeparture] = useState<Suggestion | null>(
+        villeDepart ? makeSuggestion(villeDepart) : null
+    );
+    const [arrival, setArrival] = useState<Suggestion | null>(
+        villeArrivee ? makeSuggestion(villeArrivee) : null
     );
 
-    // -- utils --
+    const [rotation, setRotation] = useState<number>(0);
+    const [tripType, setTripType] = useState<TripType>(trip ?? "oneway");
 
-    const createSuggestionFromText = (text: string): Suggestion => ({
-        id: "",
-        name: text,
-        source: "sncf",
-        lat: 0,
-        lon: 0,
-        simulated: false,
-    });
+    const validateDate = useCallback(
+        (value: string, setter: (v: string) => void, minDate?: string) => {
+            if (value.length < 10) {
+                setter(value);
+                return;
+            }
 
-    const validateDate = (
-        value: string,
-        setter: (value: string) => void
-    ): void => {
-        if (value.length < 10) {
+            const min = minDate ?? today;
+            if (value < min) {
+                alert("La date ne peut pas être dans le passé.");
+                return;
+            }
+
             setter(value);
-            return;
-        }
+        },
+        [today]
+    );
 
-        const selectedDate = new Date(value);
-        const todayDate = new Date(today);
-
-        if (selectedDate < todayDate) {
-            alert("La date ne peut pas être dans le passé.");
-            return;
-        }
-
-        setter(value);
-    };
-
-    const handleSwap = () => {
+    const handleSwap = useCallback(() => {
         setDeparture(arrival);
         setArrival(departure);
         setRotation((prev) => prev + 180);
-    };
+    }, [arrival, departure]);
 
-    const isDisabled =
-        !departure?.name ||
-        !arrival?.name ||
-        !departureDate ||
-        (tripType === "roundtrip" && !returnDate);
+    const isDisabled = useMemo(() => {
+        if (!departure?.name) return true;
+        if (!arrival?.name) return true;
+        if (!departureDate) return true;
+        if (tripType === "roundtrip" && !returnDate) return true;
+        return false;
+    }, [departure?.name, arrival?.name, departureDate, returnDate, tripType]);
 
-    const goSearch = () => {
+    const goSearch = useCallback(() => {
         if (!departure || !arrival || !departureDate) return;
-
-        const base = import.meta.env.VITE_API_URL || "http://localhost:3005";
 
         setIsLoading(true);
         setErrorMessage(null);
 
-        fetch(
-            `${base}/api/search/journeys?` +
-            `fromId=${encodeURIComponent(departure.id)}` +
+        const url =
+            `/Recherche?fromId=${encodeURIComponent(departure.id)}` +
             `&fromName=${encodeURIComponent(departure.name)}` +
-            `&fromLat=${encodeURIComponent(String(departure.lat))}` +
-            `&fromLon=${encodeURIComponent(String(departure.lon))}` +
+            `&fromLat=${encodeURIComponent(departure.lat)}` +
+            `&fromLon=${encodeURIComponent(departure.lon)}` +
             `&toId=${encodeURIComponent(arrival.id)}` +
             `&toName=${encodeURIComponent(arrival.name)}` +
-            `&toLat=${encodeURIComponent(String(arrival.lat))}` +   
-            `&toLon=${encodeURIComponent(String(arrival.lon))}` +
-            `&datetime=${encodeURIComponent(departureDate)}`
-        )
-            .then(res => res.json())
-            .then(data => {
-                console.log("Overlay search response:", data);
+            `&toLat=${encodeURIComponent(arrival.lat)}` +
+            `&toLon=${encodeURIComponent(arrival.lon)}` +
+            `&departureDate=${encodeURIComponent(departureDate)}` +
+            `&arrivalDate=${encodeURIComponent(tripType === "roundtrip" ? returnDate : "")}` +
+            `&passagers=${encodeURIComponent(String(passagers))}`;
 
-                if (data.error) {
-                    setErrorMessage(data.error);
-                    setJourneyData([]);
-                    setTransport(undefined);
-                } else {
-                    setJourneyData(data);
-                    setTransport(data[0]?.simulated ? "plane" : "train");
-                    setErrorMessage(null);
-                }
-            })
-            .catch((err) => {
-                console.error("Overlay fetch error:", err);
-                setErrorMessage("Erreur serveur, réessayez plus tard");
-                setJourneyData([]);
-                setTransport(undefined);
-            })
-            .finally(() => {
-                setTimeout(() => setIsLoading(false), 800);
-            });
-    };
-    const handleValidation = () => {
+        navigate(url);
+
+        // ✅ Ici on coupe le loader après le prochain frame (navigation déclenchée).
+        // Si tu veux un loader "jusqu'au fetch", enlève ça et coupe-le dans Resultats.
+        requestAnimationFrame(() => {
+            if (mountedRef.current) setIsLoading(false);
+        });
+    }, [
+        arrival,
+        departure,
+        departureDate,
+        navigate,
+        passagers,
+        returnDate,
+        setErrorMessage,
+        setIsLoading,
+        tripType,
+    ]);
+
+    const handleValidation = useCallback(() => {
         goSearch();
         setBoxIsOn(false);
         window.scrollTo({ top: 0, behavior: "smooth" });
-    };
+    }, [goSearch, setBoxIsOn]);
 
+    const listWidthClass = isMobile ? "min-w-50" : "min-w-100";
 
     return (
         <div
@@ -188,83 +170,68 @@ export default function QuickModificationOverlay({
                         value={departure?.name || ""}
                         placeholder="Ville de départ"
                         onChange={(text) =>
-                            setDeparture(
-                                departure ? { ...departure, name: text } : createSuggestionFromText(text)
-                            )
+                            setDeparture((prev) => (prev ? { ...prev, name: text } : makeSuggestion(text)))
                         }
-                        onSelect={(obj) => setDeparture(obj)}
+                        onSelect={setDeparture}
                         className="search-input w-full bg-[#2C474B] text-white placeholder-slate-400 rounded-xl px-4 py-3.5 text-sm outline-none border-none focus:ring-2 focus:ring-cyan-400/30"
-                        AutocompleteListClassname={`absolute ${IsMobile ?  'min-w-50' : 'min-w-100'} autocomplete-suggestions left-0 right-0 z-50 mt-5 rounded-xl bg-[#0f2628] border border-[#1b3a3d] shadow-xl backdrop-blur-md max-h-60  overflow-y-auto text-left divide-y divide-[#1e3c3f] overflow-x-hidden`}
+                        AutocompleteListClassname={`absolute ${listWidthClass} autocomplete-suggestions left-0 right-0 z-50 mt-5 rounded-xl bg-[#0f2628] border border-[#1b3a3d] shadow-xl backdrop-blur-md max-h-60 overflow-y-auto text-left divide-y divide-[#1e3c3f] overflow-x-hidden`}
                     />
 
-                    <div>
-                        <button
-                            type="button"
-                            onClick={handleSwap}
-                            className="hover:bg-[#2C474B] p-2 rounded-xl w-10 h-10 mt-1 transition-colors duration-300 flex items-center justify-center"
-                        >
-                            <ArrowDownUp
-                                size={24}
-                                className="text-white transition-transform duration-500 rounded-full rotate-90"
-                                style={{ transform: `rotate(${rotation}deg)` }}
-                            />
-                        </button>
-                    </div>
+                    <button
+                        type="button"
+                        onClick={handleSwap}
+                        className="hover:bg-[#2C474B] p-2 rounded-xl w-10 h-10 mt-1 transition-colors duration-300 flex items-center justify-center"
+                    >
+                        <ArrowDownUp
+                            size={24}
+                            className="text-white transition-transform duration-500 rounded-full rotate-90"
+                            style={{ transform: `rotate(${rotation}deg)` }}
+                        />
+                    </button>
 
                     <AutocompleteInput
                         label=""
                         value={arrival?.name || ""}
                         placeholder="Ville d’arrivée"
                         onChange={(text) =>
-                            setArrival(
-                                arrival ? { ...arrival, name: text } : createSuggestionFromText(text)
-                            )
+                            setArrival((prev) => (prev ? { ...prev, name: text } : makeSuggestion(text)))
                         }
-                        onSelect={(obj) => setArrival(obj)}
+                        onSelect={setArrival}
                         className="search-input w-full bg-[#2C474B] text-white placeholder-slate-400 rounded-xl px-4 py-3.5 text-sm outline-none border-none focus:ring-2 focus:ring-cyan-400/30"
-                        AutocompleteListClassname={`absolute ${IsMobile ? 'min-w-50' : 'min-w-100'} autocomplete-suggestions left-0 right-0 z-50 mt-5 rounded-xl bg-[#0f2628] border border-[#1b3a3d] shadow-xl backdrop-blur-md max-h-60  overflow-y-auto text-left divide-y divide-[#1e3c3f] overflow-x-hidden`}
+                        AutocompleteListClassname={`absolute ${listWidthClass} autocomplete-suggestions left-0 right-0 z-50 mt-5 rounded-xl bg-[#0f2628] border border-[#1b3a3d] shadow-xl backdrop-blur-md max-h-60 overflow-y-auto text-left divide-y divide-[#1e3c3f] overflow-x-hidden`}
                     />
                 </div>
 
-                {/* Dates + type de trajet + passagers */}
                 <div className="flex justify-between items-center w-full py-4 mb-6 rounded-xl">
-                    <div className="max-h-10  mt-2 flex justify-start gap-2 w-full">
+                    <div className="max-h-10 mt-2 flex justify-start gap-2 w-full">
                         <DateBtn
-                            size={IsMobile ? 15 : 24}
+                            size={isMobile ? 15 : 24}
                             label="Date de départ"
                             value={departureDate}
                             min={today}
-                            onChange={(value) => validateDate(value, setDepartureDate)
-                            
-                            
-                            }
+                            onChange={(value) => validateDate(value, setDepartureDate, today)}
                         />
+
                         {tripType === "roundtrip" && (
                             <DateBtn
-                                size={IsMobile ? 15 : 24}
+                                size={isMobile ? 15 : 24}
                                 label="Date de retour"
                                 value={returnDate}
                                 min={departureDate || today}
-                                onChange={(value) => validateDate(value, setReturnDate)}
+                                onChange={(value) => validateDate(value, setReturnDate, departureDate || today)}
                             />
                         )}
                     </div>
 
                     <div className="grid grid-cols w-full">
                         <div className="flex justify-center relative w-full max-w-80">
-                            <TripTypeSwitch
-                                value={tripType}
-                                onChange={setTripType}
-                                className="max-w-52"
-                            />
+                            <TripTypeSwitch value={tripType} onChange={setTripType} className="max-w-52" />
                         </div>
 
-                        <div className="flex justify-center  relative w-full mt-10 ml-2">
+                        <div className="flex justify-center relative w-full mt-10 ml-2">
                             <button
                                 type="button"
-                                onClick={() =>
-                                    setPassagers((prev) => (prev > 1 ? prev - 1 : prev))
-                                }
+                                onClick={() => setPassagers((prev) => (prev > 1 ? prev - 1 : prev))}
                                 className="w-12 h-12 text-2xl bg-[#2C474B] font-bold rounded-full text-white flex justify-center items-center p-2"
                             >
                                 -
@@ -293,13 +260,11 @@ export default function QuickModificationOverlay({
             </div>
 
             <button
-                className="w-full h-15 bg-[#98EAF3] rounded-xl disabled:opacity-50 relative bottom-0 top-0"
+                className="w-full h-15 bg-[#98EAF3] rounded-xl disabled:opacity-50"
                 onClick={handleValidation}
                 disabled={isDisabled}
             >
-                <span className="text-[#115E66] font-bold text-xl">
-                    Valider les modifications
-                </span>
+                <span className="text-[#115E66] font-bold text-xl">Valider les modifications</span>
             </button>
         </div>
     );

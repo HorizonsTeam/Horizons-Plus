@@ -148,7 +148,6 @@ export default function Resultats() {
         return departure >= now;
     })
 
-
     const lowestPrice = useMemo(() => {
         if (!journeyList?.length) return null;
         return Math.min(...journeyList.map(j => j.price));
@@ -180,7 +179,7 @@ export default function Resultats() {
                 {/* Date navigation */}
                 <div className="flex items-center justify-center space-x-4 bg-dark p-4" onClick={() => BoxIsOn && setBoxIsOn(false)} >
                     <button
-                        onClick={() => { changeDate(-1); BoxIsOn && setBoxIsOn(false) }}
+                        onClick={() => { changeDate(-1); }}
                         disabled={isPrevDisabled}
                         className={`border-4 rounded-xl p-2 w-13 ${isPrevDisabled
                                 ? "border-gray-400 opacity-50 cursor-not-allowed"

@@ -40,7 +40,7 @@ const sectionVariants: Variants = {
 
 export default function HomePage() {
   const [isPlaneAnimating, setIsPlaneAnimating] = useState(false);
-  const PLANE_ANIM_DURATION_MS = 4000; // 8 secondes (lent)
+  const PLANE_ANIM_DURATION_MS = 2000; 
   
 
 
