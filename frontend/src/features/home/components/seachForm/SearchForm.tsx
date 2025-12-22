@@ -288,6 +288,7 @@ export default function SearchForm({
 
             {/* Ville départ */}
             <AutocompleteInput
+              label=''
               value={departure?.name || ''}
               placeholder="Ville départ"
               onChange={(text) =>
@@ -319,6 +320,7 @@ export default function SearchForm({
 
             {/* Ville arrivée */}
             <AutocompleteInput
+              label=''
               value={arrival?.name || ''}
               placeholder="Ville arrivée"
               onChange={(text) =>
