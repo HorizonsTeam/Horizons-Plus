@@ -102,7 +102,7 @@ export default function Header() {
 
       {/* --- HEADER --- */}
       <div className="max-w-7xl mx-auto px-4">
-         <div className="flex items-center h-16 px-4 lg:h-20 relative">
+        <div className="flex items-center h-16 px-4 lg:h-20 relative">
 
         {/* Panier mobile */}
         <Link to="/panier" className="lg:hidden absolute left-4">
@@ -287,7 +287,6 @@ export default function Header() {
         </div>
       </div>
       </div>
-     
     </header>
   );
 }

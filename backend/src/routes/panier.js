@@ -1,9 +1,9 @@
 import express from 'express';
-import { getPanier, getOrCreatePanier } from '../controllers/panierController.js';
+import { getPanierForUser, addBilletToPanier } from '../controllers/panierController.js';
 
 const router = express.Router();
 
-router.post("/", getOrCreatePanier);
-router.get("/:userId", getPanier);
+router.get("/", getPanierForUser);
+router.post("/add", addBilletToPanier);
 
 export default router;

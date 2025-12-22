@@ -43,3 +43,7 @@ export type BackendPanierResponse = {
     };
     items: BackendPanierItem[];
 };
+
+export type TrainCardProps = {
+    item: PanierItem;
+}

@@ -8,19 +8,44 @@ import icoWifi from '../../../../assets/wifi.svg'
 import priseIco from'../../../../assets/Prises.svg'
 import climatisation_Ico from '../../../../assets/climatisation.svg'   
 import Serinita_card from '../components/Recap/serenita_card.tsx';
-import AjouterPanierBtn from '../components/Recap/AjouterPanierBtn.tsx';
 import { Link, useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import useIsMobile from '../../../../components/layouts/UseIsMobile.tsx';
 import type { LocationState } from '../types.ts';
 
+const base = `${import.meta.env.VITE_API_URL || "http://localhost:3005"}`;
+
+function parseFrenchDate(str: string): string {
+    const months: Record<string, number> = {
+        janvier: 0, février: 1, mars: 2, avril: 3, mai: 4, juin: 5,
+        juillet: 6, août: 7, septembre: 8, octobre: 9, novembre: 10, décembre: 11
+    };
+
+    const parts = str.split(" ");
+
+    const day = Number(parts[1]);
+    const month = months[parts[2].toLowerCase()];
+    const year = Number(parts[3]);
+
+    const mm = String(month + 1).padStart(2, "0");
+    const dd = String(day).padStart(2, "0");
+
+    return `${year}-${mm}-${dd}`;
+}
+
+function combineDateAndTime(dateISO: string, time: string): string {
+    return `${dateISO}T${time}:00`;
+}
 
 export default function Billet_Train_recap()
 {
-    
     const { state } = useLocation();
     const { journey, passagersCount, formattedDepartureDate } = (state || {}) as LocationState;
     
+    const isoDate = parseFrenchDate(formattedDepartureDate);
+    const departTimestamp = combineDateAndTime(isoDate, journey.departureTime); 
+    const arriveeTimestamp = combineDateAndTime(isoDate, journey.arrivalTime);
+
     const navigate = useNavigate();
     const handleretour = () =>
     {
@@ -48,6 +73,37 @@ export default function Billet_Train_recap()
             description: 'Sièges spacieux, accès salon, repas gastronomique, service prioritaire.',
         },
     ];
+
+    async function handleClick() {
+        try {
+                const res = await fetch(`${base}/api/panier/add`, {
+                    method: "POST",
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        departHeure: departTimestamp,
+                        departLieu: journey.departureName,
+                        arriveeHeure: arriveeTimestamp,
+                        arriveeLieu: journey.arrivalName,
+                        classe: selectedClass,
+                        siegeLabel: "A1",
+                        prix: journey.price,
+                        dateVoyage: isoDate,
+                        transportType: "TRAIN",
+                    }),
+                });
+
+                if (!res.ok) {
+                    throw new Error(`HTTP error! status: ${res.status}`);
+                }
+
+                console.log("Billet ajouté au panier avec succès.");
+        } catch (error) {
+            console.error("Erreur lors de l'ajout au panier :", error);
+        }
+    }
 
     return (
         <div className='m-2 p-3  -mt-3 justify-center items-center '>
@@ -133,11 +189,15 @@ export default function Billet_Train_recap()
 
             </div>
             <div className='grid grid-cols gap-2 m-4 justify-center items-center '>
-            <AjouterPanierBtn/>
-                <Link to="/Infos_Passagers" state={{ journey, selectedClass, passagersCount, formattedDepartureDate }} onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} >
-                    <button className="w-80  h-15 bg-[#98EAF3] rounded-xl mt-4">
-                        <span className="text-[#115E66] font-bold text-xl">Continuer</span>
-                    </button>
+            
+            <button className="w-80  h-15 bg-[#FFB856] rounded-xl mt-5" onClick={handleClick}>
+                <span className="text-[#115E66] font-bold text-xl">Ajouter au panier</span>
+            </button>
+            
+            <Link to="/Infos_Passagers" state={{ journey, selectedClass, passagersCount, formattedDepartureDate }} onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} >
+                <button className="w-80  h-15 bg-[#98EAF3] rounded-xl mt-4">
+                    <span className="text-[#115E66] font-bold text-xl">Continuer</span>
+                </button>
             </Link>
                 
             </div>
