@@ -1,6 +1,6 @@
 
 import { Link } from 'react-router-dom';
-import SearchForm from './components/SearchForm';
+import SearchForm from './components/seachForm/SearchForm.tsx';
 import PromotionSlider from './components/PromotionSlider';
 import ImagesSwiper from '../../components/AdditionalsComponents/swipeImges';
 import Plane1 from '../../assets/Plane.png';
