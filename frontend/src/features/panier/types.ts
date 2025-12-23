@@ -4,9 +4,9 @@ export type PanierItem = {
     id: number;
     panierId: number;
     passagerId: number;
-    departHeure: Date;
+    departHeure: string;
     departLieu: string;
-    arriveeHeure: Date;
+    arriveeHeure: string;
     arriveeLieu: string;
     classe: string;
     siegeLabel: string;
@@ -46,4 +46,5 @@ export type BackendPanierResponse = {
 
 export type TrainCardProps = {
     item: PanierItem;
+    onDeleted: (id: number) => void;
 }

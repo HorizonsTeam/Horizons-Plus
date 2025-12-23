@@ -37,6 +37,13 @@ function combineDateAndTime(dateISO: string, time: string): string {
     return `${dateISO}T${time}:00`;
 }
 
+function randomSiegeLabel() {
+    const lettre = String.fromCharCode(65 + Math.floor(Math.random() * 26));
+    const numero = String(Math.floor(Math.random() * 999) + 1).padStart(3, '0');
+
+    return lettre + numero;
+}
+
 export default function Billet_Train_recap()
 {
     const { state } = useLocation();
@@ -76,30 +83,32 @@ export default function Billet_Train_recap()
 
     async function handleClick() {
         try {
-                const res = await fetch(`${base}/api/panier/add`, {
-                    method: "POST",
-                    credentials: "include",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        departHeure: departTimestamp,
-                        departLieu: journey.departureName,
-                        arriveeHeure: arriveeTimestamp,
-                        arriveeLieu: journey.arrivalName,
-                        classe: selectedClass,
-                        siegeLabel: "A1",
-                        prix: journey.price,
-                        dateVoyage: isoDate,
-                        transportType: "TRAIN",
-                    }),
-                });
+            const siegeLabel = randomSiegeLabel();
 
-                if (!res.ok) {
-                    throw new Error(`HTTP error! status: ${res.status}`);
-                }
+            const res = await fetch(`${base}/api/panier/add`, {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    departHeure: departTimestamp,
+                    departLieu: journey.departureName,
+                    arriveeHeure: arriveeTimestamp,
+                    arriveeLieu: journey.arrivalName,
+                    classe: selectedClass,
+                    siegeLabel: siegeLabel,
+                    prix: journey.price,
+                    dateVoyage: isoDate,
+                    transportType: journey.simulated === true ? "AVION" : "TRAIN",
+                }),
+            });
 
-                console.log("Billet ajouté au panier avec succès.");
+            if (!res.ok) {
+                throw new Error(`HTTP error! status: ${res.status}`);
+            }
+
+            console.log("Billet ajouté au panier avec succès.");
         } catch (error) {
             console.error("Erreur lors de l'ajout au panier :", error);
         }

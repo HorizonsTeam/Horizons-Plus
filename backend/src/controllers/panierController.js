@@ -16,8 +16,7 @@ export async function getPanierForUser(req, res) {
 
         const result = await panierService.getPanierForUser(userId);
         res.status(200).json(result);
-    }
-    catch (error) {
+    } catch (error) {
         console.error("Erreur getPanierForUser:", error);
         res.status(500).json({ error: error.message });
     }
@@ -59,9 +58,34 @@ export async function addBilletToPanier(req, res) {
             transportType,
         });
         res.status(200).json(result);
-    }
-    catch (error) {
+    } catch (error) {
         console.error("Erreur addBilletToPanier:", error);
+        res.status(500).json({ error: error.message });
+    }
+}
+
+export async function deleteBilletFromPanier(req, res) {
+    try {
+        const session = await auth.api.getSession({
+            headers: fromNodeHeaders(req.headers)
+        });
+
+        if (!session) {
+            return res.status(401).json({ error: "Unauthenticated" });
+        }
+
+        const userId = session.user.id;
+        const { itemId } = req.body;
+
+        if (!itemId) {
+            return res.status(400).json({ error: "Missing itemId" });
+        }
+
+        const deletedItem = await panierService.deleteBilletFromPanier(userId, itemId);
+
+        res.status(200).json({ success: true, deletedItem });
+    } catch (error) {
+        console.error("Erreur deleteBilletFromPanier:", error);
         res.status(500).json({ error: error.message });
     }
 }

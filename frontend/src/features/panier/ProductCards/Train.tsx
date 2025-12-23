@@ -5,7 +5,27 @@ import SiègeIco from '../../../assets/siege_ico.svg';
 import trashcan from '../../../assets/trashcan.svg';
 import type { TrainCardProps } from '../types.ts';
 
-export default function TrainCard({ item }: TrainCardProps) {
+const base = `${import.meta.env.VITE_API_URL || "http://localhost:3005"}`;
+
+export default function TrainCard({ item, onDeleted }: TrainCardProps) {
+  const handleDeletePanierItem = async () => {
+    try {
+      const res = await fetch(`${base}/api/panier/delete`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ itemId: item.id }),
+      });
+
+      if (!res.ok) throw new Error("Erreur lors de la suppresion");
+
+      onDeleted(item.id);
+    } catch (error) {
+      console.error("Erreur lors de la suppression du panier :", error);
+      alert("Impossible de supprimer l'item.");
+    }
+  };
+
   return (
     <div className="max-w-md mx-auto bg-[#133A40] rounded-lg shadow-md p-4 text-sm text-white font-sans  m-10">
       {/* Header */}
@@ -28,11 +48,11 @@ export default function TrainCard({ item }: TrainCardProps) {
         <div className="grid grid-cols gap-0 w-22 ml-10 -mt-7">
             <div className="flex items-center gap-1 ">
             <p className="text-xs font-xs">Départ : </p>
-            <p className="text-sm">{item.departHeure.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+            <p className="text-sm">{item.departHeure}</p>
             </div>
             <div className='flex items-center gap-1'>
             <p className="text-xs font-xs">Arrivée : </p>
-            <p className="text-sm">{item.arriveeHeure.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+            <p className="text-sm">{item.arriveeHeure}</p>
             </div>
             <div>
               <h3 className=' font-bold text-3xl  mt-8 w-30 text-left -ml-6' >{item.prix} €</h3>
@@ -59,7 +79,9 @@ export default function TrainCard({ item }: TrainCardProps) {
           <p className="text-xl font-bold">Classe : <span className="font-semibold">{item.classe}</span></p>
         </div>
       </div>
-        <img src={trashcan} alt="trash can icon " className='w-12 h-12 mt-3' />
+        <button onClick={handleDeletePanierItem} className='cursor-pointer'>
+          <img src={trashcan} alt="trash can icon " className='w-12 h-12 mt-3' />
+        </button>
       </div>
     </div>
   );

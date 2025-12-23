@@ -8,6 +8,10 @@ const base = `${import.meta.env.VITE_API_URL || "http://localhost:3005"}`;
 export default function Panier () {
     const [panierItems, setPanierItems] = useState<PanierItem[]>([]);
     
+    const handleItemDeleted = (id: number) => {
+        setPanierItems(prev => prev.filter(item => item.id !== id));
+    }
+
     useEffect(() => {
         async function loadPanier() {
             try {
@@ -23,9 +27,9 @@ export default function Panier () {
                     id: item.panier_item_id,
                     panierId: item.panier_id,
                     passagerId: item.passager_id,
-                    departHeure: new Date(item.depart_heure),
+                    departHeure: item.depart_heure.slice(0, 5),
                     departLieu: item.depart_lieu,
-                    arriveeHeure: new Date(item.arrivee_heure),
+                    arriveeHeure: item.arrivee_heure.slice(0, 5),
                     arriveeLieu: item.arrivee_lieu,
                     classe: item.classe,
                     siegeLabel: item.siege_label,
@@ -56,6 +60,7 @@ export default function Panier () {
                 <Traincard 
                     key={item.id} 
                     item={item} 
+                    onDeleted={handleItemDeleted}
                 />
             ))}
         </>

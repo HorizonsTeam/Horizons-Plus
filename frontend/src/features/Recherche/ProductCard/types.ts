@@ -6,6 +6,7 @@ export type Journey = {
     arrivalTime: string;
     duration: string;
     numberOfTransfers: number;
+    simulated: boolean;
 }
 
 export type ProductCardProps =
