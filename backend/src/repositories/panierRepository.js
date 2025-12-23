@@ -15,6 +15,21 @@ export async function createPanier(userId, sessionId = null) {
     `;
 }
 
+export async function createPassager(passagerData) {
+    return await sql`
+        INSERT INTO passager (user_id, prenom, nom, email, is_primary)
+        VALUES (
+            ${passagerData.user_id},
+            ${passagerData.prenom || ""},
+            ${passagerData.name},
+            ${passagerData.email},
+            ${passagerData.is_primary}
+        )
+        RETURNING *;
+    `;
+}
+
+
 export async function findPassager(userId) {
     return await sql`
         SELECT passager_id FROM passager WHERE user_id = ${userId}

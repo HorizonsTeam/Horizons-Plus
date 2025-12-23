@@ -4,8 +4,24 @@ import {
     findPassager,
     insertPanierItem,
     getPanierItems,
-    deletePanierItem
+    deletePanierItem,
+    createPassager
 } from '../repositories/panierRepository.js';
+
+async function ensurePrimaryPassager(userId, userData) {
+    let passager = await findPassager(userId);
+
+    if (!passager || passager.length === 0) {
+        passager = await createPassager({
+            user_id: userId,
+            name: userData.name,
+            email: userData.email,
+            is_primary: true, // marque comme passager principal
+        });
+    }
+
+    return passager[0];
+}
 
 async function getPanierForUser(userId) {
     const panier = await findActivePanierByUser(userId);
@@ -18,7 +34,9 @@ async function getPanierForUser(userId) {
     return { panier: panier[0], items };
 }
 
-async function addBilletToPanier(userId, billetData) {
+async function addBilletToPanier(userId, billetData, userData) {
+    console.log("la: ", userId, billetData, userData);
+
     let panier = await findActivePanierByUser(userId);
 
     if (panier.length === 0) {
@@ -27,8 +45,8 @@ async function addBilletToPanier(userId, billetData) {
 
     const panierId = panier[0].panier_id;
 
-    const passager = await findPassager(userId);
-    const passagerId = passager[0].passager_id;
+    const passager = await ensurePrimaryPassager(userId, userData);
+    const passagerId = passager.passager_id;
 
     await insertPanierItem(panierId, passagerId, billetData);
 
@@ -58,5 +76,6 @@ async function deleteBilletFromPanier(userId, itemId) {
 export default {
     getPanierForUser,
     addBilletToPanier,
-    deleteBilletFromPanier
+    deleteBilletFromPanier,
+    ensurePrimaryPassager
 };
