@@ -1,13 +1,19 @@
 import sql from '../../db.js';
-import { toPgTimestamp } from '../utils/timestamp.js';
+import { toPgTimestamp } from '../utils/utils.js';
 
-export async function findActivePanierByUser(userId) {
+export async function findActivePanierByUserId(userId) {
     return await sql`
         SELECT * FROM panier WHERE user_id = ${userId} AND statut = 'ACTIF'
     `;
 }
 
-export async function createPanier(userId, sessionId = null) {
+export async function findActivePanierBySessionId(sessionId) {
+    return await sql`
+        SELECT * FROM panier WHERE session_id = ${sessionId} AND statut = 'ACTIF'
+    `;
+}
+
+export async function createPanier(userId, sessionId) {
     return await sql`
         INSERT INTO panier (user_id, session_id, cree_le, expire_le, statut)
         VALUES (${userId}, ${sessionId}, NOW(), NOW() + INTERVAL '1 day', 'ACTIF')
@@ -17,24 +23,25 @@ export async function createPanier(userId, sessionId = null) {
 
 export async function createPassager(passagerData) {
     return await sql`
-        INSERT INTO passager (user_id, prenom, nom, email, is_primary)
+        INSERT INTO passager (panier_id, nom, email)
         VALUES (
-            ${passagerData.user_id},
-            ${passagerData.prenom || ""},
+            ${passagerData.panier_id},
             ${passagerData.name},
             ${passagerData.email},
-            ${passagerData.is_primary}
         )
         RETURNING *;
     `;
 }
 
+export async function findPassagerByPanierId(panierId) {
+    let query = sql`SELECT * FROM passager WHERE panier_id = ${panierId}`;
 
-export async function findPassager(userId) {
-    return await sql`
-        SELECT passager_id FROM passager WHERE user_id = ${userId}
-    `;
+    query = sql`${query} LIMIT 1`;
+
+    const result = await query;
+    return result;
 }
+
 
 export async function insertPanierItem(panierId, passagerId, billetData) {
     const departHeure = toPgTimestamp(billetData.departHeure);
@@ -43,12 +50,12 @@ export async function insertPanierItem(panierId, passagerId, billetData) {
     return await sql`
         INSERT INTO panier_item (
             panier_id, passager_id, depart_heure, depart_lieu, arrivee_heure, arrivee_lieu,
-            classe, siege_label, prix, ajoute_le, date_voyage, transport_type
+            classe, siege_restant, prix, ajoute_le, date_voyage, transport_type
         )
         VALUES (
             ${panierId}, ${passagerId}, ${departHeure}, ${billetData.departLieu},
             ${arriveeHeure}, ${billetData.arriveeLieu},
-            ${billetData.classe}, ${billetData.siegeLabel},
+            ${billetData.classe}, ${billetData.siegeRestant},
             ${billetData.prix}, NOW(), ${billetData.dateVoyage},
             ${billetData.transportType}
         )
@@ -66,4 +73,20 @@ export async function deletePanierItem(panierId, itemId) {
     return await sql`
         DELETE FROM panier_item WHERE panier_id = ${panierId} AND panier_item_id = ${itemId}
     `
+}
+
+export async function checkPanierItemDoublon(panierId, billetData) {
+    const result = await sql`
+        SELECT 1
+        FROM panier_item
+        WHERE panier_id = ${panierId}
+            AND date_voyage = ${billetData.dateVoyage}
+            AND depart_lieu = ${billetData.departLieu}
+            AND arrivee_lieu = ${billetData.arriveeLieu}
+            AND transport_type = ${billetData.transportType}
+            AND classe = ${billetData.classe}
+        LIMIT 1
+    `;
+
+    return result.length > 0;
 }

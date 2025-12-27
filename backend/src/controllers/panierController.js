@@ -1,47 +1,14 @@
 import panierService from '../services/panierService.js';
-import auth from '../../dist/auth.js';
-import { fromNodeHeaders } from 'better-auth/node';
-
-export async function ensurePrimaryPassager(req, res) {
-    try {
-        const session = auth.api.getSession({
-            headers: fromNodeHeaders(req.headers)
-        })
-        
-        if (!session) {
-            return res.status(401).json({ error: "Unauthenticated" })
-        }
-
-        const userId = session.user.id;
-
-        const userData = {
-            name: session.user.name,
-            email: session.user.email,
-            is_primary: true,
-        }
-
-        const result = await panierService.ensurePrimaryPassager(userId, userData)
-
-        res.status(200).json(result);
-    } catch (error) {
-        console.error("Erreur ensurePrimaryPassager:", error);
-        res.status(500).json({ error: error.message });
-    }
-}
 
 export async function getPanierForUser(req, res) {
     try {
-        const session = await auth.api.getSession({
-            headers: fromNodeHeaders(req.headers)
+        const { userId, sessionId } = req;
+
+        const result = await panierService.getPanierForUser({
+            userId, 
+            sessionId
         });
-
-        if (!session) {
-            return res.status(401).json({ error: "Unauthenticated" });
-        }
-
-        const userId = session.user.id;
-
-        const result = await panierService.getPanierForUser(userId);
+        
         res.status(200).json(result);
     } catch (error) {
         console.error("Erreur getPanierForUser:", error);
@@ -51,41 +18,41 @@ export async function getPanierForUser(req, res) {
 
 export async function addBilletToPanier(req, res) {
     try {
-        const session = await auth.api.getSession({
-            headers: fromNodeHeaders(req.headers)
-        });
+        const { userId, sessionId, session } = req;
 
-        if (!session) {
-            return res.status(401).json({ error: "Unauthenticated" });
+        let userData;
+
+        if (session) {
+            userData = {
+                name: session.user.name,
+                email: session.user.email,
+            };
+        } else {
+            userData = {
+                name: "Invité",
+                email: null,
+            };
         }
-
-        const userId = session.user.id;
-
-        const userData = {
-            name: session.user.name,
-            email: session.user.email,
-            is_primary: true
-        };
-
+        
         const {
             departHeure,
             departLieu,
             arriveeHeure,
             arriveeLieu,
             classe,
-            siegeLabel,
+            siegeRestant,
             prix,
             dateVoyage,
             transportType,
         } = req.body;
 
-        const result = await panierService.addBilletToPanier(userId, {
+        const result = await panierService.addBilletToPanier(userId, sessionId, {
             departHeure,
             departLieu,
             arriveeHeure,
             arriveeLieu,
             classe,
-            siegeLabel,
+            siegeRestant,
             prix,
             dateVoyage,
             transportType,
@@ -99,22 +66,14 @@ export async function addBilletToPanier(req, res) {
 
 export async function deleteBilletFromPanier(req, res) {
     try {
-        const session = await auth.api.getSession({
-            headers: fromNodeHeaders(req.headers)
-        });
-
-        if (!session) {
-            return res.status(401).json({ error: "Unauthenticated" });
-        }
-
-        const userId = session.user.id;
+        const { userId, sessionId } = req;
         const { itemId } = req.body;
 
         if (!itemId) {
             return res.status(400).json({ error: "Missing itemId" });
         }
 
-        const deletedItem = await panierService.deleteBilletFromPanier(userId, itemId);
+        const deletedItem = await panierService.deleteBilletFromPanier(userId, sessionId, itemId);
 
         res.status(200).json({ success: true, deletedItem });
     } catch (error) {

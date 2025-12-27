@@ -72,7 +72,7 @@ export default function TrainCard({ item, onDeleted }: TrainCardProps) {
 
         <div className='flex items-center gap-8 mt-2'>
           <img src={SiègeIco} alt="" />
-          <p className="text-sm font-bold">Place : <span className="font-semibold">{item.siegeLabel}</span></p>
+          <p className="text-sm font-bold">Place : <span className="font-semibold">{item.siegeRestant}</span></p>
         </div>
 
         <div className='flex items-center mt-2'>

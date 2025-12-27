@@ -32,7 +32,7 @@ export default function Panier () {
                     arriveeHeure: item.arrivee_heure.slice(0, 5),
                     arriveeLieu: item.arrivee_lieu,
                     classe: item.classe,
-                    siegeLabel: item.siege_label,
+                    siegeRestant: item.siege_restant,
                     prix: parseFloat(item.prix),
                     ajouteLe: new Date(item.ajoute_le),
                     dateVoyage: new Date(item.date_voyage),

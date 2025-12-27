@@ -1,52 +1,77 @@
 import {
-    findActivePanierByUser,
+    findActivePanierByUserId,
+    findActivePanierBySessionId,
     createPanier,
-    findPassager,
+    findPassagerByPanierId,
     insertPanierItem,
     getPanierItems,
     deletePanierItem,
-    createPassager
+    createPassager,
+    checkPanierItemDoublon
 } from '../repositories/panierRepository.js';
 
-async function ensurePrimaryPassager(userId, userData) {
-    let passager = await findPassager(userId);
+async function ensurePrimaryPassager(panierId, userData) {
+    console.log("la mtn c'est : ", panierId);
+    let passager = await findPassagerByPanierId(panierId);
 
     if (!passager || passager.length === 0) {
         passager = await createPassager({
-            user_id: userId,
+            panier_id: panierId,
             name: userData.name,
             email: userData.email,
-            is_primary: true, // marque comme passager principal
         });
     }
 
-    return passager[0];
+    return passager[0].passager_id;
 }
 
-async function getPanierForUser(userId) {
-    const panier = await findActivePanierByUser(userId);
+async function getPanierForUser({ userId, sessionId }) {
+    let panier;
+        
+    if (userId) {
+        panier = await findActivePanierByUserId(userId);
+    }
+    
+    if (!panier && sessionId) {
+        panier = await findActivePanierBySessionId(sessionId);
+    }
+    
+    if (!panier || panier.length === 0) {
+        panier = await createPanier(userId ?? null, sessionId);
+        
+    }
 
-    if (panier.length === 0) return null;
-
-    const panierId = panier[0].panier_id;
-    const items = await getPanierItems(panierId);
-
-    return { panier: panier[0], items };
+    const items = await getPanierItems(panier[0].panier_id);
+    
+    return { 
+        panier, 
+        items 
+    };
 }
 
-async function addBilletToPanier(userId, billetData, userData) {
-    console.log("la: ", userId, billetData, userData);
-
-    let panier = await findActivePanierByUser(userId);
-
-    if (panier.length === 0) {
-        panier = await createPanier(userId, "session-placeholder");
+async function addBilletToPanier(userId, sessionId, billetData, userData) {
+    let panier;
+        
+    if (userId) {
+        panier = await findActivePanierByUserId(userId);
+    }
+    
+    if (!panier && sessionId) {
+        panier = await findActivePanierBySessionId(sessionId);
+    }
+    
+    if (!panier || panier.length === 0) {
+        panier = await createPanier(userId ?? null, sessionId);
     }
 
     const panierId = panier[0].panier_id;
 
-    const passager = await ensurePrimaryPassager(userId, userData);
-    const passagerId = passager.passager_id;
+    const passagerId = await ensurePrimaryPassager(panierId, userData);
+
+    const hasDoublon = await checkPanierItemDoublon(panierId, billetData);
+    if (hasDoublon) {
+        throw new Error("Ce trajet est déjà dans le panier");
+    }
 
     await insertPanierItem(panierId, passagerId, billetData);
 
@@ -55,11 +80,19 @@ async function addBilletToPanier(userId, billetData, userData) {
     return { panier: panier[0], items };
 }
 
-async function deleteBilletFromPanier(userId, itemId) {
-    const panier = await findActivePanierByUser(userId);
-
+async function deleteBilletFromPanier(userId, sessionId, itemId) {
+    let panier;
+        
+    if (userId) {
+        panier = await findActivePanierByUserId(userId);
+    }
+    
+    if (!panier && sessionId) {
+        panier = await findActivePanierBySessionId(sessionId);
+    }
+    
     if (!panier || panier.length === 0) {
-        throw new Error("Panier introuvable pour cet utilisateur");
+        panier = await createPanier(userId ?? null, sessionId);
     }
 
     const panierId = panier[0].panier_id;

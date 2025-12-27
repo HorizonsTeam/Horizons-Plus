@@ -9,7 +9,7 @@ export type PanierItem = {
     arriveeHeure: string;
     arriveeLieu: string;
     classe: string;
-    siegeLabel: string;
+    siegeRestant: string;
     prix: number;
     ajouteLe: Date;
     dateVoyage: Date;
@@ -25,7 +25,7 @@ export type BackendPanierItem = {
     arrivee_heure: string;
     arrivee_lieu: string;
     classe: string;
-    siege_label: string;
+    siege_restant: string;
     prix: string;
     ajoute_le: string;
     date_voyage: string;

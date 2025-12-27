@@ -37,11 +37,10 @@ function combineDateAndTime(dateISO: string, time: string): string {
     return `${dateISO}T${time}:00`;
 }
 
-function randomSiegeLabel() {
-    const lettre = String.fromCharCode(65 + Math.floor(Math.random() * 26));
+function randomSiegeRestant() {
     const numero = String(Math.floor(Math.random() * 999) + 1).padStart(3, '0');
 
-    return lettre + numero;
+    return numero;
 }
 
 export default function Billet_Train_recap()
@@ -83,7 +82,7 @@ export default function Billet_Train_recap()
 
     async function handleClick() {
         try {
-            const siegeLabel = randomSiegeLabel();
+            const siegeRestant = randomSiegeRestant();
 
             const res = await fetch(`${base}/api/panier/add`, {
                 method: "POST",
@@ -97,7 +96,7 @@ export default function Billet_Train_recap()
                     arriveeHeure: arriveeTimestamp,
                     arriveeLieu: journey.arrivalName,
                     classe: selectedClass,
-                    siegeLabel: siegeLabel,
+                    siegeRestant,
                     prix: journey.price,
                     dateVoyage: isoDate,
                     transportType: journey.simulated === true ? "AVION" : "TRAIN",
@@ -147,7 +146,7 @@ export default function Billet_Train_recap()
                         <span className='font-bold text-xl'>{journey.duration}</span>
                     </div>
                 </div>
-                <p className='m-4'>Total pour {passagersCount} passager{(passagersCount ?? 1) > 1 ? 's' : ''} : <span className='font-bold'>{journey.price * (passagersCount ?? 1)} €</span></p>
+                <p className='m-4'>Total pour {passagersCount} passager{passagersCount > 1 ? 's' : ''} : <span className='font-bold'>{journey.price * passagersCount} €</span></p>
 
 
             </div>
@@ -194,7 +193,7 @@ export default function Billet_Train_recap()
 
             <div className=' flex justify-between m-5 '>
                 <p className='font-bold text-3xl'>Total : </p>
-                <p className='font-bold text-3xl'>{journey.price * (passagersCount ?? 1)} €</p>
+                <p className='font-bold text-3xl'>{journey.price * passagersCount} €</p>
 
             </div>
             <div className='grid grid-cols gap-2 m-4 justify-center items-center '>
