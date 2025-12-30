@@ -2,6 +2,7 @@ import {
     findActivePanierByUserId,
     findActivePanierBySessionId,
     createPanier,
+    findPassagerByUserId,
     findPassagerByPanierId,
     insertPanierItem,
     getPanierItems,
@@ -10,16 +11,33 @@ import {
     checkPanierItemDoublon
 } from '../repositories/panierRepository.js';
 
-async function ensurePrimaryPassager(panierId, userData) {
-    console.log("la mtn c'est : ", panierId);
-    let passager = await findPassagerByPanierId(panierId);
+async function ensurePrimaryPassager(userId, panierId, userData) {
+    let passager;
 
-    if (!passager || passager.length === 0) {
-        passager = await createPassager({
-            panier_id: panierId,
-            name: userData.name,
-            email: userData.email,
-        });
+    if (userId) {
+        passager = await findPassagerByUserId(userId);
+
+        if (!passager || passager.length === 0) {
+            passager = await createPassager({
+                user_id: userId,
+                nom: userData.name,
+                email: userData.email,
+                date_naissance: userData.dateNaissance || null,
+                telephone: userData.telephone || null,
+            });
+        }
+    } else if (panierId) {
+        passager = await findPassagerByPanierId(panierId);
+
+        if (!passager || passager.length === 0) {
+            passager = await createPassager({
+                panier_id: panierId,
+                nom: userData.name || "Invité",
+                email: userData.email || null,
+            });
+        }
+    } else {
+        throw new Error("Impossible de déterminer le passager : userId ou panierId requis");
     }
 
     return passager[0].passager_id;
@@ -65,9 +83,10 @@ async function addBilletToPanier(userId, sessionId, billetData, userData) {
     }
 
     const panierId = panier[0].panier_id;
+    console.log(userId, panierId, userData);
 
-    const passagerId = await ensurePrimaryPassager(panierId, userData);
-
+    const passagerId = await ensurePrimaryPassager(userId, panierId, userData);
+    console.log(userId, panierId, userData);
     const hasDoublon = await checkPanierItemDoublon(panierId, billetData);
     if (hasDoublon) {
         throw new Error("Ce trajet est déjà dans le panier");

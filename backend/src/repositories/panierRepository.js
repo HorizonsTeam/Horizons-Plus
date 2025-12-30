@@ -16,7 +16,7 @@ export async function findActivePanierBySessionId(sessionId) {
 export async function createPanier(userId, sessionId) {
     return await sql`
         INSERT INTO panier (user_id, session_id, cree_le, expire_le, statut)
-        VALUES (${userId}, ${sessionId}, NOW(), NOW() + INTERVAL '1 day', 'ACTIF')
+        VALUES (${userId}, ${sessionId}, NOW(), NOW() + INTERVAL '1 hour', 'ACTIF')
         RETURNING *
     `;
 }
@@ -27,19 +27,28 @@ export async function createPassager(passagerData) {
         VALUES (
             ${passagerData.panier_id},
             ${passagerData.name},
-            ${passagerData.email},
+            ${passagerData.email}
         )
         RETURNING *;
     `;
 }
 
+export async function findPassagerByUserId(userId) {
+    return await sql`
+        SELECT * 
+        FROM passager 
+        WHERE user_id = ${userId} 
+        LIMIT 1
+    `
+}
+
 export async function findPassagerByPanierId(panierId) {
-    let query = sql`SELECT * FROM passager WHERE panier_id = ${panierId}`;
-
-    query = sql`${query} LIMIT 1`;
-
-    const result = await query;
-    return result;
+    return await sql`
+        SELECT * 
+        FROM passager 
+        WHERE panier_id = ${panierId} 
+        LIMIT 1
+    `;
 }
 
 
