@@ -1,0 +1,24 @@
+name: Cleanup expired paniers
+
+on:
+  schedule:
+    - cron: '0 3 * * *'   # tous les jours à 03h
+  workflow_dispatch:      # bouton "Run" manuel
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Cleanup expired paniers
+        run: |
+          psql "$DATABASE_URL" -c "
+          UPDATE panier
+          SET statut = 'EXPIRE'
+          WHERE statut = 'ACTIF'
+            AND expire_le <= NOW();
+
+          DELETE FROM panier
+          WHERE statut = 'EXPIRE'
+            AND expire_le < NOW() - INTERVAL '30 days';
+          "
