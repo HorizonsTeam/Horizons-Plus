@@ -15,7 +15,6 @@ import Infos_Passagers from './features/Products/Billets/Pages/Infos_Passagers.t
 import Settings from './features/Settings/setingsPage.tsx';
 import UserInfoPageMobile from './features/Settings/components/UserInfoMobilePage.tsx';
 import ResetPassword from './features/connexion/ResetPassword/resetpassword.tsx';
-import Correspendances from './features/Products/Billets/components/Recap/Correspendances.tsx';
 
 
 
