@@ -12,6 +12,9 @@ import { Link, useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import useIsMobile from '../../../../components/layouts/UseIsMobile.tsx';
 import type { LocationState } from '../types.ts';
+import Correspendances from '../components/Recap/Correspendances.tsx';
+import type { Stop, Leg } from '../components/Recap/Correspendances.tsx';
+import RoadDetails from '../components/Recap/RoadDetails.tsx';
 
 const base = `${import.meta.env.VITE_API_URL || "http://localhost:3005"}`;
 
@@ -78,6 +81,35 @@ export default function Billet_Train_recap()
             name: 'Première',
             description: 'Sièges spacieux, accès salon, repas gastronomique, service prioritaire.',
         },
+    ];
+    //ex : 
+    // Paris -> Lyon -> Avignon -> Aix -> Marseille (train)
+    // Marseille Airport (MRS) -> New York JFK (flight)
+    const stops: Stop[] = [
+        { kind: "station", city: "Paris", placeName: "Paris Gare de Lyon", arrival: "08:12", lat: 48.8443, lng: 2.3730 },
+        { kind: "station", city: "Lyon", placeName: "Lyon Part-Dieu", arrival: "10:05", lat: 45.7606, lng: 4.8619 },
+        { kind: "station", city: "Avignon", placeName: "Avignon TGV", arrival: "11:13", lat: 43.9210, lng: 4.7860 },
+        { kind: "station", city: "Aix-en-Provence", placeName: "Aix-en-Provence TGV", arrival: "11:45", lat: 43.4550, lng: 5.3170 },
+        { kind: "station", city: "Marseille", placeName: "Marseille Saint-Charles", arrival: "12:10", lat: 43.3026, lng: 5.3796 },
+
+
+        { kind: "airport", city: "Marignane", placeName: "Marseille Provence Airport (MRS)", arrival: "13:05", lat: 43.4393, lng: 5.2214 },
+
+
+        { kind: "airport", city: "New York", placeName: "John F. Kennedy Intl Airport (JFK)", arrival: "16:40", lat: 40.6413, lng: -73.7781 },
+    ];
+
+    const legs: Leg[] = [
+        //rail pour train , air pour vol
+        { fromIndex: 0, toIndex: 1, mode: "rail" },
+        { fromIndex: 1, toIndex: 2, mode: "rail" },
+        { fromIndex: 2, toIndex: 3, mode: "rail" },
+        { fromIndex: 3, toIndex: 4, mode: "rail" },
+
+        { fromIndex: 4, toIndex: 5, mode: "rail" },
+
+        // FLIGHT leg 
+        { fromIndex: 5, toIndex: 6, mode: "air" },
     ];
 
     async function handleClick() {
@@ -148,20 +180,36 @@ export default function Billet_Train_recap()
                 </div>
                 <p className='m-4'>Total pour {passagersCount} passager{passagersCount > 1 ? 's' : ''} : <span className='font-bold'>{journey.price * passagersCount} €</span></p>
 
+            <div className='flex  justify-center gap-6 mt-4'>
+            {!isMobile &&
+                    <div className='w-full h-full border-4 rounded-3xl border-[#FFB856] overflow-hidden mt-15 shadow-2xl'>
+                <Correspendances stops={stops} legs={legs} />
+            </div>
+            }
+            
+            <RoadDetails journey={journey} formattedDepartureDate={formattedDepartureDate} passagersCount={passagersCount}  stops={stops} legs={legs}/>
+
+
 
             </div>
-            <div className='w-full items-center h-55 bg-[#133A40] rounded-2xl border-2 border-[#2C474B] mt-5'>
+            {isMobile &&
+
+                <div className='w-full h-full py-4'>
+                    <Correspendances stops={stops} legs={legs} />
+                </div>
+            }
+            <div className=' items-center h-55 bg-[#133A40] rounded-2xl border-2 border-[#2C474B] mt-5 '>
                 <div className='border-b-3 border-[#2C474B] '>
                     <p className='m-4 font-semibold text-center -ml-2'>Informations</p>
                 </div>
-                <div className='flex justify-between'>
+                <div className='flex justify-start  gap-10'>
                     <div className='grid grid-cols gap-7 p-6'>
                         <img src={checkMarck} alt="" />
                         <img src={checkMarck} alt="" className='mt-2' />
                         <img src={clockIco} alt="" className='w-5 h-5'/>
 
                     </div>
-                    <div className='grid grid-cols  '>
+                    <div className='grid grid-cols  mt-2'>
                         <p className='text-left mt-2 '>Billets téléchargeables immédiatement après l’achat</p>
                         <p className='text-left mb-1'>Bagages inclus</p>
                         <p className='text-left mb-1 '>7 places restantes</p>
@@ -209,8 +257,7 @@ export default function Billet_Train_recap()
             </Link>
                 
             </div>
-                
-
+        </div>
         </div>
     )
 }
