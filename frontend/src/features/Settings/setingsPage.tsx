@@ -8,46 +8,67 @@ import NotificationIco from '../../assets/NotificationsIco.svg'
 import SecuIco from '../../assets/SecuIco.svg'
 import useIsMobile from '../../components/layouts/UseIsMobile';
 import UserProfileForm from './components/UserProfileForm';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import UserAdressForm from './components/UserAdressForm';
 
+type User = {
+    name?: string;
+    email: string;
+    phone?: string;
+    birthDate?: string;
+    address?: {
+        street?: string;
+        city?: string;
+        zipCode?: string;
+        country?: string;
+    };
+};
 
+export default function Setings() {
+    const isMobile = useIsMobile();
+    const navigate = useNavigate();
 
+    const [profileInfoDesplay, setProfileInfoDesplay] = useState(true);
+    const [AdresseInfoDesplay, setAdresseInfoDesplay] = useState(false);
 
+    const [user, setUser] = useState<User | null>(null);
+    const [loadingUser, setLoadingUser] = useState(true);
+    const API_BASE = import.meta.env.VITE_API_URL || '';
 
+    useEffect(() => {
+        fetch(`${API_BASE}/api/me`, { credentials: 'include' })
+            .then((res) => (res.status === 401 ? null : res.json()))
+            .then((data) => setUser(data?.user ?? null))
+            .catch(() => setUser(null))
+            .finally(() => setLoadingUser(false));
+    }, [API_BASE]);
 
-
-export default function Setings ()
-{
-    const [profileInfoDesplay , setProfileInfoDesplay] = useState(true);
-    const [AdresseInfoDesplay , setAdresseInfoDesplay] = useState(false);
-     let informationProfile : boolean = false 
-    if (profileInfoDesplay || AdresseInfoDesplay)
-    { 
+    if (loadingUser && !isMobile) {
+        return <div className="w-full p-4">Chargement des informations...</div>;
+    }
+    let informationProfile: boolean = false
+    if (profileInfoDesplay || AdresseInfoDesplay) {
         informationProfile = true
 
 
     }
-    const isMobile = useIsMobile();
-    const navigate = useNavigate();
-        const handleretour = () =>
-        {
-            navigate(-1);
-        };
+    const handleretour = () => {
+        navigate(-1);
+    };
     return (
         <>
             <div className={` ${isMobile ? 'w-full flex justify-center' : 'w-full flex justify-start gap-5 p-4  '}`}>
-                <div className={`w-full ${!isMobile && 'max-w-100'  }`   }>
+                <div className={`w-full ${!isMobile && 'max-w-100'}`}>
                     <div className='relative mt-4 display flex justify-center items-center m-2'>
-                        <button onClick={handleretour}><img src={ReturnBtn} alt="Return Button" className={`absolute left-1 mt-5 transform -translate-y-1/2 ${isMobile && 'max-w-10 '  }`  }/></button>
+                        <button onClick={handleretour}><img src={ReturnBtn} alt="Return Button" className={`absolute left-1 mt-5 transform -translate-y-1/2 ${isMobile && 'max-w-10 '}`} /></button>
                         < h1 className='text-3xl text-[#98EAF3] font-medium text-center'>Paramètres</h1>
                     </div>
 
                     <div className='w-full px-4  mt-15 '>
                         <div className={`w-full grid grid-cols    `}>
                             <button className='  border-b-2 border-[#2C474B] h-20 w-full'>
-                                <button className='w-full flex justify-start gap-4' onClick={() => { if (isMobile) {navigate("/UserInfoPageMobile") }}}>
-                                <img src={UserIco} alt="" className='h-6 w-8' />
+                                <button className='w-full flex justify-start gap-4' onClick={() => { if (isMobile) { navigate("/UserInfoPageMobile") } }}>
+                                    <img src={UserIco} alt="" className='h-6 w-8' />
                                     <p className={`text-xl font-bold ${informationProfile && !isMobile && 'text-[#98EAF3]'}`}>Informations du profil</p>
                                 </button>
                             </button>
@@ -85,33 +106,37 @@ export default function Setings ()
                         </div>
 
                     </div>
-                    
+
                 </div>
                 {!isMobile &&
                     <div className='  w-full m-4 '>
                         <div className='flex w-full justify-center h-20 mt-10'>
-                            <button className={`w-full  text-2xl font-semibold border-b-4 rounded-tr-3xl transition-colors duration-300 ${!profileInfoDesplay ? 'bg-transparent border-b-white ' : 'bg-[#133A40] text-[#98EAF3] border-b-[#98EAF3]'  }`} 
-                                onClick={ () => {
-                                    setProfileInfoDesplay(true); 
-                                    setAdresseInfoDesplay (false)
-                                    }}>Profil</button>
+                            <button className={`w-full  text-2xl font-semibold border-b-4 rounded-tr-3xl transition-colors duration-300 ${!profileInfoDesplay ? 'bg-transparent border-b-white ' : 'bg-[#133A40] text-[#98EAF3] border-b-[#98EAF3]'}`}
+                                onClick={() => {
+                                    setProfileInfoDesplay(true);
+                                    setAdresseInfoDesplay(false)
+                                }}>Profil</button>
 
-                            <button className={` w-full text-2xl font-semibold border-b-4 rounded-tl-3xl transition-colors duration-300 ${!profileInfoDesplay ? 'bg-[#133A40] text-[#98EAF3] border-b-[#98EAF3]' : 'bg-transparent border-b-white ' }`} onClick={ () => {setProfileInfoDesplay(false); setAdresseInfoDesplay (true)}}>Adresse</button>
+                            <button className={` w-full text-2xl font-semibold border-b-4 rounded-tl-3xl transition-colors duration-300 ${!profileInfoDesplay ? 'bg-[#133A40] text-[#98EAF3] border-b-[#98EAF3]' : 'bg-transparent border-b-white '}`} onClick={() => { setProfileInfoDesplay(false); setAdresseInfoDesplay(true) }}>Adresse</button>
                         </div>
-                        {
-                        profileInfoDesplay && 
-                        <div className='mt-20'>
-                            <UserProfileForm/>
-
-                        </div>
+                        {profileInfoDesplay &&
+                            <div className='mt-20'>
+                                <UserProfileForm
+                                    initialData={{
+                                        firstName: user?.name?.split(' ')[0] ?? "",
+                                        lastName: user?.name?.split(' ').slice(1).join(' ') ?? "",
+                                        birthDate: user?.birthDate ?? "",
+                                        phone: user?.phone ?? "",
+                                        email: user?.email ?? "",
+                                    }}
+                                />
+                            </div>
                         }
 
-                        {
-                        AdresseInfoDesplay && 
-                        <div className='mt-20'>
-                            <UserAdressForm/>
-
-                        </div>
+                        {AdresseInfoDesplay &&
+                            <div className='mt-20'>
+                                <UserAdressForm initialData={user?.address} />
+                            </div>
                         }
                         
 
