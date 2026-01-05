@@ -4,7 +4,7 @@ import type React from 'react';
 import { authClient } from '../../../lib/auth-clients';
 import { useState } from 'react';
 import useIsMobile from '../../../components/layouts/UseIsMobile';
- import 'react-phone-number-input/style.css';
+import 'react-phone-number-input/style.css';
 import PhoneInput from 'react-phone-number-input';
 import { isPossiblePhoneNumber } from 'react-phone-number-input';
  
