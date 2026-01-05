@@ -7,11 +7,10 @@ import PreferenceIco from '../../assets/PreferencesIco.svg'
 import NotificationIco from '../../assets/NotificationsIco.svg'
 import SecuIco from '../../assets/SecuIco.svg'
 import useIsMobile from '../../components/layouts/UseIsMobile';
-import UserProfileForm from './components/UserProfileForm';
+import UserProfileForm from './components/UserInformation/UserProfileForm';
 import { useState } from 'react';
-import UserAdressForm from './components/UserAdressForm';
-
-
+import UserAdressForm from './components/UserInformation/UserAdressForm';
+import AccountSettings from './Pages/AccountSettings/AccountSettings';
 
 
 
@@ -19,8 +18,11 @@ import UserAdressForm from './components/UserAdressForm';
 
 export default function Setings ()
 {
+    const [selectedsetting, setSelectedsetting] = useState('ProfilInfo');
     const [profileInfoDesplay , setProfileInfoDesplay] = useState(true);
     const [AdresseInfoDesplay , setAdresseInfoDesplay] = useState(false);
+
+
      let informationProfile : boolean = false 
     if (profileInfoDesplay || AdresseInfoDesplay)
     { 
@@ -46,15 +48,24 @@ export default function Setings ()
                     <div className='w-full px-4  mt-15 '>
                         <div className={`w-full grid grid-cols    `}>
                             <button className='  border-b-2 border-[#2C474B] h-20 w-full'>
-                                <button className='w-full flex justify-start gap-4' onClick={() => { if (isMobile) {navigate("/UserInfoPageMobile") }}}>
+                                <button className='w-full flex justify-start gap-4' onClick={() => { if (isMobile) {navigate("/UserInfoPageMobile")  } else { setSelectedsetting("ProfilInfo")}}}>
                                 <img src={UserIco} alt="" className='h-6 w-8' />
-                                    <p className={`text-xl font-bold ${informationProfile && !isMobile && 'text-[#98EAF3]'}`}>Informations du profil</p>
+                                    <p className={` font-bold ${selectedsetting === 'ProfilInfo' && !isMobile ? 'text-[#98EAF3] text-2xl transition-colors duration-300' : 'text-xl'}`}>Informations du profil</p>
                                 </button>
                             </button>
                             <button className='  w-full border-b-2 border-[#2C474B] h-20  '>
-                                <div className='w-full flex justify-start gap-4'>
+                                <div className='w-full flex justify-start gap-4' onClick={() =>{ if (isMobile) {
+                                    navigate("/AccountSettings");
+                                }else
+                                    {
+                                        setSelectedsetting('AccountSettings');
+
+
+
+                                    } 
+                            }}>
                                     <img src={ParametresIco} alt="" className='h-6 w-8' />
-                                    <p className='text-xl font-bold '>Paramètres du compte</p>
+                                    <p className={` font-bold ${selectedsetting === 'AccountSettings'&& !isMobile ?'text-[#98EAF3] text-2xl transition-colors duration-300' : 'text-xl'}`}>Paramètres du compte</p>
                                 </div>
                             </button><button className='  w-full border-b-2 border-[#2C474B] h-20 w-80 '>
                                 <div className='w-full flex justify-start gap-4'>
@@ -87,7 +98,7 @@ export default function Setings ()
                     </div>
                     
                 </div>
-                {!isMobile &&
+                {!isMobile && selectedsetting === 'ProfilInfo' &&
                     <div className='  w-full m-4 '>
                         <div className='flex w-full justify-center h-20 mt-10'>
                             <button className={`w-full  text-2xl font-semibold border-b-4 rounded-tr-3xl transition-colors duration-300 ${!profileInfoDesplay ? 'bg-transparent border-b-white ' : 'bg-[#133A40] text-[#98EAF3] border-b-[#98EAF3]'  }`} 
@@ -117,6 +128,13 @@ export default function Setings ()
 
                     </div>
                 }
+                {!isMobile && selectedsetting === 'AccountSettings' &&
+                    <div className=' w-full m-4 '>
+                        <AccountSettings/>
+
+
+                </div>
+}
 
 
             </div>
