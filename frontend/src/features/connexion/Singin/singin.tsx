@@ -60,6 +60,7 @@ export default function Singin() {
                 email,
                 password,
                 callbackURL: "/"
+                
             });
 
             await fetch("http://localhost:3005/api/user/phone", {

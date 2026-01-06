@@ -14,6 +14,7 @@ import { loadGeoData } from "./src/utils/geoData.js";
 import paymentRoutes from "./src/routes/payment.js"
 import promoRoutes from "./src/routes/promo.js"
 import userRoutes from "./src/routes/user.js";
+import uploadRoutes from "./src/routes/upload.js";
 
 const app = express();
 const PORT = Number(process.env.PORT || 3005);
@@ -115,7 +116,13 @@ app.use("/api/promo", promoRoutes);
 app.use("/api/payments", paymentRoutes);
 
 // Enregistrer numéro de téléphone de l'utilisateur
-app.post("/api/user/phone", userRoutes);
+app.post("/api", userRoutes);
+
+// Sauvegarder photo de profil
+app.use('/api', uploadRoutes);
+
+// Fichiers 
+app.use('/public', express.static('public'));
 
 // Health
 app.get("/api/health", (_req, res) => res.json({ ok: true }));

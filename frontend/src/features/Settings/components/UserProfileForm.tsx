@@ -1,5 +1,6 @@
 import useIsMobile from "../../../components/layouts/UseIsMobile";
 import { useState, useEffect } from "react";
+import authClient from "../../../lib/auth-clients";
 
 type UserProfileFormProps = {
     initialData?: {
@@ -9,11 +10,12 @@ type UserProfileFormProps = {
         phone?: string;
         email?: string;
     };
+    onChangeImage?: (newUrl: string) => void;
 };
 
-
-export default function UserProfileForm({ initialData }: UserProfileFormProps) {
+export default function UserProfileForm({ initialData, onChangeImage }: UserProfileFormProps) {
     const isMobile = useIsMobile();
+    const { refetch } = authClient.useSession();
 
     const [form, setForm] = useState({
         firstName: initialData?.firstName ?? "",
@@ -22,6 +24,47 @@ export default function UserProfileForm({ initialData }: UserProfileFormProps) {
         phone: initialData?.phone ?? "",
         email: initialData?.email ?? "",
     });
+
+
+    const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        console.log("Fichier sélectionné:", file.name);
+
+        // Upload vers ton backend 
+        const formData = new FormData();
+        formData.append("file", file);
+
+        try {
+            const res = await fetch("http://localhost:3005/api/upload-avatar", {
+                method: "POST",
+                body: formData,
+                credentials: "include"
+            });
+
+            if (!res.ok) {
+                console.error("Erreur upload:", res.statusText);
+                return;
+            }
+
+            const data = await res.json();
+            const imageUrl = data.url;
+
+            // Mise à jour Better Auth
+            await authClient.updateUser({ image: imageUrl });
+
+            // Rafraîchissement de la session
+            await refetch();
+
+            if (onChangeImage) onChangeImage(imageUrl);
+
+            console.log("Image de profil mise à jour avec succès");
+
+        } catch (error) {
+            console.error("Erreur:", error);
+        }
+    };
 
     useEffect(() => {
         if (initialData) {
@@ -34,6 +77,8 @@ export default function UserProfileForm({ initialData }: UserProfileFormProps) {
             });
         }
     }, [initialData]);
+
+
 
     const NoData = !form.firstName && !form.lastName && !form.birthDate && !form.phone;
     return (
@@ -56,7 +101,7 @@ export default function UserProfileForm({ initialData }: UserProfileFormProps) {
 
                 <label className="bg-transparent border-3 border-white text-white px-3 py-1 rounded-xl cursor-pointer hover:bg-white hover:text-black transition">
                     Importer
-                    <input type="file" className="hidden" />
+                    <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
                 </label>
             </div>
             <div className={`border-b-2 border-b-[#4A6367] flex ${isMobile ? 'w-80' : 'w-full'}justify-between gap-20 items-center h-30 px-2 py-5 pb-2`}>
