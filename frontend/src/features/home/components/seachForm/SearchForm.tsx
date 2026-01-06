@@ -1,5 +1,5 @@
 import { ArrowDownUp, Minus, Search } from "lucide-react";
-import { useState, useMemo, type ChangeEvent, useRef } from "react";
+import { useState, useMemo, type ChangeEvent, useRef, useEffect } from "react";
 import AutocompleteInput from "../../../../components/autocomplete/AutocompleteInput";
 import { useNavigate } from "react-router-dom";
 import type { Suggestion } from "../../../../components/autocomplete/types";
@@ -115,6 +115,18 @@ export default function SearchForm({ onPlaneAnimation, planeAnimDurationMs }: Se
       delete input.dataset.prevInlineMaxWidth;
     }
   };
+  useEffect (()=>{
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Enter") {
+        closeFocus();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+
+  },[activeWrapper])
 
   const openFocus = (wrapper: HTMLDivElement | null) => {
     if (isMobile) return;
