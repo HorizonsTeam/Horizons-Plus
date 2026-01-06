@@ -26,6 +26,13 @@ export type AutocompleteInputProps = {
   onSelect: (s: Suggestion) => void;
   className?: string;
   AutocompleteListClassname?: string;
+  Ref? : string;
+  onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void;
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
+  onFocusCapture?: (e: React.FocusEvent<HTMLInputElement>) => void;
+  onBlurCapture?: (e: React.FocusEvent<HTMLInputElement>) => void;
+  wrapperRef?: React.Ref<HTMLDivElement>;
+
 }
 
 export type AutocompleteListProps = {
