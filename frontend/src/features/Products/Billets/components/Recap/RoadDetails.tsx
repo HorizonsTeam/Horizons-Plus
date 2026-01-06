@@ -65,8 +65,8 @@ export default function RoadDetails({
 
 
     return (
-        <section className="w-full m-15">
-            <div className="w-full bg-[#133A40] rounded-2xl border-2 border-[#2C474B]">
+       <section className="w-full">
+            <div className="w-full bg-[#133A40] rounded-2xl border-2 border-[#2C474B] overflow-hidden">
                 {/* HEADER DATE */}
                 <div className="px-4 pt-5">
                     <p className="font-bold w-full text-center">{formattedDepartureDate}</p>
@@ -101,8 +101,6 @@ export default function RoadDetails({
                     </div>
                 </div>
 
-               
-
                 {/* ITINÉRAIRE (SEGMENTS) */}
                 <div className="px-4 pb-5">
                     <h3 className="font-semibold text-[#98EAF3] mb-3">Itinéraire détaillé</h3>
@@ -121,16 +119,16 @@ export default function RoadDetails({
                                 return (
                                     <article
                                         key={`${seg.mode}-${seg.fromIndex}-${seg.toIndex}`}
-                                        className="rounded-2xl border border-[#2C474B] bg-[#0F2F34] p-4"
+                                        className="rounded-2xl border border-[#2C474B] bg-[#0F2F34] p-4 overflow-hidden"
                                     >
                                         {/* titre segment */}
-                                        <header className="flex items-center justify-between gap-3">
+                                        <header className="flex items-center justify-between gap-3 min-w-0">
                                             <div className="flex items-center gap-2 min-w-0">
-                                                <span className="text-lg" aria-hidden="true">{modeIcon(seg.mode)}</span>
+                                                <span className="text-lg shrink-0" aria-hidden="true">{modeIcon(seg.mode)}</span>
                                                 <p className="font-semibold text-white truncate">{modeTitle(seg.mode)}</p>
                                             </div>
 
-                                            <p className="text-xs text-white/60 shrink-0">
+                                            <p className="text-xs text-white/60 shrink-0 whitespace-nowrap">
                                                 {segStart?.arrival ?? "--:--"} → {segEnd?.arrival ?? "--:--"}
                                             </p>
                                         </header>
@@ -149,18 +147,18 @@ export default function RoadDetails({
                                                 const isLast = i === segmentStops.length - 1;
 
                                                 return (
-                                                    <li key={`${st.placeName}-${i}`} className="flex items-start gap-3">
+                                                    <li key={`${st.placeName}-${i}`} className="flex items-start gap-3 min-w-0">
                                                         {/* heure */}
-                                                        <span className="text-xs text-white/70 w-12 pt-0.5">
+                                                        <span className="text-xs text-white/70 w-12 pt-0.5 shrink-0">
                                                             {st.arrival}
                                                         </span>
 
                                                         {/* puce + contenu */}
                                                         <div className="flex-1 min-w-0">
-                                                            <div className="flex items-center gap-2">
+                                                            <div className="flex items-center gap-2 min-w-0">
                                                                 <span
                                                                     className={[
-                                                                        "h-2.5 w-2.5 rounded-full border-2",
+                                                                        "h-2.5 w-2.5 rounded-full border-2 shrink-0",
                                                                         isFirst
                                                                             ? "bg-gray-400 border-white"
                                                                             : isLast
@@ -169,7 +167,7 @@ export default function RoadDetails({
                                                                     ].join(" ")}
                                                                     aria-hidden="true"
                                                                 />
-                                                                <p className="font-semibold text-white truncate">
+                                                                <p className="font-semibold text-white truncate min-w-0">
                                                                     {st.city}
                                                                     <span className="text-white/60 font-medium">
                                                                         {st.kind === "station" ? " • Gare" : " • Aéroport"}
@@ -187,8 +185,8 @@ export default function RoadDetails({
 
                                         {/* correspondance (si segment suivant) */}
                                         {sidx < segments.length - 1 && (
-                                            <div className="mt-4 rounded-xl border border-[#2C474B] bg-[#133A40] px-3 py-2">
-                                                <p className="text-xs text-white/80">
+                                            <div className="mt-4 rounded-xl border border-[#2C474B] bg-[#133A40] px-3 py-2 overflow-hidden">
+                                                <p className="text-xs text-white/80 break-words">
                                                     Correspondance à{" "}
                                                     <span className="font-semibold">
                                                         {stopLabel(stops[seg.toIndex])}

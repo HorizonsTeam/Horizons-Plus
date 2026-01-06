@@ -82,7 +82,6 @@ export default function PaymentPage() {
         })
             .then((res) => res.json())
             .then((data) => {
-                console.log("FRONT → data reçue :", data);
                 setClientSecret(data.clientSecret);
                 setLoadingStripe(false);
             })

@@ -8,7 +8,6 @@ import icoWifi from '../../../../assets/wifi.svg'
 import priseIco from'../../../../assets/Prises.svg'
 import climatisation_Ico from '../../../../assets/climatisation.svg'   
 import Serinita_card from '../components/Recap/serenita_card.tsx';
-import AjouterPanierBtn from '../components/Recap/AjouterPanierBtn.tsx';
 import { Link, useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import useIsMobile from '../../../../components/layouts/UseIsMobile.tsx';
@@ -96,7 +95,7 @@ export default function Billet_Train_recap()
             </div>
             }
             
-            <RoadDetails journey={journey} formattedDepartureDate={formattedDepartureDate} passagersCount={passagersCount}  stops={stops} legs={legs}/>
+            <RoadDetails journey={journey} formattedDepartureDate={formattedDepartureDate} passagersCount={passagersCount}  stops={stops} legs={legs}  />
 
 
 
@@ -154,7 +153,6 @@ export default function Billet_Train_recap()
 
             </div>
             <div className='grid grid-cols gap-2 m-4 justify-center items-center '>
-            <AjouterPanierBtn/>
                 <Link to="/Infos_Passagers" state={{ journey, selectedClass, passagersCount, formattedDepartureDate }} onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} >
                     <button className="w-80  h-15 bg-[#98EAF3] rounded-xl mt-4">
                         <span className="text-[#115E66] font-bold text-xl">Continuer</span>
