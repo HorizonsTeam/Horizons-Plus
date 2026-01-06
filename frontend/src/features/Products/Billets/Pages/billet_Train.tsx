@@ -79,25 +79,31 @@ export default function Billet_Train_recap() {
         },
     ];
 
-    const stops: Stop[] = [
-        { kind: "station", city: "Paris", placeName: "Paris Gare de Lyon", arrival: "08:12", lat: 48.8443, lng: 2.3730 },
-        { kind: "station", city: "Lyon", placeName: "Lyon Part-Dieu", arrival: "10:05", lat: 45.7606, lng: 4.8619 },
-        { kind: "station", city: "Avignon", placeName: "Avignon TGV", arrival: "11:13", lat: 43.9210, lng: 4.7860 },
-        { kind: "station", city: "Aix-en-Provence", placeName: "Aix-en-Provence TGV", arrival: "11:45", lat: 43.4550, lng: 5.3170 },
-        { kind: "station", city: "Marseille", placeName: "Marseille Saint-Charles", arrival: "12:10", lat: 43.3026, lng: 5.3796 },
-        { kind: "airport", city: "Marignane", placeName: "Marseille Provence Airport (MRS)", arrival: "13:05", lat: 43.4393, lng: 5.2214 },
-        { kind: "airport", city: "New York", placeName: "John F. Kennedy Intl Airport (JFK)", arrival: "16:40", lat: 40.6413, lng: -73.7781 },
-    ];
+    // const stops: Stop[] = [
+    //     { kind: "station", city: "Paris", placeName: "Paris Gare de Lyon", arrival: "08:12", lat: 48.8443, lng: 2.3730 },
+    //     { kind: "station", city: "Lyon", placeName: "Lyon Part-Dieu", arrival: "10:05", lat: 45.7606, lng: 4.8619 },
+    //     { kind: "station", city: "Avignon", placeName: "Avignon TGV", arrival: "11:13", lat: 43.9210, lng: 4.7860 },
+    //     { kind: "station", city: "Aix-en-Provence", placeName: "Aix-en-Provence TGV", arrival: "11:45", lat: 43.4550, lng: 5.3170 },
+    //     { kind: "station", city: "Marseille", placeName: "Marseille Saint-Charles", arrival: "12:10", lat: 43.3026, lng: 5.3796 },
+    //     { kind: "airport", city: "Marignane", placeName: "Marseille Provence Airport (MRS)", arrival: "13:05", lat: 43.4393, lng: 5.2214 },
+    //     { kind: "airport", city: "New York", placeName: "John F. Kennedy Intl Airport (JFK)", arrival: "16:40", lat: 40.6413, lng: -73.7781 },
+    // ];
 
-    const legs: Leg[] = [
-        { fromIndex: 0, toIndex: 1, mode: "rail" },
-        { fromIndex: 1, toIndex: 2, mode: "rail" },
-        { fromIndex: 2, toIndex: 3, mode: "rail" },
-        { fromIndex: 3, toIndex: 4, mode: "rail" },
-        { fromIndex: 4, toIndex: 5, mode: "rail" },
-        { fromIndex: 5, toIndex: 6, mode: "air" },
-    ];
+    // const legs: Leg[] = [
+    //     { fromIndex: 0, toIndex: 1, mode: "rail" },
+    //     { fromIndex: 1, toIndex: 2, mode: "rail" },
+    //     { fromIndex: 2, toIndex: 3, mode: "rail" },
+    //     { fromIndex: 3, toIndex: 4, mode: "rail" },
+    //     { fromIndex: 4, toIndex: 5, mode: "rail" },
+    //     { fromIndex: 5, toIndex: 6, mode: "air" },
+    // ];
 
+    const stops: Stop[] = journey.stops;
+    const legs: Leg[] = journey.legs;
+
+    console.log(stops);
+    console.log(legs);
+    
     async function handleClick() {
         try {
             const siegeRestant = randomSiegeRestant();
