@@ -5,9 +5,8 @@ import { motion } from 'framer-motion';
 
 
 export default function ProductCard({ journey, passagersCount, formattedDepartureDate, index = 0 }: ProductCardProps) {
-
     const hasNoTransfer = journey.numberOfTransfers === 0;
-    
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -53,10 +52,7 @@ export default function ProductCard({ journey, passagersCount, formattedDepartur
                                     {journey.arrivalName}
                                 </span>
                             </div>
-
-                           
                         </div>
-                   
 
                     <div className="flex flex-col items-end gap-2 min-w-[120px]">
                         <div

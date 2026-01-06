@@ -16,6 +16,7 @@ const sql = postgres(connectionString, {
   max: 20, // Taille maximale du pool de connexions
   idle_timeout: 30, // Fermer les connexions inactives après 30s
   connect_timeout: 10, // Délai d'attente de connexion de 10s
+  prepare: false,
 })
 
 export default sql

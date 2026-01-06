@@ -7,13 +7,13 @@ import useIsMobile from '../../../components/layouts/UseIsMobile';
 import 'react-phone-number-input/style.css';
 import PhoneInput from 'react-phone-number-input';
 import { isPossiblePhoneNumber } from 'react-phone-number-input';
- 
- 
- 
+
+
+
 export default function Singin() {
- 
+
     const navigate = useNavigate();
- 
+
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [email, setEmail] = useState("");
@@ -24,20 +24,20 @@ export default function Singin() {
     const [isloading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
- 
+
     const handleSubmit = async (e: React.FormEvent) => {
- 
+
         e.preventDefault();
         setError(null);
- 
+
         // Contraintes du mot de passe
         if (password.length < 8) {
- 
+
             setError("Le mot de passe doit faire au moins 8 caractères.");
             return;
         }
         if (password !== confirm) {
- 
+
             setError("Le mot Les mots de passe ne correspondent pas.");
             return;
         }
@@ -45,37 +45,55 @@ export default function Singin() {
             setError("Numéro de téléphone invalide.");
             return;
         }
- 
+
         setIsLoading(true);
         try {
             await authClient.signUp.email({
                 name: `${firstName} ${lastName}`.trim(),
                 email,
                 password,
-                // phone,
                 callbackURL: "/", // Se diriger à l'accueil
             });
+
+            // Autologin
+            await authClient.signIn.email({
+                email,
+                password,
+                callbackURL: "/"
+                
+            });
+
+            await fetch("http://localhost:3005/api/user/phone", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include", 
+                body: JSON.stringify({ phone }),
+            });
+
             navigate("/");
+
         } catch (err: any) {
             setError(err?.message || "Erreur lors de la création du compte.");
         } finally {
             setIsLoading(false);
         }
     };
- 
+
     const signInWithGoogle = () => authClient.signIn.social({ provider: "google", callbackURL: "/" });
 
-   
 
- 
+
+
     return (
         <PageTransition>
- 
-      <div className={`text-center min-h-screen flex flex-col mt-17 lg:mt-13  gap-6 ${useIsMobile() ? 'w-full px-4' : 'w-full'} `}>
+
+            <div className={`text-center min-h-screen flex flex-col mt-17 lg:mt-13  gap-6 ${useIsMobile() ? 'w-full px-4' : 'w-full'} `}>
                 <h1 className="text-4xl font-bold   text-[#98EAF3]">
                     Crée un Compte
                 </h1>
- 
+
                 {/* Test */}
                 <form onSubmit={handleSubmit} className='flex flex-col items-center mt-1  space-y-4'>
                     {error && (
@@ -83,8 +101,8 @@ export default function Singin() {
                             {error}
                         </div>
                     )}
- 
- 
+
+
                     <div className="flex flex-col items-center  space-y-4">
                         <div className="flex items-center justify-center  gap-4">                <input
                             type="text"
@@ -111,13 +129,14 @@ export default function Singin() {
                             required
                         />
                         <div className="w-full max-w-md">
-                        <PhoneInput
-                            defaultCountry="FR"
-                            value={phone}
-                            onChange={setPhone}
-                            placeholder="Numéro de téléphone"
-                            className="PhoneInput"
-                        />
+                            <PhoneInput
+                                defaultCountry="FR"
+                                value={phone}
+                                onChange={setPhone}
+                                placeholder="Numéro de téléphone"
+                                className="PhoneInput"
+                                required
+                            />
                         </div>
 
                         <input
@@ -142,7 +161,7 @@ export default function Singin() {
                             className="bg-[#98EAF3] text-[#115E66] cursor-pointer w-full h-10 rounded-lg max-w-md font-bold -mb-3">
                             {isloading ? "Création..." : "Creer une compte"}
                         </button>
- 
+
                         <div className="flex items-center justify-center w-full max-w-md my-10 mb-17 gap-3">
                             <div className="flex-grow h-px bg-[#98EAF3]"></div>
                             <span className="mx-4 text-[#98EAF3] font-medium text-2xl">
@@ -150,7 +169,7 @@ export default function Singin() {
                             </span>
                             <div className="flex-grow h-px bg-[#98EAF3]"></div>
                         </div>
- 
+
                         <button
                             type='button'
                             onClick={signInWithGoogle}
@@ -159,12 +178,12 @@ export default function Singin() {
                             Continuer avec Google
                         </button>
                         <h2>Déja un compte ? <Link to="/login" className="text-[#98EAF3]">Connectez-vous</Link> </h2>
- 
+
                     </div>
                 </form>
             </div>
- 
+
         </PageTransition>
- 
+
     );
 }
