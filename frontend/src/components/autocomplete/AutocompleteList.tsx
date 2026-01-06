@@ -31,8 +31,11 @@ function AutocompleteList({ suggestions, selectedIndex, onSelect, className }: A
     };
 
     return (
-        <ul 
-            className={`${className ? className : "absolute autocomplete-suggestions left-0 right-0 z-50 mt-2 rounded-xl bg-[#0f2628] border border-[#1b3a3d] shadow-xl backdrop-blur-md max-h-72 overflow-y-auto text-left divide-y divide-[#1e3c3f] overflow-x-hidden"}`}
+        <ul
+            className={
+                className
+                    ? className
+                    : "absolute top-full left-0 w-full z-50 mt-2 rounded-xl bg-[#0f2628] border border-[#1b3a3d] shadow-xl backdrop-blur-md max-h-72 overflow-y-auto text-left divide-y divide-[#1e3c3f] overflow-x-hidden"}
             ref={(el) => { itemsRef.current = el ? Array.from(el.children) as (HTMLLIElement | null)[] : []; }}>
             {suggestions.map((s, i) => (
                 <li
