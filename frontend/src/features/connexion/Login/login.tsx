@@ -56,7 +56,7 @@ export default function Login() {
 
   return (
     <PageTransition>
-     <div className={`text-center min-h-screen flex flex-col mt-17 lg:mt-13   gap-6 ${useIsMobile() ? 'w-full px-4' : 'w-full'} `}>
+      <div className={`text-center min-h-screen flex flex-col mt-17 lg:mt-13   gap-6 ${useIsMobile() ? 'w-full px-4' : 'w-full'} `}>
                       <h1 className="text-4xl font-bold   text-[#98EAF3] mb-5 lg:mb-10">
 
           Connectez-vous
@@ -135,7 +135,6 @@ export default function Login() {
         </form>
       </div>
 
-    </PageTransition >
-
+    </PageTransition>
   );
 }

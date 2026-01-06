@@ -257,7 +257,7 @@ export default function Resultats() {
                         </div>
                     }
                     {
-                     lowestPrice === null && !IsLoading ? (
+                    lowestPrice === null && !IsLoading ? (
                         <div className="text-center text-red-400 font-bold py-10">
 
 
