@@ -148,35 +148,6 @@ export default function Billet_Train_recap() {
 
             <div className="flex-1 w-full px-4 pb-8 space-y-5">
 
-                {/*Résumé du voyage */}
-                <div className="w-full px-4 py-5 bg-[#133A40] rounded-2xl border-2 border-[#2C474B]">
-                    <p className="font-bold w-full text-center mb-6">{formattedDepartureDate}</p>
-                    <div className="w-full py-5 border-t-2 border-b-2 border-[#2C474B] flex justify-between items-center gap-4">
-                        <div className="grid gap-4">
-                            <span className="font-bold">{journey.departureTime}</span>
-                            <span className="font-bold">{journey.arrivalTime}</span>
-                        </div>
-                        <div className="grid gap-2">
-                            <div className="h-4 w-4 bg-gray-400 border-white border-2 rounded-full"></div>
-                            <div className="border-l-2 border-dashed border-white h-12 w-0.5 ml-1.5"></div>
-                            <div className="h-4 w-4 bg-black border-white border-2 rounded-full"></div>
-                        </div>
-                        <div className="grid gap-4">
-                            <div>
-                                <span className="font-bold">{journey.departureName}</span>
-                            </div>
-                            <div>
-                                <span className="font-bold">{journey.arrivalName}</span>
-                            </div>
-                        </div>
-                        <div className="flex gap-2 items-center shrink-0">
-                            <img src={clockIco} className="h-5 w-5" />
-                            <span className="font-bold text-xl">{journey.duration}</span>
-                        </div>
-                    </div>
-                    <p className="mt-4">Total pour {passagersCount} passager{passagersCount > 1 ? 's' : ''} : <span className="font-bold">{journey.price * passagersCount} €</span></p>
-                </div>
-
                 {/*Carte + Détails */}
                 <div className={`w-full grid gap-5 ${isMobile ? 'grid-cols-1' : 'grid-cols-2'}`}>
                     {!isMobile && (
