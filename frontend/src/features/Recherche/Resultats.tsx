@@ -161,12 +161,12 @@ export default function Resultats() {
                     <img
                         src={ReturnBtn}
                         alt="Return Button"
-                        className="absolute left-4 mt-10 transform -translate-y-1/2"
+                        className=" cursor-pointer absolute left-4 mt-10 transform -translate-y-1/2"
                     />
                 </button>
                 <div className="flex items-center justify-center mt-6" onClick={() => setBoxIsOn(!BoxIsOn)}>
 
-                    <div className="flex flex-col items-center" onClick={() => BoxIsOn && setBoxIsOn(false)}>
+                    <div className="cursor-pointer flex flex-col items-center" onClick={() => BoxIsOn && setBoxIsOn(false)}>
                         <h3 className="font-bold text-primary text-xl truncate max-w-[200px]">
                             {fromName} - {toName}
                         </h3>
@@ -181,9 +181,9 @@ export default function Resultats() {
                     <button
                         onClick={() => { changeDate(-1); }}
                         disabled={isPrevDisabled}
-                        className={`border-4 rounded-xl p-2 w-13 ${isPrevDisabled
+                        className={`cursor-pointer border-4 rounded-xl p-2 w-13 ${isPrevDisabled
                                 ? "border-gray-400 opacity-50 cursor-not-allowed"
-                                : "border-primary"
+                                : "border-primary" 
                             }`}
                     >
                         <img src={Left_ico} alt="Previous Day" className="ml-2" />
@@ -192,7 +192,7 @@ export default function Resultats() {
                     <Date_String date={new Date(departureDate)} />
 
                     <button
-                        className="border-4 border-primary rounded-xl p-2 w-13"
+                        className="cursor-pointer border-4 border-primary rounded-xl p-2 w-13"
                         onClick={() => changeDate(1)}
                     >
                         <img src={Right_ico} alt="Next Day" className="ml-2" />
@@ -202,7 +202,7 @@ export default function Resultats() {
                 <div className="flex items-center justify-between w-full my-10 " onClick={() => BoxIsOn && setBoxIsOn(false)}>
                     <button
                         onClick={() => setTransport('train')}
-                        className={`w-2/3 h-[68px] flex justify-center items-center border-b-4  rounded-tr-3xl transition-colors duration-300 ${transport === "train" ? "bg-[#133A40] border-[#98EAF3]" : "bg-transparent border-b-white"
+                        className={`cursor-pointer w-2/3 h-[68px] flex justify-center items-center border-b-4  rounded-tr-3xl transition-colors duration-300 ${transport === "train" ? "bg-[#133A40] border-[#98EAF3]" : "bg-transparent border-b-white"
                             }`}
                     >
                         <div className="flex flex-col items-center" onClick={() => BoxIsOn && setBoxIsOn(false)}>
@@ -213,7 +213,7 @@ export default function Resultats() {
 
                     <button
                         onClick={() => setTransport("plane")}
-                        className={`w-2/3 h-[68px] flex justify-center items-center border-b-4  rounded-tl-3xl transition-colors duration-300 ${transport === "plane" ? "bg-[#133A40] border-[#98EAF3]" : "bg-transparent border-b-white"
+                        className={`cursor-pointer w-2/3 h-[68px] flex justify-center items-center border-b-4  rounded-tl-3xl transition-colors duration-300 ${transport === "plane" ? "bg-[#133A40] border-[#98EAF3]" : "bg-transparent border-b-white"
                             }`}
                     >
                         <div className="flex flex-col items-center">

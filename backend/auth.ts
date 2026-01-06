@@ -9,7 +9,7 @@ const { Pool } = pg;
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  
+
 });
 
 
@@ -40,26 +40,35 @@ const getBaseURL = () => {
 const isProd = process.env.NODE_ENV === "production";
 
 export const auth = betterAuth({
-    database: prismaAdapter(prisma, { provider: "postgresql" }),
+  database: prismaAdapter(prisma, { provider: "postgresql" }),
 
-    // BaseURL pointe vers la racine
-    baseURL: getBaseURL(),
-    secret: process.env.BETTER_AUTH_SECRET || "dev-secret-change-in-production",
+  // BaseURL pointe vers la racine
+  baseURL: getBaseURL(),
+  secret: process.env.BETTER_AUTH_SECRET || "dev-secret-change-in-production",
 
-    trustedOrigins: [
-        process.env.FRONT_URL || "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "https://horizons-plus.vercel.app",
-    ],
-
-    session: {
-        expiresIn: 60 * 60 * 24 * 7, // 7 jours
-        updateAge: 60 * 60 * 24, // Mis à jour tous les jours
+  user: {
+    additionalFields: {
+      phone: {
+        type: "string",
+        required: false,
+      },
     },
-    
-    // Configuration cookies adaptée dev/prod
-    advanced: {
-      
+  },
+
+  trustedOrigins: [
+    process.env.FRONT_URL || "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "https://horizons-plus.vercel.app",
+  ],
+
+  session: {
+    expiresIn: 60 * 60 * 24 * 7, // 7 jours
+    updateAge: 60 * 60 * 24, // Mis à jour tous les jours
+  },
+
+  // Configuration cookies adaptée dev/prod
+  advanced: {
+
     useSecureCookies: isProd,
 
     defaultCookieAttributes: {
@@ -79,37 +88,43 @@ export const auth = betterAuth({
       },
     },
 
-  
+
   },
 
 
-    emailAndPassword: {
-        enabled: true,
-        resetPasswordTokenExpiresIn: 3600,
-        async sendResetPassword({ url, user }) {
-            console.log("[reset-link]", url, "→", user.email);
-
-            await sendMail({
-                to: user.email,
-                subject: "Réinitialisation de votre mot de passe",
-                html: `
-        <p>Bonjour${user.name ? " " + user.name : ""},</p>
-        <p>Pour définir un nouveau mot de passe, cliquez&nbsp;:</p>
-        <p><a href="${url}" target="_blank" rel="noopener">Réinitialiser mon mot de passe</a></p>
-        <p>Si le bouton ne fonctionne pas, copiez-collez ce lien :</p>
-        <p style="word-break: break-all;">${url}</p>
-        <p>Ce lien expire dans 1 heure. Si vous n'êtes pas à l'origine de cette demande, ignorez ce message.</p>
-      `,
-            });
-        },
+  emailAndPassword: {
+    enabled: true,
+    afterCreateUser: async ({
+      user,
+      metadata,
+    }: {
+      user: { id: string }; // minimal type
+      metadata?: { phone?: string };
+    }) => {
+      if (metadata?.phone) {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { phone: metadata.phone },
+        });
+      }
     },
+    resetPasswordTokenExpiresIn: 3600,
+    async sendResetPassword({ url, user }) {
+      await sendMail({
+        to: user.email,
+        subject: "Réinitialisation de votre mot de passe",
+        html: `<p>Bonjour${user.name ? " " + user.name : ""}, cliquez ici pour réinitialiser : <a href="${url}">${url}</a></p>`,
+      });
+    },
+  },
 
-    // socialProviders: {
-    //   google: {
-    //     clientId: "",
-    //     clientSecret: "",
-    //   },
-    // },
+
+  // socialProviders: {
+  //   google: {
+  //     clientId: "",
+  //     clientSecret: "",
+  //   },
+  // },
 });
 
 export default auth;
