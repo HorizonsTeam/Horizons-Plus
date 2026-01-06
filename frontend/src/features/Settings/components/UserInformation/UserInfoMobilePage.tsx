@@ -1,6 +1,8 @@
-import { useState, useEffect } from 'react';
-import UserProfileForm from './UserProfileForm';
+import { useState } from 'react';
+import UserProfileForm from '../../components/UserInformation/UserProfileForm';
 import UserAdressForm from './UserAdressForm';
+import { useEffect } from 'react';
+
 
 
 type User = {

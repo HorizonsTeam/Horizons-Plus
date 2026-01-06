@@ -1,4 +1,4 @@
-import useIsMobile from "../../../components/layouts/UseIsMobile";
+import useIsMobile from "../../../../components/layouts/UseIsMobile";
 import { useState, useEffect } from "react";
 import authClient from "../../../lib/auth-clients";
 
