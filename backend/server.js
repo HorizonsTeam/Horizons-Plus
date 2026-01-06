@@ -13,6 +13,7 @@ import amadeusPlaces from "./src/routes/amadeusPlaces.js";
 import { loadGeoData } from "./src/utils/geoData.js";
 import paymentRoutes from "./src/routes/payment.js"
 import promoRoutes from "./src/routes/promo.js"
+import userRoutes from "./src/routes/user.js";
 
 const app = express();
 const PORT = Number(process.env.PORT || 3005);
@@ -112,6 +113,9 @@ app.use("/api/promo", promoRoutes);
 
 // Feat : Payement  
 app.use("/api/payments", paymentRoutes);
+
+// Enregistrer numéro de téléphone de l'utilisateur
+app.post("/api/user/phone", userRoutes);
 
 // Health
 app.get("/api/health", (_req, res) => res.json({ ok: true }));
