@@ -12,7 +12,7 @@ router.post("/phone", async (req, res) => {
         const { phone } = req.body;
         if (!phone) return res.status(400).json({ error: "Phone is required" });
 
-        // Met à jour l'utilisateur dans Better Auth (Prisma)
+        // Mise à jour l'utilisateur dans Better Auth
         const updatedUser = await auth.database.updateUser(session.user.id, {
             phone,
         });
