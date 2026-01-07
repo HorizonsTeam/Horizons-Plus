@@ -23,7 +23,6 @@ type ModificationProps = {
     setIsLoading: (value: boolean) => void;
     setErrorMessage: (value: string | null) => void;
 
-    // si tu ne t’en sers pas ici, garde-les mais ignore-les (évite warnings)
     setJourneyData: (value: any[]) => void;
     setTransport: (value: "train" | "plane" | undefined) => void;
 };
@@ -115,23 +114,21 @@ export default function QuickModificationOverlay({
         setIsLoading(true);
         setErrorMessage(null);
 
-        const url =
-            `/Recherche?fromId=${encodeURIComponent(departure.id)}` +
-            `&fromName=${encodeURIComponent(departure.name)}` +
-            `&fromLat=${encodeURIComponent(departure.lat)}` +
-            `&fromLon=${encodeURIComponent(departure.lon)}` +
-            `&toId=${encodeURIComponent(arrival.id)}` +
-            `&toName=${encodeURIComponent(arrival.name)}` +
-            `&toLat=${encodeURIComponent(arrival.lat)}` +
-            `&toLon=${encodeURIComponent(arrival.lon)}` +
-            `&departureDate=${encodeURIComponent(departureDate)}` +
-            `&arrivalDate=${encodeURIComponent(tripType === "roundtrip" ? returnDate : "")}` +
-            `&passagers=${encodeURIComponent(String(passagers))}`;
+        navigate(
+            `/Recherche?fromId=${encodeURIComponent(departure.id)}
+        &fromName=${encodeURIComponent(departure.name)}
+        &fromLat=${encodeURIComponent(departure.lat)}
+        &fromLon=${encodeURIComponent(departure.lon)}
+        &toId=${encodeURIComponent(arrival.id)}
+        &toName=${encodeURIComponent(arrival.name)}
+        &toLat=${encodeURIComponent(arrival.lat)}
+        &toLon=${encodeURIComponent(arrival.lon)}
+        &departureDate=${encodeURIComponent(departureDate)}
+        &arrivalDate=${encodeURIComponent(tripType === "roundtrip" ? returnDate || "" : "")}
+        &passagers=${encodeURIComponent(passagers)}`.replace(/\s+/g, "")
+        );
 
-        navigate(url);
-
-        // ✅ Ici on coupe le loader après le prochain frame (navigation déclenchée).
-        // Si tu veux un loader "jusqu'au fetch", enlève ça et coupe-le dans Resultats.
+        
         requestAnimationFrame(() => {
             if (mountedRef.current) setIsLoading(false);
         });
