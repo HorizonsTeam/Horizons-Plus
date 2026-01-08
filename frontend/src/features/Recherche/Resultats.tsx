@@ -1,7 +1,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-
+import FiltreBloc from './Filtres/FiltresBloc.tsx';
 import ReturnBtn from '../../assets/ReturnBtn.svg';
 import Right_ico from '../../assets/Right_Ico.svg';
 import Left_ico from '../../assets/Left_Ico.svg';
@@ -17,6 +17,7 @@ import NoResultsImage from '../../assets/LogoNotFound.png';
 import QouickModificationOverlay from './ModificationRapide/QuickSearchModif.tsx';
 
 import { ClipLoader } from 'react-spinners';
+import useIsMobile from '../../components/layouts/UseIsMobile.tsx';
 
 
 
@@ -152,6 +153,7 @@ export default function Resultats() {
         if (!journeyList?.length) return null;
         return Math.min(...journeyList.map(j => j.price));
     }, [journeyList]);
+    const isMobile = useIsMobile() ; 
 
     return (
         < >
@@ -226,11 +228,15 @@ export default function Resultats() {
                 
 
 
-                {/* Results */}
                 <div
-                    className="bg-[#133A40] px-2 pt-5 -mt-10 w-full pb-10"
+                    className="bg-[#133A40] px-2 pt-5 -mt-10 w-full pb-10 flex"
                     onClick={() => BoxIsOn && setBoxIsOn(false)}
                 >
+                    {!isMobile &&
+
+                        <FiltreBloc/>
+
+                    }
 
                     {IsLoading &&
                         <div className="text-center text-red-400 font-bold py-10">
@@ -279,32 +285,9 @@ export default function Resultats() {
                             </div>
                         </div>
                     ) : !IsLoading && (
-                        <>
-                            {/* Filters 
-                            <div className="flex gap-2 -ml-3">
-                                <button className="flex items-center gap-1 border-primary border-2 px-4 py-2 rounded-full text-primary text-sm w-24">
-                                    <span className="-ml-1">Horaires</span>
-                                    <span className="text-primary">▼</span>
-                                </button>
+                        <div className='w-full px-4 py-4'>
+                            
 
-                                <button className="flex items-left gap-1 border-primary border-2 px-4 py-2 rounded-full text-primary text-sm w-20">
-                                    <span className="-ml-1">Gares</span>
-                                    <span className="text-primary">▼</span>
-                                </button>
-
-                                <button className="flex items-center gap-1 border-primary border-2 px-4 py-2 rounded-full text-primary text-sm w-24">
-                                    <span className="-ml-1">Départs</span>
-                                    <span className="text-primary">▼</span>
-                                </button>
-
-                                <button className="flex items-center gap-2 text-[#133A40] bg-primary px-4 py-2 rounded-full text-sm w-20">
-                                    <span className="-ml-1">Direct</span>
-                                    <span className="text-[#133A40]">▼</span>
-                                </button>
-                            </div>
-                            */}
-
-                            {/* Product cards */}
                             {journeyList.map((journey, idx) => (
                                 <Productcard
                                     key={idx}
@@ -314,7 +297,7 @@ export default function Resultats() {
                                     index={idx}
                                 />
                             ))}
-                        </>
+                        </div>
                     )}
                 </div>
                 <QouickModificationOverlay
