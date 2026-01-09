@@ -19,19 +19,26 @@ export default function Header() {
   const [QuickprofileDesktopIsOpen, setQuickprofileDesktopIsOpen] = useState(false);
   const isMobile = useIsMobile();
   const [userImage, setUserImage] = useState<string | null>(null);
-
+  const [imageError, setImageError] = useState(false);
   const API_BASE = import.meta.env.VITE_API_URL || "";
 
   // --- session /api/me ---
   // Récupération session
   useEffect(() => {
-    console.log("API URL:", import.meta.env.VITE_API_URL);
     fetch(`${API_BASE}/api/me`, { credentials: "include" })
       .then((res) => (res.status === 401 ? null : res.json()))
-      .then((data) => setUser(data?.user ?? null))
+      .then((data) => {
+        if (data?.user) {
+          setUser(data.user);
+          setUserImage(data.user.image || null);
+
+        } else {
+          setUser(null)
+        }
+      })
       .catch(() => setUser(null))
       .finally(() => setLoadingUser(false));
-  }, []);
+  }, [API_BASE]);
 
   const displayName = useMemo(() => {
     if (!user?.name || user.name.trim() === "") {
@@ -94,13 +101,6 @@ export default function Header() {
     };
   }, [isMenuOpen]);
 
-  // Changer l'image de profile 
-  useEffect(() => {
-    fetch("http://localhost:3005/api/me", { credentials: "include" })
-      .then(res => res.json())
-      .then(data => setUserImage(data?.user?.image ?? null));
-  }, []);
-
   return (
     <header className="bg-[#103035] sticky top-0 z-50 text-white border-b border-[#4A6367]">
 
@@ -161,22 +161,22 @@ export default function Header() {
               </button>
             )}
 
-            {/* Profil connecté */}
+            {/* Profil connecté desktop*/}
             {!loadingUser && user && (
               <div>
                 <div className="flex items-center space-x-3 ml-6 hover:cursor-pointer relative hover:text-[#98EAF3] transition-colors hover:bg-[#4A6367]  p-2 rounded-xl " onClick={() => setQuickprofileDesktopIsOpen(!QuickprofileDesktopIsOpen)}>
-                  <div className="w-10 h-10 rounded-full overflow-hidden">
-                    {userImage ? (
+                  <div className="w-10 h-10 rounded-full overflow-hidden bg-[#98EAF3] flex items-center justify-center text-[#103035] font-bold text-lg">
+                    {userImage && !imageError ? (
                       <img
                         id="header-user-image"
                         src={userImage}
                         alt="Profil"
                         className="w-full h-full object-cover"
+                        onError={() => setImageError(true)}
                       />
                     ) : (
-                      <div className="bg-[#98EAF3] w-full h-full flex items-center justify-center text-[#103035] font-bold">
-                        {initials}
-                      </div>
+                      // Affichage des initials
+                      <span>{initials}</span>
                     )}
                   </div>
                   <div className="font-bold">{displayName}</div>
@@ -236,14 +236,19 @@ export default function Header() {
         >
           <div className="p-6 overflow-y-auto">
 
-            {/* Profil connecté */}
+            {/* Profil connecté mobile*/}
             {loadingUser ? (
               <div className="text-sm opacity-60">Chargement...</div>
             ) : user ? (
               <div className="mb-8">
                 <div className="flex items-center space-x-3">
-                  <div className="bg-[#98EAF3] w-10 h-10 rounded-full flex items-center justify-center text-[#103035] font-bold">
-                    {initials}
+                  {/* Photo de profil ou initials */}
+                  <div className="w-12 h-12 rounded-full overflow-hidden bg-[#98EAF3] flex items-center justify-center text-[#103035] font-bold text-lg">
+                    {userImage && !imageError ? (
+                      <img src={userImage} alt="" className="w-full h-full object-cover" onError={() => setImageError(true)} />
+                    ) : (
+                      <span>{initials}</span>
+                    )}
                   </div>
                   <div>
                     <div className="font-bold text-xl">{displayName}</div>

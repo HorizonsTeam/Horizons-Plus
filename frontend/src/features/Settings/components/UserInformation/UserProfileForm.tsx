@@ -2,6 +2,8 @@ import useIsMobile from "../../../../components/layouts/UseIsMobile";
 import { useState, useEffect } from "react";
 import authClient from "../../../../lib/auth-clients";
 
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3005";
+
 type UserProfileFormProps = {
     initialData?: {
         firstName?: string;
@@ -32,15 +34,15 @@ export default function UserProfileForm({ initialData, onChangeImage }: UserProf
 
         console.log("Fichier sélectionné:", file.name);
 
-        // Upload vers ton backend 
+        // Upload vers backend 
         const formData = new FormData();
         formData.append("file", file);
 
         try {
-            const res = await fetch("http://localhost:3005/api/upload-avatar", {
+            const res = await fetch(`${API_BASE}/api/upload/upload-avatar`, {
                 method: "POST",
                 body: formData,
-                credentials: "include"
+                credentials: "include",
             });
 
             if (!res.ok) {
