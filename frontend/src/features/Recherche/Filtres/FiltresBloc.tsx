@@ -8,6 +8,7 @@ export default function FiltreBloc() {
 
   return (
     <div className="w-full bg-[#0C2529] mb-5 rounded-lg h-30 flex max-w-100 mt-10">
+      <h1 className="text-xl">Filtres</h1>
         <div>
               Escales
         </div>
