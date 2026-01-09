@@ -16,6 +16,7 @@ import promoRoutes from "./src/routes/promo.js"
 import panierRoutes from "./src/routes/panier.js";
 import userRoutes from "./src/routes/user.js";
 import uploadRoutes from "./src/routes/upload.js";
+import { authMiddleware } from "./src/middlewares/authMiddleware.js";
 
 const app = express();
 const PORT = Number(process.env.PORT || 3005);
@@ -119,10 +120,10 @@ app.use("/api/panier", panierRoutes);
 app.use("/api/payments", paymentRoutes);
 
 // Enregistrer numéro de téléphone de l'utilisateur
-app.post("/api", userRoutes);
+app.post("/api/users", userRoutes);
 
-// Sauvegarder photo de profil
-app.use('/api', uploadRoutes);
+// Cloudinary - Changement de photo de profil
+app.use('/api/upload', authMiddleware, uploadRoutes);
 
 // Fichiers 
 app.use('/public', express.static('public'));

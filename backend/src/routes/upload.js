@@ -1,28 +1,63 @@
 import express from "express";
 import multer from "multer";
-import path from "path";
+import { v2 as cloudinary } from 'cloudinary';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
+import { prisma } from "../../dist/auth.js";
 
 const router = express.Router();
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, 'public/uploads/avatars/'),
-    filename: (req, file, cb) => {
-        const uniqueName = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, uniqueName + path.extname(file.originalname));
+// Configuration Cloudinary - Identifiants
+cloudinary.config({
+    cloud_name: 'dty7z8rxt',
+    api_key: '752413822317222',
+    api_secret: process.env.CLOUDINARY_SECRET
+});
+
+// Stockage 
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'avatars',
+        allowed_formats: ['jpg', 'png', 'webp', 'jpeg'],
+        transformation: [{ width: 400, height: 400, crop: 'limit' }]
+    },
+});
+
+const upload = multer({ storage: storage });
+
+// Route Upload
+router.post('/upload-avatar', upload.single('file'), async (req, res) => {
+
+    try {
+        // console.log("ID utilisateur extrait de la session :", req.userId);
+        
+        if (!req.file) return res.status(400).json({ error: "Fichier non reçu par Multer" });
+        // console.log("URL Cloudinary générée :", req.file.path);
+
+        const userBefore = await prisma.user.findUnique({
+            where: { id: req.userId }
+        });
+
+        if (!userBefore) {
+            // console.error("Erreur : Aucun utilisateur trouvé en bdd avec l'ID :", req.userId);
+            return res.status(404).json({ error: "Utilisateur introuvable dans la base de données" });
+        }
+
+        const updatedUser = await prisma.user.update({
+            where: { id: req.userId },
+            data: { image: req.file.path }
+        });
+
+        // console.log("Succès : Utilisateur mis à jour dans Neon :", updatedUser.image);
+        
+        res.json({
+            success: true,
+            url: updatedUser.image
+        });
+
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
-});
-
-const upload = multer({ 
-    storage,
-    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
-    fileFilter: (req, file, cb) => file.mimetype.startsWith('image/') ? cb(null, true) : cb(new Error('Images seulement acceptées'))
-});
-
-router.post('/upload-avatar', upload.single('file'), (req, res) => {
-    if (!req.file) return res.status(400).json({ error: 'Aucun fichier' });
-    
-    const imageUrl = `http://localhost:3005/public/uploads/avatars/${req.file.filename}`;
-    res.json({ url: imageUrl });
 });
 
 export default router;
