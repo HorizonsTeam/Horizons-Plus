@@ -29,7 +29,10 @@ export default function TripTypeSwitch<T extends string>({
     return (
         <div className="grid gap-2">
             
+            
             <div className={["flex items-center gap-2", className].join(" ")}>
+                <div className="ml-2 text-white font-light text-sm opacity-50"> {"( "}{isB ? b : a}  {" )"}</div>
+
                 <button
                     type="button"
                     role="switch"
@@ -53,6 +56,8 @@ export default function TripTypeSwitch<T extends string>({
                         ].join(" ")}
                     />
                 </button>
+
+
             </div>
         </div>
     );
