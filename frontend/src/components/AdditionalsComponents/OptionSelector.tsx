@@ -19,13 +19,17 @@ const MenuProps = {
 type OptionSelectorProps = {
     options?: string[];
     Placeholder?: string;
+    Onchange: (option: string) => void | React.Dispatch<React.SetStateAction<string>>;
 };
 
-export default function SelectPlaceholder({ options, Placeholder }: OptionSelectorProps) {
+export default function SelectPlaceholder({ options, Placeholder, Onchange }: OptionSelectorProps) {
     const [option, setOption] = React.useState<string>("");
 
     const handleChange = (event: SelectChangeEvent<string>) => {
         setOption(event.target.value);
+        if (Onchange) {
+            Onchange(event.target.value);
+        }
     };
 
     return (

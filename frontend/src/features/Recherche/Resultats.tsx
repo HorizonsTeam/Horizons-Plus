@@ -18,6 +18,7 @@ import QouickModificationOverlay from './ModificationRapide/QuickSearchModif.tsx
 
 import { ClipLoader } from 'react-spinners';
 import useIsMobile from '../../components/layouts/UseIsMobile.tsx';
+import type { StopType } from './Filtres/FiltresBloc.tsx';
 
 
 
@@ -85,8 +86,8 @@ export default function Resultats() {
 
     useEffect(() => {
         if (!fromId || !toId || !departureDate) return;
-        setIsLoading(true);         
-        setErrorMessage(null); 
+        setIsLoading(true);
+        setErrorMessage(null);
 
         fetch(`${base}/api/search/journeys?fromId=${encodeURIComponent(fromId)}&fromName=${encodeURIComponent(fromName)}&fromLat=${encodeURIComponent(fromLat)}&fromLon=${encodeURIComponent(fromLon)}&toId=${encodeURIComponent(toId)}&toName=${encodeURIComponent(toName)}&toLat=${encodeURIComponent(toLat)}&toLon=${encodeURIComponent(toLon)}&datetime=${encodeURIComponent(departureDate)}`)
             .then(res => res.json())
@@ -94,7 +95,7 @@ export default function Resultats() {
                 console.log('API journeys response:', data);
 
                 if (data.error) {
-                    setErrorMessage(data.error); 
+                    setErrorMessage(data.error);
                     setJourneyData([]);
                 } else {
                     setErrorMessage(null);
@@ -111,7 +112,7 @@ export default function Resultats() {
             .finally(() => {
                 setTimeout(() => {
                     setIsLoading(false);
-                }, 1000);    
+                }, 1000);
             });
     }, [fromId, toId, departureDate, arrivalDate]);
 
@@ -153,11 +154,103 @@ export default function Resultats() {
         if (!journeyList?.length) return null;
         return Math.min(...journeyList.map(j => j.price));
     }, [journeyList]);
-    const isMobile = useIsMobile() ; 
+    const isMobile = useIsMobile();
+    /* Les Filtres */
+
+
+    const [hasBike, setHasBike] = useState<boolean>(false);
+    const [hasAnimal, setHasAnimal] = useState<boolean>(false);
+    const [hasWifi, setHasWifi] = useState<boolean>(false);
+    const [hasFood, setHasFood] = useState<boolean>(false);
+    const [isNightTrain, setIsNightTrain] = useState<boolean>(false);
+
+
+
+    const timeToMinutes = (hhmm: string) => {
+        const [h, m] = hhmm.split(":").map(Number);
+        return h * 60 + m;
+    };
+
+    const matchBucket = (hhmm: string, bucket: string) => {
+        if (!bucket) return true;
+
+        const t = timeToMinutes(hhmm);
+
+        // Matin: 05:00 - 11:59
+        if (bucket === "Matin") return t >= 5 * 60 && t < 12 * 60;
+
+        // Après-midi: 12:00 - 17:59
+        if (bucket === "Après-midi") return t >= 12 * 60 && t < 18 * 60;
+
+        // Soir: 18:00 - 04:59 (donc 18:00-23:59 OU 00:00-04:59)
+        if (bucket === "Soir") return t >= 18 * 60 || t < 5 * 60;
+
+        return true;
+    };
+    type Filters = {
+        stopType: StopType;
+        priceOption: string;
+        timeDeparturOption: string;
+        timeArrivalOption: string;
+    };
+
+    const [draftFilters, setDraftFilters] = useState<Filters>({
+        stopType: "direct",
+        priceOption: "",
+        timeDeparturOption: "",
+        timeArrivalOption: "",
+    });
+
+    const [appliedFilters, setAppliedFilters] = useState<Filters>(draftFilters);
+
+    const applyFilters = (
+        list: Journey[],
+        filters: Filters,
+        transport?: "train" | "plane"
+    ) => {
+        let out = [...list];
+
+        // Transport (autorisé car tu as déjà journey.simulated dans ton code)
+        if (transport === "plane") {
+            out = out.filter(j => j.simulated === true);
+        } else if (transport === "train") {
+            out = out.filter(j => j.simulated === false);
+        }
+
+        // Escales
+        if (filters.stopType === "direct") {
+            out = out.filter(j => j.numberOfTransfers === 0);
+        } else if (filters.stopType === "correspondance") {
+            out = out.filter(j => j.numberOfTransfers > 0);
+        }
+
+        // Horaires (bucket)
+        if (filters.timeDeparturOption) {
+            out = out.filter(j => matchBucket(j.departureTime, filters.timeDeparturOption));
+        }
+        if (filters.timeArrivalOption) {
+            out = out.filter(j => matchBucket(j.arrivalTime, filters.timeArrivalOption));
+        }
+
+        // Prix (tri)
+        if (filters.priceOption === "Prix croissant") {
+            out.sort((a, b) => a.price - b.price);
+        }
+        if (filters.priceOption === "Prix décroissant") {
+            out.sort((a, b) => b.price - a.price);
+        }
+
+        return out;
+    };
+    const displayedJourneys = useMemo(() => {
+        return applyFilters(journeyList, appliedFilters, transport);
+    }, [journeyList, appliedFilters, transport]);
+
+
+
 
     return (
         < >
-            {/* Header */}
             <div>
                 <button onClick={handleRetour}>
                     <img
@@ -178,14 +271,13 @@ export default function Resultats() {
                     </div>
                 </div>
 
-                {/* Date navigation */}
                 <div className="flex items-center justify-center space-x-4 bg-dark p-4" onClick={() => BoxIsOn && setBoxIsOn(false)} >
                     <button
                         onClick={() => { changeDate(-1); }}
                         disabled={isPrevDisabled}
                         className={`cursor-pointer border-4 rounded-xl p-2 w-13 ${isPrevDisabled
-                                ? "border-gray-400 opacity-50 cursor-not-allowed"
-                                : "border-primary" 
+                            ? "border-gray-400 opacity-50 cursor-not-allowed"
+                            : "border-primary"
                             }`}
                     >
                         <img src={Left_ico} alt="Previous Day" className="ml-2" />
@@ -225,16 +317,49 @@ export default function Resultats() {
                         </div>
                     </button>
                 </div>
-                
+
 
 
                 <div
-                    className="bg-[#133A40] px-2 pt-5 -mt-10 w-full pb-10 flex"
+                    className={`bg-[#133A40] px-2 pt-5 -mt-10 w-full pb-10 ${IsLoading ? "flex justify-center" : "flex"}`}
                     onClick={() => BoxIsOn && setBoxIsOn(false)}
                 >
-                    {!isMobile &&
+                    {!isMobile && !IsLoading &&
 
-                        <FiltreBloc/>
+                        <FiltreBloc
+                            stopType={draftFilters.stopType}
+                            setStopType={(v) =>
+                                setDraftFilters((prev) => ({ ...prev, stopType: v }))
+                            }
+
+                            priceOption={draftFilters.priceOption}
+                            setPriceOption={(v) =>
+                                setDraftFilters((prev) => ({ ...prev, priceOption: v }))
+                            }
+
+                            timeDeparturOption={draftFilters.timeDeparturOption}
+                            setTimedeparturOption={(v) =>
+                                setDraftFilters((prev) => ({ ...prev, timeDeparturOption: v }))
+                            }
+
+                            timeArrivalOption={draftFilters.timeArrivalOption}
+                            setTimeArrivalOption={(v) =>
+                                setDraftFilters((prev) => ({ ...prev, timeArrivalOption: v }))
+                            }
+
+                            hasBike={hasBike}
+                            setHasBike={setHasBike}
+                            hasAnimal={hasAnimal}
+                            setHasAnimal={setHasAnimal}
+                            hasWifi={hasWifi}
+                            setHasWifi={setHasWifi}
+                            hasFood={hasFood}
+                            setHasFood={setHasFood}
+                            isNightTrain={isNightTrain}
+                            setIsNightTrain={setIsNightTrain}
+
+                            onUpdateFilters={() => setAppliedFilters(draftFilters)}
+                        />
 
                     }
 
@@ -252,53 +377,54 @@ export default function Resultats() {
                                         />
                                     </div>
                                     <div className='grid grid-cols  '>
-                                    <h2 className='text-white font-bold text-2xl mt-4 mb-4 '> Chargement</h2>
+                                        <h2 className='text-white font-bold text-2xl mt-4 mb-4 '> Chargement</h2>
 
-                                    
+
                                     </div>
-                                    
+
 
                                 </div>
                             </div>
                         </div>
                     }
                     {
-                    lowestPrice === null && !IsLoading ? (
-                        <div className="text-center text-red-400 font-bold py-10">
+                        lowestPrice === null && !IsLoading ? (
+                            <div className="text-center text-red-400 font-bold py-10">
 
 
-                            <div className='flex justify-center'>
-                                <div className=' p-6 rounded-2xl mt-4'>
-                                    <div className='flex justify-center'>
-                                        <img src={NoResultsImage} alt="" className=' relative  h-30 w-30 ' />
-                                    </div>
-                                    <h2 className='text-white font-bold text-2xl mt-4'>Oups...</h2>
+                                <div className='flex justify-center'>
+                                    <div className=' p-6 rounded-2xl mt-4'>
+                                        <div className='flex justify-center'>
+                                            <img src={NoResultsImage} alt="" className=' relative  h-30 w-30 ' />
+                                        </div>
+                                        <h2 className='text-white font-bold text-2xl mt-4'>Oups...</h2>
                                         {errorMessage}
-                                    <p className='text-white mt-5'>Désolé, aucun résultat ne correspond à votre recherche. Veuillez modifier vos critères et réessayer.</p>
+                                        <p className='text-white mt-5'>Désolé, aucun résultat ne correspond à votre recherche. Veuillez modifier vos critères et réessayer.</p>
 
-                                    <div className='flex w-full justify-between mt-10'>
-                                        <button className='text-white bg-[#115E66] p-4 rounded-xl hover:bg-[#115E56] hover:cursor-pointer' onClick={() => { setBoxIsOn(!BoxIsOn); scrollTo({ top: 0, behavior: "smooth" }) }}>Modifier le trajet</button>
-                                        <button className='text-white bg-[#FFB856] p-4 rounded-xl hover:bg-[#FFB820] hover:cursor-pointer' onClick={() => { setTransport("plane"); scrollTo({ top: 0, behavior: "smooth" }) }}>Voir les vols</button>
+                                        <div className='flex w-full justify-between mt-10'>
+                                            <button className='text-white bg-[#115E66] p-4 rounded-xl hover:bg-[#115E56] hover:cursor-pointer' onClick={() => { setBoxIsOn(!BoxIsOn); scrollTo({ top: 0, behavior: "smooth" }) }}>Modifier le trajet</button>
+                                            <button className='text-white bg-[#FFB856] p-4 rounded-xl hover:bg-[#FFB820] hover:cursor-pointer' onClick={() => { setTransport("plane"); scrollTo({ top: 0, behavior: "smooth" }) }}>Voir les vols</button>
+                                        </div>
+
                                     </div>
-
                                 </div>
                             </div>
-                        </div>
-                    ) : !IsLoading && (
-                        <div className='w-full px-4 py-4'>
-                            
+                        ) : !IsLoading && (
+                            <div className='w-full px-4 py-4'>
 
-                            {journeyList.map((journey, idx) => (
-                                <Productcard
-                                    key={idx}
-                                    journey={journey}
-                                    passagersCount={passagerCount}
-                                    formattedDepartureDate={formattedDepartureDate}
-                                    index={idx}
-                                />
-                            ))}
-                        </div>
-                    )}
+
+                                {displayedJourneys.map((journey, idx) => (
+                                    <Productcard
+                                        key={`${journey.departureName}-${journey.arrivalName}-${journey.departureTime}-${journey.arrivalTime}-${idx}`}
+                                        journey={journey}
+                                        passagersCount={passagerCount}
+                                        formattedDepartureDate={formattedDepartureDate}
+                                        index={idx}
+                                    />
+                                ))}
+
+                            </div>
+                        )}
                 </div>
                 <QouickModificationOverlay
                     villeDepart={fromName}
