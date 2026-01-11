@@ -76,9 +76,9 @@ model panier {
   cree_le     DateTime      @db.Timestamp(6)
   expire_le   DateTime      @db.Timestamp(6)
   statut      String        @db.VarChar(20)
-  user        User?         @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "panier_user_id_key")
-  panier_item panier_item[]
-  passager    passager[]
+  user        User?         @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "panier_user_id_key")
+  panier_item panier_item[] 
+  passager    passager[]    
 
   @@index([expire_le], map: "idx_panier_expire_le")
 }
@@ -98,7 +98,7 @@ model panier_item {
   date_voyage    DateTime?      @db.Date
   transport_type transport_type @default(TRAIN)
   panier         panier         @relation(fields: [panier_id], references: [panier_id], onDelete: Cascade, onUpdate: NoAction, map: "panier_item_panier_fk")
-  passager       passager       @relation(fields: [passager_id], references: [passager_id], onDelete: NoAction, onUpdate: NoAction)
+  passager       passager       @relation(fields: [passager_id], references: [passager_id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([panier_id], map: "idx_panier_item_panier_id")
 }
@@ -111,8 +111,8 @@ model passager {
   telephone      String?       @db.VarChar(15)
   panier_id      Int?
   user_id        String?
-  panier_item    panier_item[]
-  panier         panier?       @relation(fields: [panier_id], references: [panier_id], onDelete: NoAction, onUpdate: NoAction, map: "passager_panier_fk")
+  panier_item    panier_item[] 
+  panier         panier?       @relation(fields: [panier_id], references: [panier_id], onDelete: Cascade, onUpdate: NoAction, map: "passager_panier_fk")
 }
 
 model promo_code {
@@ -121,6 +121,17 @@ model promo_code {
   reduction_type  String?  @default("%") @db.VarChar(10)
   reduction_value Decimal  @db.Decimal(5, 2)
   conditions      Json?    @default("{}")
+}
+
+model paiement {
+  paiement_id    Int      @id @default(autoincrement())
+  res_id         Int
+  montant_total  Decimal  @db.Decimal(10, 2)
+  devise         String   @db.Char(3)
+  moyen_paiement String?  @db.VarChar
+  statut         String?  @db.VarChar
+  transaction_id String?  @db.VarChar
+  cree_le        DateTime @db.Date
 }
 
 enum transport_type {

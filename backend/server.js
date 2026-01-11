@@ -120,7 +120,7 @@ app.use("/api/panier", panierRoutes);
 app.use("/api/payments", paymentRoutes);
 
 // Enregistrer numéro de téléphone de l'utilisateur
-app.post("/api/users", userRoutes);
+app.use("/api/users", userRoutes);
 
 // Cloudinary - Changement de photo de profil
 app.use('/api/upload', authMiddleware, uploadRoutes);
