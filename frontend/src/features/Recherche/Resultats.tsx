@@ -1,7 +1,7 @@
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, type JSX } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-
+import FiltreBloc from './Filtres/FiltresBloc.tsx';
 import ReturnBtn from '../../assets/ReturnBtn.svg';
 import Right_ico from '../../assets/Right_Ico.svg';
 import Left_ico from '../../assets/Left_Ico.svg';
@@ -12,12 +12,14 @@ import Productcard from './ProductCard/ProductCard.tsx';
 import BestPrice from './ProductCard/bestPrice.tsx';
 import Date_String from './Date.tsx';
 import type { Journey } from './ProductCard/types.ts';
-import NoResultsImage from '../../assets/LogoNotFound.png';
+import Error from '../../components/AdditionalsComponents/Error.tsx';
 
 import QouickModificationOverlay from './ModificationRapide/QuickSearchModif.tsx';
 
-import { ClipLoader } from 'react-spinners';
-
+import useIsMobile from '../../components/layouts/UseIsMobile.tsx';
+import type { StopType } from './Filtres/FiltresBloc.tsx';
+import useIsScrolling from '../../components/layouts/UseScrolle.tsx';
+import Caret from '../../assets/caret-down-arrow-south 1.svg';
 
 
 
@@ -84,8 +86,8 @@ export default function Resultats() {
 
     useEffect(() => {
         if (!fromId || !toId || !departureDate) return;
-        setIsLoading(true);         
-        setErrorMessage(null); 
+        setIsLoading(true);
+        setErrorMessage(null);
 
         fetch(`${base}/api/search/journeys?fromId=${encodeURIComponent(fromId)}&fromName=${encodeURIComponent(fromName)}&fromLat=${encodeURIComponent(fromLat)}&fromLon=${encodeURIComponent(fromLon)}&toId=${encodeURIComponent(toId)}&toName=${encodeURIComponent(toName)}&toLat=${encodeURIComponent(toLat)}&toLon=${encodeURIComponent(toLon)}&datetime=${encodeURIComponent(departureDate)}`)
             .then(res => res.json())
@@ -93,7 +95,7 @@ export default function Resultats() {
                 console.log('API journeys response:', data);
 
                 if (data.error) {
-                    setErrorMessage(data.error); 
+                    setErrorMessage(data.error);
                     setJourneyData([]);
                 } else {
                     setErrorMessage(null);
@@ -110,7 +112,7 @@ export default function Resultats() {
             .finally(() => {
                 setTimeout(() => {
                     setIsLoading(false);
-                }, 1000);    
+                }, 3000);
             });
     }, [fromId, toId, departureDate, arrivalDate]);
 
@@ -152,10 +154,111 @@ export default function Resultats() {
         if (!journeyList?.length) return null;
         return Math.min(...journeyList.map(j => j.price));
     }, [journeyList]);
+    const isMobile = useIsMobile();
+    /* Les Filtres */
 
+
+    const [hasBike, setHasBike] = useState<boolean>(false);
+    const [hasAnimal, setHasAnimal] = useState<boolean>(false);
+    const [hasWifi, setHasWifi] = useState<boolean>(false);
+    const [hasFood, setHasFood] = useState<boolean>(false);
+    const [isNightTrain, setIsNightTrain] = useState<boolean>(false);
+
+
+
+    const timeToMinutes = (hhmm: string) => {
+        const [h, m] = hhmm.split(":").map(Number);
+        return h * 60 + m;
+    };
+
+    const matchBucket = (hhmm: string, bucket: string) => {
+        if (!bucket) return true;
+
+        const t = timeToMinutes(hhmm);
+
+        // Matin: 05:00 - 11:59
+        if (bucket === "Matin") return t >= 5 * 60 && t < 12 * 60;
+
+        // Après-midi: 12:00 - 17:59
+        if (bucket === "Après-midi") return t >= 12 * 60 && t < 18 * 60;
+
+        // Soir: 18:00 - 04:59 (donc 18:00-23:59 OU 00:00-04:59)
+        if (bucket === "Soir") return t >= 18 * 60 || t < 5 * 60;
+
+        return true;
+    };
+    type Filters = {
+        stopType: StopType;
+        priceOption: string;
+        timeDeparturOption: string;
+        timeArrivalOption: string;
+    };
+
+    const [draftFilters, setDraftFilters] = useState<Filters>({
+        stopType: "direct",
+        priceOption: "",
+        timeDeparturOption: "",
+        timeArrivalOption: "",
+    });
+
+    const [appliedFilters, setAppliedFilters] = useState<Filters>(draftFilters);
+
+    const applyFilters = (
+        list: Journey[],
+        filters: Filters,
+        transport?: "train" | "plane"
+    ) => {
+        let out = [...list];
+
+        // Transport (autorisé car tu as déjà journey.simulated dans ton code)
+        if (transport === "plane") {
+            out = out.filter(j => j.simulated === true);
+        } else if (transport === "train") {
+            out = out.filter(j => j.simulated === false);
+        }
+
+        // Escales
+        if (filters.stopType === "direct") {
+            out = out.filter(j => j.numberOfTransfers === 0);
+        } else if (filters.stopType === "correspondance") {
+            out = out.filter(j => j.numberOfTransfers > 0);
+        }
+
+        // Horaires (bucket)
+        if (filters.timeDeparturOption) {
+            out = out.filter(j => matchBucket(j.departureTime, filters.timeDeparturOption));
+        }
+        if (filters.timeArrivalOption) {
+            out = out.filter(j => matchBucket(j.arrivalTime, filters.timeArrivalOption));
+        }
+
+        // Prix (tri)
+        if (filters.priceOption === "Prix croissant") {
+            out.sort((a, b) => a.price - b.price);
+        }
+        if (filters.priceOption === "Prix décroissant") {
+            out.sort((a, b) => b.price - a.price);
+        }
+
+
+        return out;
+    };
+    const displayedJourneys = useMemo(() => {
+        return applyFilters(journeyList, appliedFilters, transport);
+    }, [journeyList, appliedFilters, transport]);
+
+    const ErrorBtn = () : JSX.Element => {
+        return (
+            <>
+                <button className="text-sm font-bold bg-primary text-secondary p-4 rounded-lg hover:bg-[#6ACDD8] transition-all duration-300 " onClick={() => { setBoxIsOn(!BoxIsOn); scrollTo({ top: 0, behavior: "smooth" }) }}>Modifier le trajet</button>
+                <button className="text-sm font-bold bg-[#FFB856] text-secondary p-4 rounded-lg hover:bg-[#C28633] transition-all duration-300" onClick={() => { setTransport("plane"); scrollTo({ top: 0, behavior: "smooth" }) }}>Voir les vols</button>
+            </>
+        );
+    };
+    const [FiltreMobileIsOn, setFiltreMobileIsOn] = useState<boolean>(false);
+    const Onscrolle = useIsScrolling();
     return (
         < >
-            {/* Header */}
             <div>
                 <button onClick={handleRetour}>
                     <img
@@ -171,19 +274,19 @@ export default function Resultats() {
                             {fromName} - {toName}
                         </h3>
                         <h4 className="text-primary">
+
                             {passagerCount} passager{passagerCount > 1 ? "s" : ""}
                         </h4>
                     </div>
                 </div>
 
-                {/* Date navigation */}
                 <div className="flex items-center justify-center space-x-4 bg-dark p-4" onClick={() => BoxIsOn && setBoxIsOn(false)} >
                     <button
                         onClick={() => { changeDate(-1); }}
                         disabled={isPrevDisabled}
                         className={`cursor-pointer border-4 rounded-xl p-2 w-13 ${isPrevDisabled
-                                ? "border-gray-400 opacity-50 cursor-not-allowed"
-                                : "border-primary" 
+                            ? "border-gray-400 opacity-50 cursor-not-allowed"
+                            : "border-primary"
                             }`}
                     >
                         <img src={Left_ico} alt="Previous Day" className="ml-2" />
@@ -223,99 +326,167 @@ export default function Resultats() {
                         </div>
                     </button>
                 </div>
-                
 
 
-                {/* Results */}
+
                 <div
-                    className="bg-[#133A40] px-2 pt-5 -mt-10 w-full pb-10"
+                    className={`bg-[#133A40] px-2 pt-5 -mt-10 w-full pb-10 ${IsLoading ? "flex justify-center" : "flex"}`}
                     onClick={() => BoxIsOn && setBoxIsOn(false)}
                 >
+                    {!isMobile && 
 
-                    {IsLoading &&
-                        <div className="text-center text-red-400 font-bold py-10">
+                        <FiltreBloc
+                            stopType={draftFilters.stopType}
+                            setStopType={(v) =>
+                                setDraftFilters((prev) => ({ ...prev, stopType: v }))
+                            }
 
+                            priceOption={draftFilters.priceOption}
+                            setPriceOption={(v) =>
+                                setDraftFilters((prev) => ({ ...prev, priceOption: v }))
+                            }
 
-                            <div className='flex justify-center'>
-                                <div className=' p-6 rounded-2xl mt-4'>
-                                    <div className='flex justify-center mb-4'>
-                                        <ClipLoader
-                                            color="#92dad9"
-                                            size={50}
-                                            className='flex justify-center'
-                                        />
-                                    </div>
-                                    <div className='grid grid-cols  '>
-                                    <h2 className='text-white font-bold text-2xl mt-4 mb-4 '> Chargement</h2>
+                            timeDeparturOption={draftFilters.timeDeparturOption}
+                            setTimedeparturOption={(v) =>
+                                setDraftFilters((prev) => ({ ...prev, timeDeparturOption: v }))
+                            }
 
-                                    
-                                    </div>
-                                    
+                            timeArrivalOption={draftFilters.timeArrivalOption}
+                            setTimeArrivalOption={(v) =>
+                                setDraftFilters((prev) => ({ ...prev, timeArrivalOption: v }))
+                            }
 
-                                </div>
-                            </div>
-                        </div>
+                            hasBike={hasBike}
+                            setHasBike={setHasBike}
+                            hasAnimal={hasAnimal}
+                            setHasAnimal={setHasAnimal}
+                            hasWifi={hasWifi}
+                            setHasWifi={setHasWifi}
+                            hasFood={hasFood}
+                            setHasFood={setHasFood}
+                            isNightTrain={isNightTrain}
+                            setIsNightTrain={setIsNightTrain}
+
+                            onUpdateFilters={() => setAppliedFilters(draftFilters)}
+                            resetFilters={() => {
+                                setDraftFilters({
+                                    stopType: "direct",
+                                    priceOption: "",
+                                    timeDeparturOption: "",
+                                    timeArrivalOption: "",
+                                });
+                                setAppliedFilters(draftFilters);
+                            }}
+                            Isloading={IsLoading}
+                            
+                        />
+
                     }
-                    {
-                    lowestPrice === null && !IsLoading ? (
-                        <div className="text-center text-red-400 font-bold py-10">
+                    {isMobile && (
+                        <>
+                            {/* Bouton */}
+                            <button
+                                className={`fixed top-55 left-0 z-15 h-10 ${Onscrolle ? "w-6 " : "w-16 "} rounded-tr-xl rounded-br-xl bg-primary text-[#2C474B] font-bold hover:bg-blue-300`}
+                                onClick={() => setFiltreMobileIsOn(true)}
+                            >
+                                {Onscrolle ? <img src={Caret} alt="caret" className="w-7 h-8" /> : "Filtres"}
+                            </button>
 
+                            {/* Backdrop */}
+                            <div
+                                onClick={() => setFiltreMobileIsOn(false)}
+                                className={[
+                                    "fixed inset-0 z-40 bg-black/30",
+                                    "transition-opacity duration-300 ease-in-out",
+                                    FiltreMobileIsOn ? "opacity-100" : "opacity-0 pointer-events-none",
+                                ].join(" ")}
+                            />
 
-                            <div className='flex justify-center'>
-                                <div className=' p-6 rounded-2xl mt-4'>
-                                    <div className='flex justify-center'>
-                                        <img src={NoResultsImage} alt="" className=' relative  h-30 w-30 ' />
-                                    </div>
-                                    <h2 className='text-white font-bold text-2xl mt-4'>Oups...</h2>
-                                        {errorMessage}
-                                    <p className='text-white mt-5'>Désolé, aucun résultat ne correspond à votre recherche. Veuillez modifier vos critères et réessayer.</p>
+                            {/* Sidebar  */}
+                            <div
+                                className={[
+                                    "fixed inset-0 z-50",
+                                    "transform-gpu transition-transform duration-300 ease-in-out will-change-transform",
+                                    FiltreMobileIsOn ? "translate-x-0" : "-translate-x-full pointer-events-none",
+                                ].join(" ")}
+                            >
+                                <div className="h-full w-full max-w-sm">
+                                <FiltreBloc
+                                    stopType={draftFilters.stopType}
+                                    setStopType={(v) => setDraftFilters((prev) => ({ ...prev, stopType: v }))}
 
-                                    <div className='flex w-full justify-between mt-10'>
-                                        <button className='text-white bg-[#115E66] p-4 rounded-xl hover:bg-[#115E56] hover:cursor-pointer' onClick={() => { setBoxIsOn(!BoxIsOn); scrollTo({ top: 0, behavior: "smooth" }) }}>Modifier le trajet</button>
-                                        <button className='text-white bg-[#FFB856] p-4 rounded-xl hover:bg-[#FFB820] hover:cursor-pointer' onClick={() => { setTransport("plane"); scrollTo({ top: 0, behavior: "smooth" }) }}>Voir les vols</button>
-                                    </div>
+                                    priceOption={draftFilters.priceOption}
+                                    setPriceOption={(v) => setDraftFilters((prev) => ({ ...prev, priceOption: v }))}
 
-                                </div>
+                                    timeDeparturOption={draftFilters.timeDeparturOption}
+                                    setTimedeparturOption={(v) =>
+                                        setDraftFilters((prev) => ({ ...prev, timeDeparturOption: v }))
+                                    }
+
+                                    timeArrivalOption={draftFilters.timeArrivalOption}
+                                    setTimeArrivalOption={(v) =>
+                                        setDraftFilters((prev) => ({ ...prev, timeArrivalOption: v }))
+                                    }
+
+                                    hasBike={hasBike}
+                                    setHasBike={setHasBike}
+                                    hasAnimal={hasAnimal}
+                                    setHasAnimal={setHasAnimal}
+                                    hasWifi={hasWifi}
+                                    setHasWifi={setHasWifi}
+                                    hasFood={hasFood}
+                                    setHasFood={setHasFood}
+                                    isNightTrain={isNightTrain}
+                                    setIsNightTrain={setIsNightTrain}
+
+                                    onUpdateFilters={() => setAppliedFilters(draftFilters)}
+                                    resetFilters={() => {
+                                        const reset = {
+                                            stopType: "direct" as const,
+                                            priceOption: "",
+                                            timeDeparturOption: "",
+                                            timeArrivalOption: "",
+                                        };
+                                        setDraftFilters(reset);
+                                        setAppliedFilters(reset);
+                                    }}
+
+                                    setFiltreMobileIsOn={setFiltreMobileIsOn}
+                                    Isloading={IsLoading}
+                                />
                             </div>
                         </div>
-                    ) : !IsLoading && (
-                        <>
-                            {/* Filters 
-                            <div className="flex gap-2 -ml-3">
-                                <button className="flex items-center gap-1 border-primary border-2 px-4 py-2 rounded-full text-primary text-sm w-24">
-                                    <span className="-ml-1">Horaires</span>
-                                    <span className="text-primary">▼</span>
-                                </button>
-
-                                <button className="flex items-left gap-1 border-primary border-2 px-4 py-2 rounded-full text-primary text-sm w-20">
-                                    <span className="-ml-1">Gares</span>
-                                    <span className="text-primary">▼</span>
-                                </button>
-
-                                <button className="flex items-center gap-1 border-primary border-2 px-4 py-2 rounded-full text-primary text-sm w-24">
-                                    <span className="-ml-1">Départs</span>
-                                    <span className="text-primary">▼</span>
-                                </button>
-
-                                <button className="flex items-center gap-2 text-[#133A40] bg-primary px-4 py-2 rounded-full text-sm w-20">
-                                    <span className="-ml-1">Direct</span>
-                                    <span className="text-[#133A40]">▼</span>
-                                </button>
-                            </div>
-                            */}
-
-                            {/* Product cards */}
-                            {journeyList.map((journey, idx) => (
-                                <Productcard
-                                    key={idx}
-                                    journey={journey}
-                                    passagersCount={passagerCount}
-                                    formattedDepartureDate={formattedDepartureDate}
-                                    index={idx}
-                                />
-                            ))}
                         </>
                     )}
+
+                     
+                    
+
+                    
+                    {
+                        displayedJourneys.length === 0 && !IsLoading ? (
+                            <Error errorMessage={errorMessage}  errorBtns={ErrorBtn()}  />
+
+
+
+
+                        ) :  (
+                            <div className='w-full px-4 py-4'>
+
+
+                                {displayedJourneys.map((journey, idx) => (
+                                    <Productcard
+                                        key={`${journey.departureName}-${journey.arrivalName}-${journey.departureTime}-${journey.arrivalTime}-${idx}`}
+                                        journey={journey}
+                                        passagersCount={passagerCount}
+                                        formattedDepartureDate={formattedDepartureDate}
+                                        index={idx}
+                                        IsLoading={IsLoading}
+                                    />
+                                ))}
+
+                            </div>
+                        )}
                 </div>
                 <QouickModificationOverlay
                     villeDepart={fromName}
@@ -329,6 +500,7 @@ export default function Resultats() {
                     setJourneyData={setJourneyData}
                     setTransport={setTransport}
                 />
+                
 
             </div>
 
