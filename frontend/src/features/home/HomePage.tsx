@@ -49,7 +49,7 @@ export default function HomePage() {
 
     <div className="min-h-screen  w-full ">
       <section className="">
-        {/* ✈️ Avion animé */}
+        {/* Avion animé */}
         <motion.img
           src={PlaneAnim}
           alt="Avion animation"

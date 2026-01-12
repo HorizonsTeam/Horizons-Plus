@@ -15,13 +15,16 @@ export default function Error({ errorMessage, errorBtns}: ErrorProps) {
 
 
                 <div className='flex justify-center'>
-                    <div className=' p-6 rounded-2xl mt-4'>
+                    <div className=' p-6 rounded-2xl mt-4 grid gap-10'>
                         <div className='flex justify-center'>
                             <img src={NoResultsImage} alt="" className=' relative  h-30 w-30 ' />
                         </div>
                         <h2 className='text-white font-bold text-2xl mt-4'>Oups...</h2>
-                        {errorMessage}
-                        <p className='text-white mt-5'>Désolé, aucun résultat ne correspond à votre recherche. Veuillez modifier vos critères et réessayer.</p>
+
+                        {errorMessage && <span className="text-xl text-bold text-primary   " >{errorMessage}</span> 
+
+                        
+                        }
 
                         <div className='flex w-full justify-between mt-10'>
                             {errorBtns}

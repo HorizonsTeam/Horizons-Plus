@@ -22,7 +22,6 @@ export default function Header() {
   const [imageError, setImageError] = useState(false);
   const API_BASE = import.meta.env.VITE_API_URL || "";
 
-  // --- session /api/me ---
   // Récupération session
   useEffect(() => {
     fetch(`${API_BASE}/api/me`, { credentials: "include" })
@@ -108,16 +107,11 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center h-16 px-4 lg:h-20 relative">
 
-          {/* Panier mobile */}
-          <Link to="/panier" className="lg:hidden absolute left-4">
-            <img src={Panier_Ico} alt="Panier" className="w-7 h-7" />
-          </Link>
-
           {/* Titre centré mobile / logo desktop */}
           <Link
             to="/"
             className="text-2xl font-bold text-[#98EAF3] lg:text-3xl 
-          absolute left-1/2 -translate-x-1/2 lg:static lg:left-auto lg:translate-x-0"
+          absolute lg:static lg:left-auto lg:translate-x-0"
           >
             Horizons+
           </Link>
@@ -228,7 +222,7 @@ export default function Header() {
           </button>
         </div>
 
-        {/* --- MENU MOBILE (NE REMPLACE PAS LE HEADER) --- */}
+        {/* --- MENU MOBILE  --- */}
         <div
           className={`fixed top-[4.1rem] left-0 right-0 bottom-0 z-40 bg-[#103035]
         transform transition-transform duration-300 ease-in-out lg:hidden

@@ -19,6 +19,7 @@ async function ensurePrimaryPassager(userId, panierId, userData) {
 
         if (!passager || passager.length === 0) {
             passager = await createPassager({
+                panier_id: panierId,
                 user_id: userId,
                 nom: userData.name,
                 email: userData.email,

@@ -1,14 +1,38 @@
-import TrainIco from '../../../assets/train_icon.svg';
-import mobigoIco from '../../../assets/mobigo_ico.svg';
-import terIco from '../../../assets/ter_ico.svg';
-import SiègeIco from '../../../assets/siege_ico.svg';
-import trashcan from '../../../assets/trashcan.svg';
-import type { TrainCardProps } from '../types.ts';
+import { useMemo } from "react";
+import { useNavigate } from "react-router-dom";
+import terIco from "../../../assets/ter_ico.svg";
+import SiegeIco from "../../../assets/siege_ico.svg";
+import trashcan from "../../../assets/trashcan.svg";
+import type { TrainCardProps } from "../types.ts";
 
 const base = `${import.meta.env.VITE_API_URL || "http://localhost:3005"}`;
 
+function parseHHMM(hhmm: string): { h: number; m: number } | null {
+  const m = /^(\d{1,2}):(\d{2})$/.exec(hhmm.trim());
+  if (!m) return null;
+  const h = Number(m[1]);
+  const mm = Number(m[2]);
+  if (Number.isNaN(h) || Number.isNaN(mm)) return null;
+  return { h, m: mm };
+}
+
+function durationLabel(start: string, end: string): string {
+  const a = parseHHMM(start);
+  const b = parseHHMM(end);
+  if (!a || !b) return "—";
+  let startMin = a.h * 60 + a.m;
+  let endMin = b.h * 60 + b.m;
+  if (endMin < startMin) endMin += 24 * 60;
+  const d = endMin - startMin;
+  const hh = Math.floor(d / 60);
+  const mm = d % 60;
+  return `${hh}h${String(mm).padStart(2, "0")}`;
+}
+
 export default function TrainCard({ item, onDeleted }: TrainCardProps) {
-  const handleDeletePanierItem = async () => {
+  const navigate = useNavigate();
+
+  const handleDeletePanierItem = async (): Promise<void> => {
     try {
       const res = await fetch(`${base}/api/panier/delete`, {
         method: "DELETE",
@@ -16,9 +40,7 @@ export default function TrainCard({ item, onDeleted }: TrainCardProps) {
         credentials: "include",
         body: JSON.stringify({ itemId: item.id }),
       });
-
-      if (!res.ok) throw new Error("Erreur lors de la suppresion");
-
+      if (!res.ok) throw new Error("Erreur lors de la suppression");
       onDeleted(item.id);
     } catch (error) {
       console.error("Erreur lors de la suppression du panier :", error);
@@ -26,63 +48,84 @@ export default function TrainCard({ item, onDeleted }: TrainCardProps) {
     }
   };
 
+  const duree = useMemo(() => durationLabel(item.departHeure, item.arriveeHeure), [
+    item.departHeure,
+    item.arriveeHeure,
+  ]);
+
+  const prix = useMemo(() => {
+    const n = Number(item.prix);
+    return Number.isFinite(n) ? n.toFixed(2) : String(item.prix);
+  }, [item.prix]);
+
+  const handleVoirDetail = (): void => {
+    navigate(`/train/${item.id}`);
+  };
+
   return (
-    <div className="max-w-md mx-auto bg-[#133A40] rounded-lg shadow-md p-4 text-sm text-white font-sans  m-10">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-2">
-          <img src={TrainIco} alt="Train icon" className="h-7 w-7" />
-          <img src={mobigoIco} alt="Mobigo logo" className="h-10 w-20 ml-3" />
-        </div>
-        <span className="text-Bold text-xl text-white">{item.dateVoyage.toLocaleDateString()}</span>
-      </div>
+    <article className="w-full rounded-3xl border border-[#2C474B] bg-[#0C2529] text-white px-4 py-4 sm:px-6">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="inline-flex items-center rounded-full bg-[#98EAF3] text-[#0C2529] font-bold text-xs px-3 py-1">
+              Direct
+            </span>
+            <span className="text-xs text-white/60">TER</span>
+            <span className="text-xs text-white/40">•</span>
+            <span className="text-xs text-white/60">n°{item.id}</span>
+          </div>
 
-      
-    <div className='flex items-center justify-between w-84'>
-        {/* Trajet */}
-        <div className="mb-4 w-50">
-            <p className="text-xl mb-5 -ml-30">n°{item.id}</p>
-            <h2 className="text-xl font-semibold mb-1 text-left">{item.departLieu} → {item.arriveeLieu}</h2>
-        </div>
-        {/* Horaires sous la date */}
-        <div className="grid grid-cols gap-0 w-22 ml-10 -mt-7">
-            <div className="flex items-center gap-1 ">
-            <p className="text-xs font-xs">Départ : </p>
-            <p className="text-sm">{item.departHeure}</p>
+          <h3 className="mt-2 text-lg sm:text-xl font-semibold text-[#98EAF3] truncate">
+            {item.departLieu} → {item.arriveeLieu}
+          </h3>
+
+          <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-white/80">
+            <span className="font-semibold">{item.departHeure}</span>
+            <span className="text-white/40">→</span>
+            <span className="font-semibold">{item.arriveeHeure}</span>
+            <span className="text-white/40">•</span>
+            <span>{duree}</span>
+          </div>
+
+          <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-white/70">
+            <div className="flex items-center gap-2">
+              <img src={terIco} alt="" className="h-4 w-4" />
+              <span>{item.classe}</span>
             </div>
-            <div className='flex items-center gap-1'>
-            <p className="text-xs font-xs">Arrivée : </p>
-            <p className="text-sm">{item.arriveeHeure}</p>
+            <div className="flex items-center gap-2">
+              <img src={SiegeIco} alt="" className="h-4 w-4" />
+              <span>{item.siegeRestant} places</span>
             </div>
-            <div>
-              <h3 className=' font-bold text-3xl  mt-8 w-30 text-left -ml-6' >{item.prix} €</h3>
-            </div>
-        </div>
-        
-    </div>
-      
-
-    {/* Infos siège */}
-    <div className=" flex items-center justify-between mb-4">
-      <div className=" grid-cols w-40 gap-4 ">
-        <div className='flex items-center gap-4 mt-3'>
-          <img src={terIco} alt="" />
-          <p className="text-sm font-bold ">Train : TER</p>
+          </div>
         </div>
 
-        <div className='flex items-center gap-8 mt-2'>
-          <img src={SiègeIco} alt="" />
-          <p className="text-sm font-bold">Place : <span className="font-semibold">{item.siegeRestant}</span></p>
-        </div>
+        <div className="shrink-0 text-right">
+          <p className="text-2xl font-extrabold">{prix}€</p>
+          <p className="mt-1 text-xs font-semibold text-emerald-300">
+            Il reste {item.siegeRestant}
+          </p>
 
-        <div className='flex items-center mt-2'>
-          <p className="text-xl font-bold">Classe : <span className="font-semibold">{item.classe}</span></p>
+          <div className="mt-3 flex items-center justify-end gap-2">
+            <button
+              type="button"
+              onClick={handleVoirDetail}
+              className="h-9 px-4 rounded-full bg-[#FFB856] text-[#0C2529] font-bold text-sm hover:brightness-110 transition"
+            >
+              Détail
+            </button>
+
+            <button
+              type="button"
+              onClick={handleDeletePanierItem}
+              className="h-9 w-9 rounded-2xl bg-[#133A40] border border-[#2C474B] flex items-center justify-center hover:border-red-400/60 hover:bg-red-500/10 transition"
+              aria-label="Supprimer"
+              title="Supprimer"
+            >
+              <img src={trashcan} alt="" className="h-5 w-5" />
+            </button>
+          </div>
         </div>
       </div>
-        <button onClick={handleDeletePanierItem} className='cursor-pointer'>
-          <img src={trashcan} alt="trash can icon " className='w-12 h-12 mt-3' />
-        </button>
-      </div>
-    </div>
+    </article>
   );
 }
