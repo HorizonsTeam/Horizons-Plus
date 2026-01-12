@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import useIsMobile from '../../../components/layouts/UseIsMobile.tsx';
 
 
-export default function ProductCard({ journey, passagersCount, formattedDepartureDate, index = 0 }: ProductCardProps) {
+export default function ProductCard({ journey, passagersCount, formattedDepartureDate, index = 0 ,IsLoading }: ProductCardProps) {
     const hasNoTransfer = journey.numberOfTransfers === 0;
     const isMobile = useIsMobile();
 
@@ -21,8 +21,15 @@ export default function ProductCard({ journey, passagersCount, formattedDepartur
             }}
         >
             <Link to="/Recap" className="block" state={{ journey, passagersCount, formattedDepartureDate }} onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
-            <article className="mt-4 rounded-3xl bg-[#0C2529] border border-[#2C474B]  text-white cursor-pointer">
-                <div className="">
+                <article className={[
+                    "mt-4 rounded-3xl border border-[#2C474B] text-white cursor-pointer relative overflow-hidden",
+                    IsLoading ? "bg-[#2C474B] pointer-events-none" : "bg-[#0C2529]",
+                    IsLoading
+                        ? "after:content-[''] after:absolute after:inset-0 after:translate-x-[-100%] after:animate-[shimmer_1.2s_infinite]" +
+                        " after:bg-gradient-to-r after:from-transparent after:via-white/20 after:to-transparent"
+                        : "",
+                ].join(" ")}>
+                <div className={` ${IsLoading && "opacity-0 " } `}>
                     <div className="flex   justify-between items-center px-6 py-4 border-b border-[#2C474B]">
 
                         <div className='flex flex-col gap-4 min-w-0'>
