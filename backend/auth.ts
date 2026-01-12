@@ -47,6 +47,46 @@ export const auth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET || "dev-secret-change-in-production",
 
   user: {
+    hardDelete: true,
+    deleteUser: { // Avec ça on ppermet la suppresion de l'utilisateur
+      enabled: true,
+      sendDeleteAccountVerification: async ({ user, url }) => {
+
+        await sendMail({
+          to: user.email,
+          subject: "Confirmez la supression de votre compte",
+          html: `
+          <h2>Suppression de votre compte</h2>
+          <p>Bonjour ${user.name || ''},</p>
+          <p>Vous avez demandé la <strong>suppression définitive</strong> de votre compte.</p>
+          <p>Cette action est <strong>irréversible</strong>.</p>
+          <p><a href="${url}" style="background: #dc3545; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px;">Confirmer la suppression</a></p>
+          <p><small>Ce lien expire dans 24h. Ignorer ce message pour annuler.</small></p>
+        `,
+        });
+      },
+      beforeDelete: async (user) => {
+        await prisma.$transaction(async (tx) => {
+          // Suppression des paniers et dépendances
+          const paniers = await tx.panier.findMany({ where: { user_id: user.id }, select: { panier_id: true } });
+          const panierIds = paniers.map(p => p.panier_id);
+
+          await tx.panier_item.deleteMany({ where: { panier_id: { in: panierIds } } });
+          await tx.passager.deleteMany({ where: { panier_id: { in: panierIds } } });
+          await tx.panier.deleteMany({ where: { panier_id: { in: panierIds } } });
+
+          // Suppression des tables Better Auth
+          await tx.account.deleteMany({ where: { userId: user.id } });
+          await tx.session.deleteMany({ where: { userId: user.id } });
+          await tx.verification.deleteMany({ where: { identifier: user.email } });
+
+          // Supprimer l'utilisateur lui-même dans Neon
+          await tx.user.delete({ where: { id: user.id } });
+        });
+
+        console.log(`${user.email} supprimé définitivement dans Neon`);
+      }
+    },
     additionalFields: {
       phone: {
         type: "string",

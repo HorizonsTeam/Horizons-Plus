@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type JSX, type ReactNode } from "react";
 import useIsMobile from "../../../../components/layouts/UseIsMobile";
+import authClient from "../../../../lib/auth-clients";
 
 type EmailItem = {
     id: string;
@@ -70,7 +71,7 @@ export default function AccountSettings(): JSX.Element {
     const isMobile = useIsMobile();
 
     const [emails, setEmails] = useState<EmailItem[]>([
-        { id: "primary", address: "nassimazzouzi59@gmail.com", verified: true, primary: true },
+        { id: "primary", address: "", verified: true, primary: true },
     ]);
 
     const [currentPassword, setCurrentPassword] = useState<string>("");
@@ -86,6 +87,7 @@ export default function AccountSettings(): JSX.Element {
     ]);
 
     const [banner, setBanner] = useState<BannerState>({ type: "", message: "" });
+
     const [isSaving, setIsSaving] = useState<boolean>(false);
     const initialSnapshotRef = useRef<string | null>(null);
 
@@ -278,8 +280,8 @@ export default function AccountSettings(): JSX.Element {
     return (
         <div className="w-full">
             <div className="px-2 py-5">
-                { bannerPosition === "top" &&
-                <Banner />
+                {bannerPosition === "top" &&
+                    <Banner />
                 }
                 <Section
                     title="Adresse mail"
@@ -287,7 +289,7 @@ export default function AccountSettings(): JSX.Element {
                     right={
                         <div className="flex items-center gap-2">
                             {isDirty ? <Pill tone="warn">Modifications non enregistrées</Pill> : <Pill>À jour</Pill>}
-                            <Button onClick={()=> {handleSave(); setBannerPosition("top")} } disabled={!canSave} className="min-w-[120px]">
+                            <Button onClick={() => { handleSave(); setBannerPosition("top") }} disabled={!canSave} className="min-w-[120px]">
                                 {isSaving ? "..." : "Enregistrer"}
                             </Button>
                         </div>
@@ -531,19 +533,43 @@ export default function AccountSettings(): JSX.Element {
                 <Section title="Suppression du compte" subtitle="Action irréversible : soyez sûr avant de continuer.">
                     <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
                         <p className="text-sm text-white">
-                            Supprimer votre compte effacera vos données et désactivera l’accès à l’application.
+                            Supprimer votre compte effacera vos données et désactivera l’accès.
                         </p>
 
                         <div className="mt-4 flex items-center gap-2">
                             <Button
                                 type="button"
                                 variant="danger"
-                                onClick={() =>
-                                    setBanner({
-                                        type: "error",
-                                        message: "Action simulée : suppression du compte.",
-                                    })
-                                }
+                                onClick={async () => {
+                                    if (!confirm("Suppression définitive \n\n Toutes vos données seront effacées à jamais. \n\n Confirmer l'envoi de l'email ?")) {
+                                        return;
+                                    }
+
+                                    try {
+                                        setBanner({
+                                            type: "info",
+                                            message: "Email de confirmation envoyé"
+                                        });
+
+                                        await authClient.deleteUser({
+                                            callbackURL: window.location.origin + "/"
+                                        });
+                                        
+
+                                        setBanner({
+                                            type: "success",
+                                            message: "Vérifiez votre boîte email pour finaliser !"
+                                        });
+
+                                    } catch (error: any) {
+                                        console.error("Erreur:", error);
+                                        setBanner({
+                                            type: "error",
+                                            message: error.message || "Erreur lors de la demande."
+                                        });
+                                    }
+                                }}
+                                className="min-w-[200px]"
                             >
                                 Supprimer mon compte
                             </Button>
@@ -576,11 +602,11 @@ export default function AccountSettings(): JSX.Element {
                         Annuler
                     </Button>
 
-                    <Button type="button" onClick={()=>{handleSave() ; setBannerPosition("bottom")}} disabled={!canSave} className="min-w-[140px]">
+                    <Button type="button" onClick={() => { handleSave(); setBannerPosition("bottom") }} disabled={!canSave} className="min-w-[140px]">
                         {isSaving ? "..." : "Enregistrer"}
                     </Button>
 
-                    
+
                 </div>
 
                 {bannerPosition === "bottom" &&
