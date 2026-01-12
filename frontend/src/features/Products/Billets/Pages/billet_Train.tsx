@@ -103,7 +103,7 @@ export default function Billet_Train_recap() {
 
     console.log(stops);
     console.log(legs);
-    
+
     async function handleClick() {
         try {
             const siegeRestant = randomSiegeRestant();
@@ -156,11 +156,11 @@ export default function Billet_Train_recap() {
                         </div>
                     )}
                     <div className="w-full">
-                        <RoadDetails 
-                            journey={journey} 
-                            formattedDepartureDate={formattedDepartureDate} 
+                        <RoadDetails
+                            journey={journey}
+                            formattedDepartureDate={formattedDepartureDate}
                             passagersCount={passagersCount}
-                            stops={stops} 
+                            stops={stops}
                             legs={legs}
                         />
                     </div>
@@ -199,8 +199,8 @@ export default function Billet_Train_recap() {
                     </div>
                     <div className="flex flex-wrap gap-5 justify-center py-5 px-3">
                         {classes.map((classe) => (
-                            <div 
-                                key={classe.name} 
+                            <div
+                                key={classe.name}
                                 onClick={() => setSelectedClass(classe.name)}
                                 className="cursor-pointer"
                             >
@@ -216,12 +216,12 @@ export default function Billet_Train_recap() {
                 </div>
 
                 {/* Inclus */}
-                <Inclus 
-                    avantage1='WIFI' 
-                    Ico_path_Avantage1={icoWifi} 
-                    avantage2='Prise électrique' 
+                <Inclus
+                    avantage1='WIFI'
+                    Ico_path_Avantage1={icoWifi}
+                    avantage2='Prise électrique'
                     Ico_path_Avantage2={priseIco}
-                    avantage3='Climatisation' 
+                    avantage3='Climatisation'
                     Ico_path_Avantage3={climatisation_Ico}
                 />
 
@@ -235,15 +235,15 @@ export default function Billet_Train_recap() {
                     </div>
 
                     <div className="flex flex-col gap-3 items-center">
-                        <button 
+                        <button
                             className="w-full max-w-xs h-16 bg-[#FFB856] rounded-xl hover:bg-[#FFB856]/90 transition"
                             onClick={handleClick}
                         >
                             <span className="text-[#115E66] font-bold text-lg">Ajouter au panier</span>
                         </button>
 
-                        <Link 
-                            to="/Infos_Passagers" 
+                        <Link
+                            to="/Infos_Passagers"
                             state={{ journey, selectedClass, passagersCount, formattedDepartureDate }}
                             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
                             className="w-full max-w-xs"

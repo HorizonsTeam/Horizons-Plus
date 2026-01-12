@@ -19,6 +19,7 @@ export type ProductCardProps =
     passagersCount: number;
     formattedDepartureDate: string;
     index?: number;
+    IsLoading?: boolean;
 }
 
 export type DateStringProps = {

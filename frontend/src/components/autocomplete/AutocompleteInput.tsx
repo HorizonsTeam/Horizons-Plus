@@ -1,145 +1,149 @@
-import { useState, useEffect, useRef } from "react";
-import type { AutocompleteInputProps, Suggestion, SuggestionType } from "./types";
+import type React from "react";
+import { useEffect, useRef, useState, forwardRef } from "react";
+import type { AutocompleteInputProps, Suggestion } from "./types";
 import AutocompleteList from "./AutocompleteList";
 
-function AutocompleteInput({
-    label,
-    value,
-    placeholder,
-    onChange,
-    onSelect,
-    className,
-    AutocompleteListClassname,
-}: AutocompleteInputProps) {
-    const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
-    const [isFocused, setIsFocused] = useState<boolean>(false);
-    const [selectedIndex, setSelectedIndex] = useState<number>(0);
+const AutocompleteInput = forwardRef<HTMLInputElement, AutocompleteInputProps>(
+    function AutocompleteInput(
+        {
+            label,
+            value,
+            placeholder,
+            onChange,
+            onSelect,
+            className,
+            AutocompleteListClassname,
+            onFocus,
+            onBlur,
+            wrapperRef,
+        },
+        ref
+    ) {
+        const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+        const [isFocused, setIsFocused] = useState(false);
+        const [selectedIndex, setSelectedIndex] = useState(0);
 
-    const containerRef = useRef<HTMLDivElement | null>(null);
+        const innerWrapperRef = useRef<HTMLDivElement | null>(null);
+        const API_BASE_ = import.meta.env.VITE_API_URL || "";
 
-    const API_BASE_ = import.meta.env.VITE_API_URL || "";
+        // ✅ ref wrapper (div) : interne + externe (wrapperRef)
+        const setWrapperRefs = (node: HTMLDivElement | null) => {
+            innerWrapperRef.current = node;
 
-    useEffect(() => {
-        if (!value) {
-            setSuggestions([]);
-            return;
-        }
+            if (!wrapperRef) return;
 
-        const timeout = setTimeout(async () => {
-            try {
-                const [sncfData, amadeusData] = await Promise.allSettled([
-                    fetch(`${API_BASE_}/api/search/stations?q=${encodeURIComponent(value)}`).then((r) => r.json()),
-                    fetch(`${API_BASE_}/api/search/airports?q=${encodeURIComponent(value)}`).then((r) => r.json()),
-                ]);
+            if (typeof wrapperRef === "function") wrapperRef(node);
+            else (wrapperRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
+        };
 
-                const sncfResults: Suggestion[] =
-                    sncfData.status === "fulfilled" ? sncfData.value : [];
-                const amadeusResults: Suggestion[] =
-                    amadeusData.status === "fulfilled" ? amadeusData.value : [];
-
-                const combined = [...sncfResults, ...amadeusResults];
-
-                const seen = new Set<string>();
-                const unique = combined.filter((v) => {
-                    const key = `${v.name.toLowerCase()}|${v.name}`;
-                    if (seen.has(key)) return false;
-                    seen.add(key);
-                    return true;
-                });
-
-                const typeOrder: Record<SuggestionType, number> = {
-                    city: 0,
-                    stop_area: 1,
-                    airport: 2,
-                };
-
-                const sorted = unique.sort((a, b) => {
-                    const typeA = a.type ?? "city";
-                    const typeB = b.type ?? "city";
-                    return typeOrder[typeA] - typeOrder[typeB];
-                });
-
-                setSuggestions(sorted);
-            } catch (err) {
-                console.error(err);
+        useEffect(() => {
+            if (!value) {
                 setSuggestions([]);
+                return;
             }
-        }, 300);
 
-        return () => clearTimeout(timeout);
-    }, [value, API_BASE_]);
+            const timeout = setTimeout(async () => {
+                try {
+                    const [sncfData, amadeusData] = await Promise.allSettled([
+                        fetch(`${API_BASE_}/api/search/stations?q=${encodeURIComponent(value)}`).then((r) => r.json()),
+                        fetch(`${API_BASE_}/api/search/airports?q=${encodeURIComponent(value)}`).then((r) => r.json()),
+                    ]);
 
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (
-                containerRef.current &&
-                !containerRef.current.contains(event.target as Node)
-            ) {
+                    const sncfResults = sncfData.status === "fulfilled" ? sncfData.value : [];
+                    const amadeusResults = amadeusData.status === "fulfilled" ? amadeusData.value : [];
+
+                    setSuggestions([...sncfResults, ...amadeusResults]);
+                    setSelectedIndex(0);
+                } catch {
+                    setSuggestions([]);
+                }
+            }, 300);
+
+            return () => clearTimeout(timeout);
+        }, [value, API_BASE_]);
+
+        // ✅ click outside (plus fiable en pointerdown capture)
+        useEffect(() => {
+            const onPointerDown = (e: PointerEvent) => {
+                const wrapper = innerWrapperRef.current;
+                if (!wrapper) return;
+
+                if (!wrapper.contains(e.target as Node)) {
+                    setIsFocused(false);
+                }
+            };
+
+            document.addEventListener("pointerdown", onPointerDown, true);
+            return () => document.removeEventListener("pointerdown", onPointerDown, true);
+        }, []);
+
+        const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+            if (!suggestions.length) return;
+
+            if (e.key === "ArrowDown") {
+                e.preventDefault();
+                setSelectedIndex((i) => Math.min(i + 1, suggestions.length - 1));
+            } else if (e.key === "ArrowUp") {
+                e.preventDefault();
+                setSelectedIndex((i) => Math.max(i - 1, 0));
+            } else if (e.key === "Enter") {
+                e.preventDefault();
+                onSelect(suggestions[selectedIndex]);
+                setIsFocused(false);
+            } else if (e.key === "Escape") {
                 setIsFocused(false);
             }
         };
 
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
+        const handleFocusInternal = (e: React.FocusEvent<HTMLInputElement>) => {
+            setIsFocused(true);
+            onFocus?.(e);
+        };
 
-    useEffect(() => {
-        setSelectedIndex(0);
-    }, [suggestions]);
+        const handleBlurInternal = (e: React.FocusEvent<HTMLInputElement>) => {
+            onBlur?.(e);
+            // ❌ ne pas setIsFocused(false) ici, sinon click sur suggestion = blur = ça ferme trop tôt
+            // le click outside gère la fermeture
+        };
 
-    const handleSelect = (s: Suggestion) => {
-        onChange(s.name);
-        onSelect(s);
-        setIsFocused(false);
-    };
+        return (
+            <div ref={setWrapperRefs} className="relative w-full">
+                {label && <label className="block text-sm text-slate-400 mb-2">{label}</label>}
 
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (!suggestions || suggestions.length === 0) return;
+                <input
+                    ref={ref}
+                    type="text"
+                    value={value}
+                    placeholder={placeholder}
+                    onChange={(e) => onChange(e.target.value)}
+                    onFocus={handleFocusInternal}
+                    onBlur={handleBlurInternal}
+                    onKeyDown={handleKeyDown}
+                    autoComplete="off"
+                    className={className}
+                    // ✅ FIX double click : force focus au premier clic
+                    onMouseDownCapture={(e) => {
+                        const el = e.currentTarget;
+                        if (document.activeElement !== el) {
+                            e.preventDefault(); // empêche sélection/blur bizarre
+                            el.focus();
+                        }
+                    }}
+                />
 
-        if (e.key === "ArrowDown") {
-            e.preventDefault();
-            setSelectedIndex((prev) => Math.min(prev + 1, suggestions.length - 1));
-        }
-
-        if (e.key === "ArrowUp") {
-            e.preventDefault();
-            setSelectedIndex((prev) => Math.max(prev - 1, 0));
-        }
-
-        if (e.key === "Enter") {
-            e.preventDefault();
-            handleSelect(suggestions[selectedIndex]);
-        }
-    };
-
-    return (
-        <div ref={containerRef} className="relative w-full">
-        <div        >
-            {label && label.length > 0 && (
-                <label className="block text-sm text-slate-400 mb-2">{label}</label>
-            )}
-
-            <input
-                type="text"
-                className={className}
-                value={value}
-                onChange={(e) => onChange(e.target.value)}
-                autoComplete="off"
-                placeholder={placeholder}
-                onFocus={() => setIsFocused(true)}
-                onKeyDown={handleKeyDown}
-            />
+                <AutocompleteList
+                    suggestions={isFocused ? suggestions : []}
+                    selectedIndex={selectedIndex}
+                    onSelect={(s) => {
+                        onChange(s.name);
+                        onSelect(s);
+                        setIsFocused(false);
+                    }}
+                    className={AutocompleteListClassname}
+                />
             </div>
-
-            <AutocompleteList
-                suggestions={isFocused ? suggestions : []}
-                selectedIndex={selectedIndex}
-                onSelect={handleSelect}
-                className={AutocompleteListClassname}
-            />
-        
-        </div>
-    );
-}
+        );
+    }
+);
 
 export default AutocompleteInput;
