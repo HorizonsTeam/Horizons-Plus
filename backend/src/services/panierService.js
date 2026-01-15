@@ -19,11 +19,12 @@ async function ensurePrimaryPassager(userId, panierId, userData) {
 
         if (!passager || passager.length === 0) {
             passager = await createPassager({
+                panier_id: panierId,
                 user_id: userId,
                 nom: userData.name,
                 email: userData.email,
-                date_naissance: userData.dateNaissance || null,
-                telephone: userData.telephone || null,
+                date_naissance: userData.dateNaissance,
+                telephone: userData.telephone,
             });
         }
     } else if (panierId) {
@@ -33,7 +34,9 @@ async function ensurePrimaryPassager(userId, panierId, userData) {
             passager = await createPassager({
                 panier_id: panierId,
                 nom: userData.name || "Invité",
-                email: userData.email || null,
+                email: userData.email,
+                date_naissance: userData.dateNaissance,
+                telephone: userData.telephone,
             });
         }
     } else {
