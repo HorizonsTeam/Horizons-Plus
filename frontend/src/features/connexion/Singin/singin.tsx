@@ -38,7 +38,7 @@ export default function Singin() {
         }
         if (password !== confirm) {
 
-            setError("Le mot Les mots de passe ne correspondent pas.");
+            setError("Le mot ou les mots de passe ne correspondent pas.");
             return;
         }
         if (!phone || !isPossiblePhoneNumber(phone)) {
@@ -91,7 +91,7 @@ export default function Singin() {
 
             <div className={`text-center min-h-screen flex flex-col mt-17 lg:mt-13  gap-6 ${useIsMobile() ? 'w-full px-4' : 'w-full'} `}>
                 <h1 className="text-4xl font-bold   text-[#98EAF3]">
-                    Crée un Compte
+                    Créer un Compte
                 </h1>
 
                 {/* Test */}
@@ -113,7 +113,7 @@ export default function Singin() {
                             required
                         />
                             <input type="text"
-                                placeholder="nom"
+                                placeholder="Nom"
                                 value={lastName}
                                 onChange={(e) => setLastName(e.target.value)}
                                 className="w-full max-w-md bg-[#2C474B] text-white placeholder-gray-400 rounded-lg p-3 outline-none focus:ring-2 focus:ring-[#98EAF3] transition"
@@ -122,7 +122,7 @@ export default function Singin() {
                         </div>
                         <input
                             type="text"
-                            placeholder="e-mail"
+                            placeholder="E-mail"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             className="w-full max-w-md bg-[#2C474B] text-white placeholder-gray-400 rounded-lg p-3 outline-none focus:ring-2 focus:ring-[#98EAF3] transition"
@@ -159,7 +159,7 @@ export default function Singin() {
                             type='submit'
                             disabled={isloading}
                             className="bg-[#98EAF3] text-[#115E66] cursor-pointer w-full h-10 rounded-lg max-w-md font-bold -mb-3">
-                            {isloading ? "Création..." : "Creer une compte"}
+                            {isloading ? "Création..." : "Créer un compte"}
                         </button>
 
                         <div className="flex items-center justify-center w-full max-w-md my-10 mb-17 gap-3">
@@ -177,7 +177,7 @@ export default function Singin() {
                             <img src="src/assets/Google_Favicon_2025.svg" alt="google logo" className="mr-2 w-6 h-6" />
                             Continuer avec Google
                         </button>
-                        <h2>Déja un compte ? <Link to="/login" className="text-[#98EAF3]">Connectez-vous</Link> </h2>
+                        <h2>Déjà un compte ? <Link to="/login" className="text-[#98EAF3]">Connectez-vous</Link> </h2>
 
                     </div>
                 </form>
