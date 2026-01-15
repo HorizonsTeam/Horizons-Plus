@@ -11,6 +11,7 @@ export const authMiddleware = async (req, res, next) => {
     }
 
     // Stockage de l'ID utilisateur pour Prisma
+    // req.user = session.user;
     req.userId = session.user.id;
     next();
   } catch (error) {
