@@ -3,40 +3,26 @@ import { formatDuration } from "../utils/time.js";
 import { calculerPrixFictif } from "../utils/price.js";
 import { analyzeJourney, computeJourneyDistanceMeters } from "../services/journey/journey.analyzer.js";
 import { generationJourneysFictif } from "../services/journey/journey.factory.js";
+import { parseJourneySections } from "../services/journey/journey.parser.js";
+import { shouldGenerateFlightAlternative } from "../utils/config.js";
 
 const searchJourneys = express.Router();
 
 searchJourneys.get("/journeys", async (req, res) => {
     const {
-        fromId,
-        fromName,
-        toId,
-        toName,
-        datetime,
-        fromLat,
-        toLat,
-        fromLon,
-        toLon,
-        fromSource,
-        toSource,
+        fromId, fromName, toId, toName, datetime,
+        fromLat, toLat, fromLon, toLon,
+        fromSource, toSource,
     } = req.query;
 
     if (
-        !fromId ||
-        !fromName ||
-        !toId ||
-        !toName ||
-        !datetime ||
-        !fromLat ||
-        !toLat ||
-        !fromLon ||
-        !toLon ||
-        !fromSource ||
-        !toSource
+        !fromId || !fromName || !toId || !toName || !datetime ||
+        !fromLat || !toLat || !fromLon || !toLon ||
+        !fromSource || !toSource
     ) {
-        return res
-        .status(400)
-        .json({ error: "Missing parameters ?fromId=&toId=&datetime=..." });
+        return res.status(400).json({ 
+            error: "Missing required parameters" 
+        });
     }
 
     try {
@@ -50,25 +36,37 @@ searchJourneys.get("/journeys", async (req, res) => {
         )}&count=20`,
         {
             headers: {
-            Authorization:
-                "Basic " +
-                Buffer.from(process.env.NAVITIA_API_KEY + ":").toString("base64"),
-            },
-        }
+                Authorization:
+                    "Basic " +
+                    Buffer.from(process.env.NAVITIA_API_KEY + ":").toString("base64"),
+                },
+            }
         );
 
         const data = await response.json();
 
+        // CAS 1 : Pas de résultats SNCF -> génération fictive uniquement
         if (data.error || !data.journeys || data.journeys.length === 0) {
             return res.json(
                 generationJourneysFictif({
-                    from: { name: fromName, lat: Number(fromLat), lon: Number(fromLon), source: fromSource },
-                    to: { name: toName, lat: Number(toLat), lon: Number(toLon), source: toSource },
+                    from: { 
+                        name: fromName, 
+                        lat: Number(fromLat), 
+                        lon: Number(fromLon), 
+                        source: fromSource 
+                    },
+                    to: { 
+                        name: toName, 
+                        lat: Number(toLat), 
+                        lon: Number(toLon), 
+                        source: toSource 
+                    },
                 })
             );
         }
 
-        const JourneyList = data.journeys.map((journey) => {
+        // CAS 2 : Résultats SNCF existent -> on les mappe
+        const sncfJourneys = data.journeys.map((journey) => {
             const { stops, legs } = parseJourneySections(journey);
             const firstSection = journey.sections[0].from;
             const lastSection = journey.sections[journey.sections.length - 1].to;
@@ -95,8 +93,8 @@ searchJourneys.get("/journeys", async (req, res) => {
 
             const price =
                 journey.fare?.total.value != 0
-                ? (journey.fare.total.value / 100).toFixed(2)
-                : calculerPrixFictif(distanceM, numberOfTransfers, trainType);
+                    ? (journey.fare.total.value / 100).toFixed(2)
+                    : calculerPrixFictif(distanceM, numberOfTransfers, trainType);
 
             const departureTime = journey.departure_date_time
                 .split("T")[1]
@@ -124,7 +122,34 @@ searchJourneys.get("/journeys", async (req, res) => {
             };
         });
 
-        return res.json(JourneyList);
+        // CAS 3 : Si départ ET arrivée dans la liste -> ajout des vols fictifs
+        let finalJourneys = [...sncfJourneys];
+
+        if (shouldGenerateFlightAlternative(fromName, toName)) {
+            console.log("lala\n\n\n")
+            const flightJourneys = generationJourneysFictif({
+                from: {
+                    name: fromName,
+                    lat: Number(fromLat),
+                    lon: Number(fromLon),
+                    source: "amadeus"
+                },
+                to: {
+                    name: toName,
+                    lat: Number(toLat),
+                    lon: Number(toLon),
+                    source: "amadeus"
+                },
+            });
+
+            finalJourneys = [...sncfJourneys, ...flightJourneys].sort((a, b) => {
+                const timeA = a.departureTime.replace(":", "");
+                const timeB = b.departureTime.replace(":", "");
+                return parseInt(timeA) - parseInt(timeB);
+            })
+        }
+
+        return res.json(finalJourneys);
 
     } catch (err) {
         console.error("Erreur API SNCF :", err);

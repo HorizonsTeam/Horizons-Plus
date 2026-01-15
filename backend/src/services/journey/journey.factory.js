@@ -48,6 +48,40 @@ function calculateJourneyTiming(distanceKm, currentDeparture, numberOfTransfers)
     return { totalDurationMinutes, arrivalMinutes, parisArrival };
 }
 
+function isAlreadyInHub(location) {
+    const locationName = location.name.toLowerCase();
+
+    const parisHubNames = [
+        "paris",
+        "orly",
+        "charles de gaulle",
+        "cdg",
+        "gare de lyon",
+        "gare du nord",
+        "gare montparnasse",
+        "gare de l'est",
+        "gare saint-lazare",
+        "aeroport",
+        "aéroport"
+    ];
+    
+    return parisHubNames.some(hub => locationName.includes(hub));
+}
+
+function getStartingHub(location, transportMode) {
+    if (isAlreadyInHub(location)) {
+        return {
+            kind: location.source === "sncf" ? "station" : "airport",
+            city: location.name,
+            placeName: location.name,
+            lat: location.lat,
+            lng: location.lon
+        };
+    }
+
+    return getParisHub(transportMode);
+}
+
 // ==================== JOURNEY BUILDERS ====================
 
 function buildDirectJourney(from, to, currentDeparture, arrivalMinutes) {
@@ -117,6 +151,146 @@ function buildHubJourneyWithoutTransfer(from, to, currentDeparture, parisArrival
 function buildHubJourneyWithTransfer(from, to, currentDeparture, parisArrival, arrivalMinutes) {
     const firstMode = getTransportMode(from.source);
     const secondMode = getTransportMode(to.source);
+    
+    const isFromParis = isAlreadyInHub(from);
+    const isToParis = isAlreadyInHub(to);
+    
+    // CAS 1 : Départ ET arrivée à Paris (Orly → Gare de Lyon)
+    if (isFromParis && isToParis) {
+        const startHub = getStartingHub(from, firstMode);
+        const endHub = getStartingHub(to, secondMode);
+        
+        const stops = [
+            createStop({
+                ...startHub,
+                arrival: minutesToHHMM(currentDeparture)
+            }),
+            createStop({
+                ...endHub,
+                arrival: minutesToHHMM(arrivalMinutes)
+            })
+        ];
+        
+        const legs = [createLeg(0, 1, "walking")];
+        
+        return { stops, legs };
+    }
+    
+    // CAS 2 : Départ depuis Paris uniquement (Orly → Marseille)
+    if (isFromParis && !isToParis) {
+        const startHub = getStartingHub(from, firstMode);
+        const secondHub = getParisHub(secondMode);
+        
+        // Si même type de hub (airport→airport ou station→station), pas de transfert
+        if (startHub.kind === secondHub.kind) {
+            const stops = [
+                createStop({
+                    ...startHub,
+                    arrival: minutesToHHMM(currentDeparture)
+                }),
+                createStop({
+                    kind: secondMode === "rail" ? "station" : "airport",
+                    city: to.name,
+                    placeName: to.name,
+                    arrival: minutesToHHMM(arrivalMinutes),
+                    lat: to.lat,
+                    lng: to.lon
+                })
+            ];
+            
+            const legs = [createLeg(0, 1, secondMode)];
+            
+            return { stops, legs };
+        }
+        
+        // Sinon, transfert nécessaire (Gare → CDG ou CDG → Gare)
+        const transferArrival = currentDeparture + TRANSFER_TIME_MINUTES;
+        
+        const stops = [
+            createStop({
+                ...startHub,
+                arrival: minutesToHHMM(currentDeparture)
+            }),
+            createStop({
+                ...secondHub,
+                arrival: minutesToHHMM(transferArrival)
+            }),
+            createStop({
+                kind: secondMode === "rail" ? "station" : "airport",
+                city: to.name,
+                placeName: to.name,
+                arrival: minutesToHHMM(arrivalMinutes),
+                lat: to.lat,
+                lng: to.lon
+            })
+        ];
+        
+        const legs = [
+            createLeg(0, 1, "walking"),
+            createLeg(1, 2, secondMode)
+        ];
+        
+        return { stops, legs };
+    }
+    
+    // CAS 3 : Arrivée à Paris uniquement (Munich → Gare de Lyon)
+    if (!isFromParis && isToParis) {
+        const firstHub = getParisHub(firstMode);
+        const endHub = getStartingHub(to, secondMode);
+        
+        // Si même type de hub, pas de transfert
+        if (firstHub.kind === endHub.kind) {
+            const stops = [
+                createStop({
+                    kind: firstMode === "rail" ? "station" : "airport",
+                    city: from.name,
+                    placeName: from.name,
+                    arrival: minutesToHHMM(currentDeparture),
+                    lat: from.lat,
+                    lng: from.lon
+                }),
+                createStop({
+                    ...endHub,
+                    arrival: minutesToHHMM(arrivalMinutes)
+                })
+            ];
+            
+            const legs = [createLeg(0, 1, firstMode)];
+            
+            return { stops, legs };
+        }
+        
+        // Sinon, transfert nécessaire
+        const transferArrival = parisArrival + TRANSFER_TIME_MINUTES;
+        
+        const stops = [
+            createStop({
+                kind: firstMode === "rail" ? "station" : "airport",
+                city: from.name,
+                placeName: from.name,
+                arrival: minutesToHHMM(currentDeparture),
+                lat: from.lat,
+                lng: from.lon
+            }),
+            createStop({
+                ...firstHub,
+                arrival: minutesToHHMM(parisArrival)
+            }),
+            createStop({
+                ...endHub,
+                arrival: minutesToHHMM(transferArrival)
+            })
+        ];
+        
+        const legs = [
+            createLeg(0, 1, firstMode),
+            createLeg(1, 2, "walking")
+        ];
+        
+        return { stops, legs };
+    }
+    
+    // CAS 4 : Cas normal (ni départ ni arrivée à Paris)
     const firstHub = getParisHub(firstMode);
     const secondHub = getParisHub(secondMode);
     const transferArrival = parisArrival + TRANSFER_TIME_MINUTES;
@@ -157,6 +331,40 @@ function buildHubJourneyWithTransfer(from, to, currentDeparture, parisArrival, a
     return { stops, legs };
 }
 
+function cleanupRedundantStops(stops, legs) {
+    // CAS 1 : Détecter les stops de même ville consécutifs au début
+    if (stops.length >= 2) {
+        const firstStop = stops[0];
+        const secondStop = stops[1];
+        
+        // Si les 2 premiers stops sont dans la même ville ET très proches
+        const isSameCity = firstStop.city.toLowerCase() === secondStop.city.toLowerCase();
+        const distance = haversineDistance(
+            firstStop.lat, 
+            firstStop.lng, 
+            secondStop.lat, 
+            secondStop.lng
+        );
+        
+        // Si même ville et < 15km de distance → on supprime le premier
+        if (isSameCity && distance < 15) {
+            // Supprime le premier stop
+            stops.shift();
+            
+            // Supprime le premier leg
+            legs.shift();
+            
+            // Réindexe tous les legs
+            legs.forEach(leg => {
+                leg.fromIndex = Math.max(0, leg.fromIndex - 1);
+                leg.toIndex = Math.max(0, leg.toIndex - 1);
+            });
+        }
+    }
+    
+    return { stops, legs };
+}
+
 function buildJourneyStopsAndLegs(from, to, currentDeparture, parisArrival, arrivalMinutes, distanceKm) {
     const requiresHub = needsParisHub(from, to, distanceKm);
 
@@ -168,11 +376,14 @@ function buildJourneyStopsAndLegs(from, to, currentDeparture, parisArrival, arri
     const secondMode = getTransportMode(to.source);
     const requiresTransfer = needsTransferBetweenHubs(firstMode, secondMode);
 
+    let result;
     if (requiresTransfer) {
-        return buildHubJourneyWithTransfer(from, to, currentDeparture, parisArrival, arrivalMinutes);
+        result = buildHubJourneyWithTransfer(from, to, currentDeparture, parisArrival, arrivalMinutes);
+    } else {
+        result = buildHubJourneyWithoutTransfer(from, to, currentDeparture, parisArrival, arrivalMinutes);
     }
-
-    return buildHubJourneyWithoutTransfer(from, to, currentDeparture, parisArrival, arrivalMinutes);
+    
+    return cleanupRedundantStops(result.stops, result.legs);
 }
 
 function formatJourneyDuration(totalMinutes) {
