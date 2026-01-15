@@ -155,12 +155,13 @@ export default function QuickModificationOverlay({
     return (
         <div
             className={`
+
         fixed bottom-0 left-0 w-full bg-[#103035] border-2 border-[#4A6367] rounded-t-4xl 
-        transition-all duration-500 h-95 p-4 max-w-150
+        transition-all duration-500 h-95 p-4  max-w-150
         ${BoxIsOn ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"}
       `}
         >
-            <div className="grid justify-center gap-2 mt-4">
+            <div className="grid justify-center gap-2  py-4 mb-8">
                 <div className="flex justify-center gap-5">
                     <AutocompleteInput
                         label=""
@@ -200,6 +201,20 @@ export default function QuickModificationOverlay({
                 </div>
 
                 <div className="flex justify-between items-center w-full py-4 mb-6 rounded-xl">
+                    <div className="w-full ">
+                        <div className=" justify-center gap-2 relative w-full max-w-80 -mt-4 mb-4">
+                            <span className="block font-semibold text-[10px] mb-2 ml-1 text-slate-400 ">
+                                Aller-retour
+                            </span>
+                            <TripTypeSwitch
+                                value={tripType}
+                                onChange={setTripType}
+                                a="oneway"
+                                b="roundtrip"
+                                label="Aller-retour"
+                            />
+                        </div>
+                    
                     <div className="max-h-10 mt-2 flex justify-start gap-2 w-full">
                         <DateBtn
                             size={isMobile ? 15 : 24}
@@ -219,11 +234,10 @@ export default function QuickModificationOverlay({
                             />
                         )}
                     </div>
+                    </div>
 
                     <div className="grid grid-cols w-full">
-                        <div className="flex justify-center relative w-full max-w-80">
-                            <TripTypeSwitch value={tripType} onChange={setTripType} className="max-w-52" />
-                        </div>
+                        
 
                         <div className="flex justify-center relative w-full mt-10 ml-2">
                             <button
