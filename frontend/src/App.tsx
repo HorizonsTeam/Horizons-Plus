@@ -17,6 +17,8 @@ import UserInfoPageMobile from './features/Settings/components/UserInformation/U
 import ResetPassword from './features/connexion/ResetPassword/resetpassword.tsx';
 import AccountSettings from './features/Settings/Pages/AccountSettings/AccountSettings.tsx';
 
+import ReservationsPages from './features/reservations-pages/components/reservationsPages.tsx';
+
 
 
 function App() {
@@ -38,6 +40,7 @@ function App() {
           <Route path="Settings" element={<Settings/>} />
           <Route path="UserInfoPageMobile" element={<UserInfoPageMobile />} />
           <Route path="AccountSettings" element={<AccountSettings />} />
+          <Route path="reservations" element={<ReservationsPages />} />
           
          
 
