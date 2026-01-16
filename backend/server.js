@@ -18,6 +18,9 @@ import userRoutes from "./src/routes/user.js";
 import uploadRoutes from "./src/routes/upload.js";
 import { authMiddleware } from "./src/middlewares/authMiddleware.js";
 
+// Resevations
+import ticketRoutes from "./src/routes/ticketRoutes.js";
+
 const app = express();
 const PORT = Number(process.env.PORT || 3005);
 
@@ -124,6 +127,9 @@ app.use("/api/users", userRoutes);
 
 // Cloudinary - Changement de photo de profil
 app.use('/api/upload', authMiddleware, uploadRoutes);
+
+// Resevations
+app.use("/api", ticketRoutes);
 
 // Fichiers 
 app.use('/public', express.static('public'));

@@ -88,7 +88,7 @@ export default function Header() {
     { label: "Évènements", icon: Evenements_Ico, path: "/" },
   ];
   const menuItemsProfileDesktop = [
-    { label: "Mes réservations", icon: Reservation_ico, path: "/" },
+    { label: "Mes réservations", icon: Reservation_ico, path: "/reservations" },
     { label: "Mes cartes de réduction", icon: Carte_Reduc_Ico, path: "/" },
     { label: "Paramètres", icon: Parametres_Ico, path: "/Settings" },
   ];
