@@ -1,5 +1,5 @@
 import Gender_Selection from './Gender';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import CarteReduction from './Carte_De_Reduction'
 import closeSvg from '../../../../../assets/CloseSVG.svg'
 
@@ -7,9 +7,10 @@ type Props = {
     passagerIndex?: number;
     suprimer_Passager?: () => void;
     onChange: (data: any) => void;
+    user?: any;
 };
 
-export default function Passagers_Data_From({ passagerIndex, suprimer_Passager, onChange }: Props) {
+export default function Passagers_Data_From({ passagerIndex, suprimer_Passager, onChange, user }: Props) {
     const [Abonement_Reduction, setAbonement_reduc] = useState(false);
     const fermer = () => {
         setAbonement_reduc(false);
@@ -21,7 +22,7 @@ export default function Passagers_Data_From({ passagerIndex, suprimer_Passager, 
 
     const [selectedGender, setSelectedGender] = useState("Homme");
 
-    // State pour stocker les données
+     // State pour stocker les données
     const [formData, setFormData] = useState({
         firstname: "",
         lastname: "",
@@ -31,6 +32,21 @@ export default function Passagers_Data_From({ passagerIndex, suprimer_Passager, 
         gender: selectedGender
     });
 
+
+    useEffect(() => {
+    if (passagerIndex === 1 && user) {
+      setFormData({
+        firstname: user.name?.split(' ')[0] ?? "",
+        lastname: user.name?.split(' ').slice(1).join(' ') ?? "",
+        birthdate: user.birthDate ?? "",
+        email: user.email ?? "",
+        phone: user.phone ?? "",
+        gender: selectedGender,
+      });
+    }
+  }, [user, passagerIndex]);
+
+   
     const updateField = (field: string, value: string) => {
         const updated = { ...formData, [field]: value };
         setFormData(updated);
@@ -88,16 +104,40 @@ export default function Passagers_Data_From({ passagerIndex, suprimer_Passager, 
                             <label className="text-white">Num <span className='font-bold text-[#FFB856]'>*</span></label>
                         </div>
                         <div className='grid grid-cols gap-10 '>
-                            <input type="text" className="h-13  rounded-md px-3 border-3 border-[#2C474B] bg-[#103035] focus:border-[#98EAF3] focus:outline-none w-full" value={formData.firstname} onChange={(e) => updateField("firstname", e.target.value)} />
-                            <input type="text" className="h-13  rounded-md px-3 border-3 border-[#2C474B] bg-[#103035] focus:border-[#98EAF3] focus:outline-none w-full" value={formData.lastname} onChange={(e) => updateField("lastname", e.target.value)} />
+                            <input
+                                type="text"
+                                className="h-13  rounded-md px-3 border-3 border-[#2C474B] bg-[#103035] focus:border-[#98EAF3] focus:outline-none w-full"
+                                value={formData.firstname}
+                                onChange={(e) => updateField("firstname", e.target.value)}
+                                placeholder={!formData.firstname ? "Non renseignée" : ""} />
+
+                            <input
+                                type="text"
+                                className="h-13  rounded-md px-3 border-3 border-[#2C474B] bg-[#103035] focus:border-[#98EAF3] focus:outline-none w-full"
+                                value={formData.lastname}
+                                onChange={(e) => updateField("lastname", e.target.value)}
+                                placeholder={!formData.lastname ? "Non renseignée" : ""} />
+
                             <input
                                 type="date"
                                 className="h-13 rounded-md px-3 border-3 border-[#2C474B] bg-[#103035] focus:border-[#98EAF3] focus:outline-none w-full input-date-white"
                                 value={formData.birthdate}
                                 onChange={(e) => updateField("birthdate", e.target.value)}
+                                placeholder={!formData.birthdate ? "Non renseignée" : ""}
                             />
-                            <input type="email" className="h-13  rounded-md px-3 border-3 border-[#2C474B] bg-[#103035] focus:border-[#98EAF3] focus:outline-none w-full" value={formData.email} onChange={(e) => updateField("email", e.target.value)} />
-                            <input type="tel" className="h-13  rounded-md px-3 border-3 border-[#2C474B] bg-[#103035] focus:border-[#98EAF3] focus:outline-none w-full" value={formData.phone} onChange={(e) => updateField("phone", e.target.value)} />
+                            <input
+                                type="email"
+                                className="h-13  rounded-md px-3 border-3 border-[#2C474B] bg-[#103035] focus:border-[#98EAF3] focus:outline-none w-full"
+                                value={formData.email}
+                                onChange={(e) => updateField("email", e.target.value)}
+                                placeholder={!formData.email ? "Non renseignée" : ""} />
+
+                            <input
+                                type="tel"
+                                className="h-13  rounded-md px-3 border-3 border-[#2C474B] bg-[#103035] focus:border-[#98EAF3] focus:outline-none w-full"
+                                value={formData.phone}
+                                onChange={(e) => updateField("phone", e.target.value)}
+                                placeholder={!formData.phone ? "Non renseignée" : ""} />
 
                         </div>
                     </div>

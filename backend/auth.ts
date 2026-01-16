@@ -9,13 +9,13 @@ const { Pool } = pg;
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  
+
 });
 
 
 const adapter = new PrismaPg(pool);
 
-const prisma = new PrismaClient({
+export const prisma = new PrismaClient({
   adapter,
 });
 
@@ -40,26 +40,75 @@ const getBaseURL = () => {
 const isProd = process.env.NODE_ENV === "production";
 
 export const auth = betterAuth({
-    database: prismaAdapter(prisma, { provider: "postgresql" }),
+  database: prismaAdapter(prisma, { provider: "postgresql" }),
 
-    // BaseURL pointe vers la racine
-    baseURL: getBaseURL(),
-    secret: process.env.BETTER_AUTH_SECRET || "dev-secret-change-in-production",
+  // BaseURL pointe vers la racine
+  baseURL: getBaseURL(),
+  secret: process.env.BETTER_AUTH_SECRET || "dev-secret-change-in-production",
 
-    trustedOrigins: [
-        process.env.FRONT_URL || "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "https://horizons-plus.vercel.app",
-    ],
+  user: {
+    hardDelete: true,
+    deleteUser: { // Avec ça on ppermet la suppresion de l'utilisateur
+      enabled: true,
+      sendDeleteAccountVerification: async ({ user, url }) => {
 
-    session: {
-        expiresIn: 60 * 60 * 24 * 7, // 7 jours
-        updateAge: 60 * 60 * 24, // Mis à jour tous les jours
+        await sendMail({
+          to: user.email,
+          subject: "Confirmez la supression de votre compte",
+          html: `
+          <h2>Suppression de votre compte</h2>
+          <p>Bonjour ${user.name || ''},</p>
+          <p>Vous avez demandé la <strong>suppression définitive</strong> de votre compte.</p>
+          <p>Cette action est <strong>irréversible</strong>.</p>
+          <p><a href="${url}" style="background: #dc3545; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px;">Confirmer la suppression</a></p>
+          <p><small>Ce lien expire dans 24h. Ignorer ce message pour annuler.</small></p>
+        `,
+        });
+      },
+      beforeDelete: async (user) => {
+        await prisma.$transaction(async (tx) => {
+          // Suppression des paniers et dépendances
+          const paniers = await tx.panier.findMany({ where: { user_id: user.id }, select: { panier_id: true } });
+          const panierIds = paniers.map(p => p.panier_id);
+
+          await tx.panier_item.deleteMany({ where: { panier_id: { in: panierIds } } });
+          await tx.passager.deleteMany({ where: { panier_id: { in: panierIds } } });
+          await tx.panier.deleteMany({ where: { panier_id: { in: panierIds } } });
+
+          // Suppression des tables Better Auth
+          await tx.account.deleteMany({ where: { userId: user.id } });
+          await tx.session.deleteMany({ where: { userId: user.id } });
+          await tx.verification.deleteMany({ where: { identifier: user.email } });
+
+          // Supprimer l'utilisateur lui-même dans Neon
+          await tx.user.delete({ where: { id: user.id } });
+        });
+
+        console.log(`${user.email} supprimé définitivement dans Neon`);
+      }
     },
-    
-    // Configuration cookies adaptée dev/prod
-    advanced: {
-      
+    additionalFields: {
+      phone: {
+        type: "string",
+        required: false,
+      },
+    },
+  },
+
+  trustedOrigins: [
+    process.env.FRONT_URL || "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "https://horizons-plus.vercel.app",
+  ],
+
+  session: {
+    expiresIn: 60 * 60 * 24 * 7, // 7 jours
+    updateAge: 60 * 60 * 24, // Mis à jour tous les jours
+  },
+
+  // Configuration cookies adaptée dev/prod
+  advanced: {
+
     useSecureCookies: isProd,
 
     defaultCookieAttributes: {
@@ -79,37 +128,43 @@ export const auth = betterAuth({
       },
     },
 
-  
+
   },
 
 
-    emailAndPassword: {
-        enabled: true,
-        resetPasswordTokenExpiresIn: 3600,
-        async sendResetPassword({ url, user }) {
-            console.log("[reset-link]", url, "→", user.email);
-
-            await sendMail({
-                to: user.email,
-                subject: "Réinitialisation de votre mot de passe",
-                html: `
-        <p>Bonjour${user.name ? " " + user.name : ""},</p>
-        <p>Pour définir un nouveau mot de passe, cliquez&nbsp;:</p>
-        <p><a href="${url}" target="_blank" rel="noopener">Réinitialiser mon mot de passe</a></p>
-        <p>Si le bouton ne fonctionne pas, copiez-collez ce lien :</p>
-        <p style="word-break: break-all;">${url}</p>
-        <p>Ce lien expire dans 1 heure. Si vous n'êtes pas à l'origine de cette demande, ignorez ce message.</p>
-      `,
-            });
-        },
+  emailAndPassword: {
+    enabled: true,
+    afterCreateUser: async ({
+      user,
+      metadata,
+    }: {
+      user: { id: string }; // minimal type
+      metadata?: { phone?: string };
+    }) => {
+      if (metadata?.phone) {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { phone: metadata.phone },
+        });
+      }
     },
+    resetPasswordTokenExpiresIn: 3600,
+    async sendResetPassword({ url, user }) {
+      await sendMail({
+        to: user.email,
+        subject: "Réinitialisation de votre mot de passe",
+        html: `<p>Bonjour${user.name ? " " + user.name : ""}, cliquez ici pour réinitialiser : <a href="${url}">${url}</a></p>`,
+      });
+    },
+  },
 
-    // socialProviders: {
-    //   google: {
-    //     clientId: "",
-    //     clientSecret: "",
-    //   },
-    // },
+
+  // socialProviders: {
+  //   google: {
+  //     clientId: "",
+  //     clientSecret: "",
+  //   },
+  // },
 });
 
 export default auth;

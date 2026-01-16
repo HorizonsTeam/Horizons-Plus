@@ -8,8 +8,6 @@ export default function PaiementForm({ clientSecret, onSuccess, onReady, passage
     const stripe = useStripe();
     const elements = useElements();
 
-    console.log("stripe", stripe);
-    console.log("elements", elements);
     // Style 
     const styleInput = {
         style: {
@@ -37,20 +35,39 @@ export default function PaiementForm({ clientSecret, onSuccess, onReady, passage
         } else if (result.paymentIntent.status === "succeeded") {
             const API_BASE = import.meta.env.VITE_API_URL || "";
 
-            await fetch(`${API_BASE}/api/payments/send-confirmation`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    email: passagersData[0].email,
-                    customerName: passagersData[0].firstname + " " + passagersData[0].lastname,
-                    journey: `${journey.departureName} → ${journey.arrivalName}`,
-                    date: formattedDepartureDate,
-                    time: `${journey.departureTime} - ${journey.arrivalTime}`,
-                    price: journey.price * passagersData.length,
-                    passengers: passagersData.length,
-                })
-            });
-            onSuccess();
+            try {
+                // ✅ Créer la réservation en base de données
+                const response = await fetch(`${API_BASE}/api/payments/send-confirmation`, {
+                    method: "POST",
+                    credentials: "include", // ✅ IMPORTANT pour envoyer le cookie d'authentification
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        email: passagersData[0].email,
+                        customerName: passagersData[0].firstname + " " + passagersData[0].lastname,
+                        journey: `${journey.departureName} → ${journey.arrivalName}`,
+                        date: formattedDepartureDate,
+                        time: `${journey.departureTime} - ${journey.arrivalTime}`,
+                        price: journey.price * passagersData.length,
+                        passengers: passagersData.length,
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error("Erreur lors de la création de la réservation");
+                }
+
+                const data = await response.json();
+                console.log("✅ Réservation créée:", data.ticketId);
+                
+                // Afficher un message de succès
+                alert(`Réservation créée ! Votre ID billet : ${data.ticketId}`);
+                
+                // Appeler onSuccess pour rediriger l'utilisateur
+                onSuccess();
+            } catch (error) {
+                console.error("Erreur:", error);
+                alert("Erreur lors de la création de la réservation");
+            }
         }
     };
 
@@ -127,4 +144,3 @@ export default function PaiementForm({ clientSecret, onSuccess, onReady, passage
         </form >
     );
 }
-

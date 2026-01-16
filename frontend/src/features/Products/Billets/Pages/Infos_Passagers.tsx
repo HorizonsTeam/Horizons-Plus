@@ -2,14 +2,27 @@ import ReturnBtn from '../../../../assets/ReturnBtn.svg';
 import { useNavigate } from 'react-router-dom';
 import { Link, useLocation } from 'react-router-dom';
 import Passagers_Data_From from '../components/Passager_info/Passagers_DataForm.tsx';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { LocationState } from '../types.ts';
+
+const API_BASE = import.meta.env.VITE_API_URL || '';
 
 export default function Infos_Passagers() {
   const navigate = useNavigate();
 
   const { state } = useLocation();
   const { journey, selectedClass, passagersCount, formattedDepartureDate } = (state || {}) as LocationState;
+
+  const [currentUser, setCurrentUser] = useState(null);
+  useEffect(() => {
+    fetch(`${API_BASE}/api/me`, { credentials: 'include' })
+      .then((res) => (res.status === 401 ? null : res.json()))
+      .then((data) => {
+        console.log("User dans Infos_Passagers:", data);
+        setCurrentUser(data?.user ?? data ?? null);
+      })
+      .catch(() => setCurrentUser(null));
+  }, []);
 
   const handleretour = () => 
     {
@@ -60,6 +73,7 @@ export default function Infos_Passagers() {
           passagerIndex={num}
           suprimer_Passager={() => Supprimer_Passager(num)}
           onChange={(data) => updatePassager(num, data)}
+          user={currentUser} 
         />
       ))}
 

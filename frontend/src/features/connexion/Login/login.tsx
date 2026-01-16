@@ -56,8 +56,8 @@ export default function Login() {
 
   return (
     <PageTransition>
-     <div className={`text-center min-h-screen flex flex-col mt-10   gap-6 ${useIsMobile() ? 'w-full px-4' : 'w-full'} `}>
-                      <h1 className="text-4xl font-bold   text-[#98EAF3] mb-20">
+      <div className={`text-center min-h-screen flex flex-col mt-17 lg:mt-13   gap-6 ${useIsMobile() ? 'w-full px-4' : 'w-full'} `}>
+                      <h1 className="text-4xl font-bold   text-[#98EAF3] mb-5 lg:mb-10">
 
           Connectez-vous
         </h1>
@@ -65,7 +65,7 @@ export default function Login() {
 
         <form
           onSubmit={handleSubmit}
-          className={`flex flex-col items-center  mt-12 space-y-4 `}
+          className={`flex flex-col items-center  mt-1  space-y-4 `}
         >
 
           {/* bloc erreur */}
@@ -78,7 +78,7 @@ export default function Login() {
 
           <input
             type="email"
-            placeholder="e-mail"
+            placeholder="E-mail"
             className="w-full max-w-md bg-[#2C474B] text-white placeholder-gray-400 rounded-lg p-3 outline-none focus:ring-2 focus:ring-[#98EAF3] transition"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -107,7 +107,7 @@ export default function Login() {
             disabled={isLoading}
             className="bg-[#98EAF3] text-[#115E66] w-full h-10 rounded-lg max-w-md font-bold -mb-3"
           >
-            {isLoading ? "Connexion..." : "Se Connecter"}
+            {isLoading ? "Connexion..." : "Se connecter"}
           </button>
 
           {/* Ou */}
@@ -135,7 +135,6 @@ export default function Login() {
         </form>
       </div>
 
-    </PageTransition >
-
+    </PageTransition>
   );
 }

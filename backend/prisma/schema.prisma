@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -15,22 +9,24 @@ datasource db {
 model User {
   id            String    @id
   name          String
-  email         String
+  email         String    @unique
   emailVerified Boolean   @default(false)
   image         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  sessions      Session[]
+  phone         String?   @unique
   accounts      Account[]
+  panier        panier[]
+  sessions      Session[]
+  reservations  Reservation[]
 
-  @@unique([email])
   @@map("user")
 }
 
 model Session {
   id        String   @id
   expiresAt DateTime
-  token     String
+  token     String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   ipAddress String?
@@ -38,7 +34,6 @@ model Session {
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([token])
   @@index([userId])
   @@map("session")
 }
@@ -48,7 +43,6 @@ model Account {
   accountId             String
   providerId            String
   userId                String
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   accessToken           String?
   refreshToken          String?
   idToken               String?
@@ -58,6 +52,7 @@ model Account {
   password              String?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@map("account")
@@ -73,4 +68,96 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+model panier {
+  panier_id   Int           @id @default(autoincrement())
+  user_id     String?
+  session_id  String?
+  cree_le     DateTime      @db.Timestamp(6)
+  expire_le   DateTime      @db.Timestamp(6)
+  statut      String        @db.VarChar(20)
+  user        User?         @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "panier_user_id_key")
+  panier_item panier_item[] 
+  passager    passager[]    
+
+  @@index([expire_le], map: "idx_panier_expire_le")
+}
+
+model panier_item {
+  panier_item_id Int            @id @default(autoincrement())
+  panier_id      Int
+  passager_id    Int
+  depart_heure   DateTime       @db.Time(6)
+  depart_lieu    String         @db.VarChar(255)
+  arrivee_heure  DateTime       @db.Time(6)
+  arrivee_lieu   String         @db.VarChar(255)
+  classe         String         @db.VarChar(20)
+  siege_restant  String?        @db.VarChar(10)
+  prix           Decimal        @db.Decimal(10, 2)
+  ajoute_le      DateTime       @default(now()) @db.Timestamp(6)
+  date_voyage    DateTime?      @db.Date
+  transport_type transport_type @default(TRAIN)
+  panier         panier         @relation(fields: [panier_id], references: [panier_id], onDelete: Cascade, onUpdate: NoAction, map: "panier_item_panier_fk")
+  passager       passager       @relation(fields: [passager_id], references: [passager_id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([panier_id], map: "idx_panier_item_panier_id")
+}
+
+model passager {
+  passager_id    Int           @id @default(autoincrement())
+  nom            String        @db.VarChar
+  date_naissance DateTime?     @db.Date
+  email          String?       @db.VarChar
+  telephone      String?       @db.VarChar(15)
+  panier_id      Int?
+  user_id        String?
+  panier_item    panier_item[] 
+  panier         panier?       @relation(fields: [panier_id], references: [panier_id], onDelete: Cascade, onUpdate: NoAction, map: "passager_panier_fk")
+}
+
+model promo_code {
+  promo_code_id   String   @id @db.VarChar(50)
+  actif           Boolean? @default(true)
+  reduction_type  String?  @default("%") @db.VarChar(10)
+  reduction_value Decimal  @db.Decimal(5, 2)
+  conditions      Json?    @default("{}")
+}
+
+model paiement {
+  paiement_id    Int      @id @default(autoincrement())
+  res_id         Int
+  montant_total  Decimal  @db.Decimal(10, 2)
+  devise         String   @db.Char(3)
+  moyen_paiement String?  @db.VarChar
+  statut         String?  @db.VarChar
+  transaction_id String?  @db.VarChar
+  cree_le        DateTime @db.Date
+}
+
+
+model Reservation {
+  reservation_id  Int       @id @default(autoincrement())
+  ticket_id       String    @unique @db.VarChar(100)
+  user_id         String
+  user            User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  customer_name   String    @db.VarChar(255)
+  journey         String    @db.VarChar(500)
+  date            DateTime  @db.Date
+  time            String    @db.VarChar(100)
+  passengers      Int
+  price           Decimal   @db.Decimal(10, 2)
+  transport_type  transport_type @default(TRAIN)
+  status          String    @default("confirmed") @db.VarChar(20)
+  created_at      DateTime  @default(now()) @db.Timestamp(6)
+  updated_at      DateTime  @updatedAt @db.Timestamp(6)
+
+  @@index([user_id])
+  @@index([ticket_id])
+  @@map("reservation")
+}
+
+enum transport_type {
+  TRAIN
+  AVION
 }

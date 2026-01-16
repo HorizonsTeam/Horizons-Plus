@@ -12,6 +12,14 @@ import searchJourneys from "./src/routes/searchJourneys.js";
 import amadeusPlaces from "./src/routes/amadeusPlaces.js";
 import { loadGeoData } from "./src/utils/geoData.js";
 import paymentRoutes from "./src/routes/payment.js"
+import promoRoutes from "./src/routes/promo.js"
+import panierRoutes from "./src/routes/panier.js";
+import userRoutes from "./src/routes/user.js";
+import uploadRoutes from "./src/routes/upload.js";
+import { authMiddleware } from "./src/middlewares/authMiddleware.js";
+
+// Resevations
+import ticketRoutes from "./src/routes/ticketRoutes.js";
 
 const app = express();
 const PORT = Number(process.env.PORT || 3005);
@@ -107,8 +115,24 @@ app.use("/api/search", amadeusPlaces);
 app.use("/api/search", searchJourneys);
 app.use("/api/search", searchPlaces);
 
-// Feat : Payement 
+app.use("/api/promo", promoRoutes);
+
+app.use("/api/panier", panierRoutes);
+
+// Feat : Payement  
 app.use("/api/payments", paymentRoutes);
+
+// Enregistrer numéro de téléphone de l'utilisateur
+app.use("/api/users", userRoutes);
+
+// Cloudinary - Changement de photo de profil
+app.use('/api/upload', authMiddleware, uploadRoutes);
+
+// Resevations
+app.use("/api", ticketRoutes);
+
+// Fichiers 
+app.use('/public', express.static('public'));
 
 // Health
 app.get("/api/health", (_req, res) => res.json({ ok: true }));
@@ -120,6 +144,5 @@ app.get("/api/debug-cookies", (req, res) => {
     cookies: req.cookies || {},
   });
 });
-
 
 app.listen(PORT, () => console.log(`API ready → http://localhost:${PORT}`));

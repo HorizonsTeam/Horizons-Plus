@@ -1,3 +1,5 @@
+import type { Stop, Leg } from "../../Products/Billets/components/Recap/Correspendances.tsx";
+
 export type Journey = {
     departureName: string;
     arrivalName: string;
@@ -6,6 +8,9 @@ export type Journey = {
     arrivalTime: string;
     duration: string;
     numberOfTransfers: number;
+    simulated: boolean;
+    stops: Stop[];
+    legs: Leg[];
 }
 
 export type ProductCardProps =
@@ -14,6 +19,7 @@ export type ProductCardProps =
     passagersCount: number;
     formattedDepartureDate: string;
     index?: number;
+    IsLoading?: boolean;
 }
 
 export type DateStringProps = {
