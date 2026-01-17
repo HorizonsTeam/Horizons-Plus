@@ -83,7 +83,7 @@ export default function Login() {
 
           <input
             type="email"
-            placeholder="e-mail"
+            placeholder="E-mail"
             className="w-full max-w-md bg-[#2C474B] text-white placeholder-gray-400 rounded-lg p-3 outline-none focus:ring-2 focus:ring-[#98EAF3] transition"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -111,7 +111,7 @@ export default function Login() {
             disabled={isLoading}
             className="bg-[#98EAF3] text-[#115E66] w-full h-10 rounded-lg max-w-md font-bold -mb-3"
           >
-            {isLoading ? "Connexion..." : "Se Connecter"}
+            {isLoading ? "Connexion..." : "Se connecter"}
           </button>
           {
             isLoading &&

@@ -44,6 +44,8 @@ export default function Resultats() {
     const fromLon = searchParams.get("fromLon") || '';
     const toLat = searchParams.get("toLat") || '';
     const toLon = searchParams.get("toLon") || '';
+    const fromSource = searchParams.get("fromSource") || '';
+    const toSource = searchParams.get("toSource") || '';
 
     const [departureDate, setDepartureDate] = useState<string>(
         searchParams.get("departureDate") || new Date().toISOString().split('T')[0]
@@ -89,7 +91,7 @@ export default function Resultats() {
         setIsLoading(true);
         setErrorMessage(null);
 
-        fetch(`${base}/api/search/journeys?fromId=${encodeURIComponent(fromId)}&fromName=${encodeURIComponent(fromName)}&fromLat=${encodeURIComponent(fromLat)}&fromLon=${encodeURIComponent(fromLon)}&toId=${encodeURIComponent(toId)}&toName=${encodeURIComponent(toName)}&toLat=${encodeURIComponent(toLat)}&toLon=${encodeURIComponent(toLon)}&datetime=${encodeURIComponent(departureDate)}`)
+        fetch(`${base}/api/search/journeys?fromId=${encodeURIComponent(fromId)}&fromName=${encodeURIComponent(fromName)}&fromLat=${encodeURIComponent(fromLat)}&fromLon=${encodeURIComponent(fromLon)}&toId=${encodeURIComponent(toId)}&toName=${encodeURIComponent(toName)}&toLat=${encodeURIComponent(toLat)}&toLon=${encodeURIComponent(toLon)}&fromSource=${encodeURIComponent(fromSource)}&toSource=${encodeURIComponent(toSource)}&datetime=${encodeURIComponent(departureDate)}`)
             .then(res => res.json())
             .then(data => {
                 console.log('API journeys response:', data);

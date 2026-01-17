@@ -228,6 +228,8 @@ export default function SearchForm({ onPlaneAnimation, planeAnimDurationMs }: Se
         &toName=${encodeURIComponent(arrival.name)}
         &toLat=${encodeURIComponent(arrival.lat)}
         &toLon=${encodeURIComponent(arrival.lon)}
+        &fromSource=${encodeURIComponent(departure.source)}
+        &toSource=${encodeURIComponent(arrival.source)}
         &departureDate=${encodeURIComponent(departureDate)}
         &arrivalDate=${encodeURIComponent(tripType === "roundtrip" ? arrivalDate || "" : "")}
         &passagers=${encodeURIComponent(passagerCount)}`.replace(/\s+/g, "")

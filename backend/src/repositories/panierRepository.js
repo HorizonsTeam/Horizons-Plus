@@ -21,15 +21,16 @@ export async function createPanier(userId, sessionId) {
     `;
 }
 
-export async function createPassager(passagerData) {
+export async function createPassager({ panier_id, nom, email, date_naissance = null, telephone = null, user_id = null }) {
     return await sql`
-        INSERT INTO passager (panier_id, nom, email, date_naissance, telephone)
+        INSERT INTO passager (panier_id, nom, email, date_naissance, telephone, user_id)
         VALUES (
-            ${passagerData.panier_id},
-            ${passagerData.nom},
-            ${passagerData.email},
-            ${passagerData.date_naissance},
-            ${passagerData.telephone}
+            ${panier_id},
+            ${nom},
+            ${email},
+            ${date_naissance},
+            ${telephone},
+            ${user_id}
         )
 
         RETURNING *;
