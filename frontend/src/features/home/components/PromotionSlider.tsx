@@ -68,7 +68,7 @@ export default function PromotionSlider() {
        
           spaceBetween={24}
           slidesPerView="auto"
-          
+          loop={true}
          
           className="pb-12"
         >
