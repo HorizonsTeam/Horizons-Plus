@@ -29,7 +29,7 @@ function durationLabel(start: string, end: string): string {
   return `${hh}h${String(mm).padStart(2, "0")}`;
 }
 
-export default function TrainCard({ item, onDeleted }: TrainCardProps) {
+export default function TrainCard({ item, onDeleted, setisItemDeleted }: TrainCardProps) {
   const navigate = useNavigate();
 
   const handleDeletePanierItem = async (): Promise<void> => {
@@ -116,7 +116,7 @@ export default function TrainCard({ item, onDeleted }: TrainCardProps) {
 
             <button
               type="button"
-              onClick={handleDeletePanierItem}
+              onClick={() => {handleDeletePanierItem () ; setisItemDeleted?.(true);}}
               className="h-9 w-9 rounded-2xl bg-[#133A40] border border-[#2C474B] flex items-center justify-center hover:border-red-400/60 hover:bg-red-500/10 transition"
               aria-label="Supprimer"
               title="Supprimer"
