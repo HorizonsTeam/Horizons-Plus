@@ -67,12 +67,94 @@ function uid(): string {
     return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
+function Input({ className = "", ...props }: InputProps): JSX.Element {
+    return (
+        <input
+            {...props}
+            className={[
+                "w-full bg-[#2C474B] rounded-xl outline-none",
+                "h-12 px-4",
+                "focus:ring-2 focus:ring-white/20",
+                className,
+            ].join(" ")}
+        />
+    );
+}
+
+function Section({
+    title,
+    subtitle,
+    children,
+    right,
+    isMobile,
+}: SectionProps & { isMobile: boolean }): JSX.Element {
+    return (
+        <div className="border-b border-[#2a3f42] py-6">
+            <div className={`w-full ${isMobile ? "flex flex-col gap-2" : "flex items-start justify-between gap-6"}`}>
+                <div className="min-w-0">
+                    <p className="text-lg font-semibold">{title}</p>
+                    {subtitle ? <p className="text-sm opacity-80 mt-1">{subtitle}</p> : null}
+                </div>
+                {right ? <div className={`${isMobile ? "" : "shrink-0"}`}>{right}</div> : null}
+            </div>
+            <div className="mt-5">{children}</div>
+        </div>
+    );
+}
+
+function Row({ label, children, isMobile }: RowProps & { isMobile: boolean }): JSX.Element {
+    return (
+        <div className={`w-full ${isMobile ? "flex flex-col gap-2" : "flex items-center gap-6"}`}>
+            <p className={`${isMobile ? "w-full" : "w-60"} font-semibold`}>{label}</p>
+            <div className="w-full min-w-0">{children}</div>
+        </div>
+    );
+}
+
+function Button({ variant = "solid", className = "", ...props }: ButtonProps): JSX.Element {
+    const base =
+        "inline-flex items-center justify-center rounded-xl transition select-none disabled:opacity-50 disabled:cursor-not-allowed";
+    const solid = "bg-[#2C474B] hover:bg-white hover:text-black";
+    const ghost = "bg-transparent hover:bg-white/10 ";
+    const danger = "bg-transparent hover:bg-[#FFB856]/15  text-[#FFB856]";
+    const styles = variant === "ghost" ? ghost : variant === "danger" ? danger : solid;
+
+    return <button {...props} className={[base, styles, "h-11 px-4", className].join(" ")} />;
+}
+
+function Pill({ children, tone = "neutral" }: PillProps): JSX.Element {
+    const base = "inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold";
+    const neutral = "bg-[#FFB856] text-[#115E66]";
+    const success = "bg-primary text-[#2C474B] ";
+    const warn = "bg-[#FFB856] text-[#115E66]";
+    const styles = tone === "success" ? success : tone === "warn" ? warn : neutral;
+    return <span className={[base, styles].join(" ")}>{children}</span>;
+}
+
+function Banner({ banner }: { banner: BannerState }): JSX.Element | null {
+    if (!banner.message) return null;
+
+    const tone =
+        banner.type === "success"
+            ? "border-primary/25 bg-primary/98 text-[#2C474B] font-semibold"
+            : banner.type === "error"
+                ? "border-red-400/25 bg-red-400 text-red-100"
+                : "border-white/10 bg-white/5 text-white/90";
+
+    return (
+        <div className={`mb-5 rounded-2xl border px-4 py-3 ${tone}`}>
+            <p className="text-sm">{banner.message}</p>
+        </div>
+    );
+}
+
 export default function AccountSettings(): JSX.Element {
     const isMobile = useIsMobile();
 
-    const [emails, setEmails] = useState<EmailItem[]>([
-        { id: "primary", address: "", verified: true, primary: true },
-    ]);
+    const { data: session } = authClient.useSession();
+    const didInitRef = useRef(false);
+
+    const [emails, setEmails] = useState<EmailItem[]>([]);
 
     const [currentPassword, setCurrentPassword] = useState<string>("");
     const [newPassword, setNewPassword] = useState<string>("");
@@ -92,25 +174,50 @@ export default function AccountSettings(): JSX.Element {
     const initialSnapshotRef = useRef<string | null>(null);
 
     useEffect(() => {
-        if (!initialSnapshotRef.current) {
-            initialSnapshotRef.current = JSON.stringify({ emails, twoFAEnabled });
-        }
-    }, [emails, twoFAEnabled]);
+        if (!session?.user || didInitRef.current) return;
 
-    const isDirty = useMemo<boolean>(() => {
+        didInitRef.current = true;
+
+        const email = session.user.email ?? "";
+
+        const nextEmails: EmailItem[] = [
+            {
+                id: "primary",
+                address: email,
+                verified: Boolean((session.user as any).emailVerified),
+                primary: true,
+            },
+        ];
+
+        setEmails(nextEmails);
+
+        // si tu ne stockes pas 2FA dans user, laisse false
+        const next2FA = Boolean((session.user as any).twoFAEnabled ?? false);
+        setTwoFAEnabled(next2FA);
+
+        // IMPORTANT: snapshot après init
+        initialSnapshotRef.current = JSON.stringify({ emails: nextEmails, twoFAEnabled: next2FA });
+    }, [session]);
+
+
+    const isDirtyAccount = useMemo<boolean>(() => {
         if (!initialSnapshotRef.current) return false;
         const now = JSON.stringify({ emails, twoFAEnabled });
-        return (
-            now !== initialSnapshotRef.current ||
-            Boolean(currentPassword || newPassword || confirmPassword)
-        );
-    }, [emails, twoFAEnabled, currentPassword, newPassword, confirmPassword]);
+        return now !== initialSnapshotRef.current;
+    }, [emails, twoFAEnabled]);
+
+    const isDirtyPassword = useMemo<boolean>(() => {
+        return Boolean(currentPassword || newPassword || confirmPassword);
+    }, [currentPassword, newPassword, confirmPassword]);
+
 
     const primaryEmail = useMemo<EmailItem>(() => {
         const found = emails.find((e) => e.primary);
         if (found) return found;
-        return emails[0] ?? { id: "primary", address: "", verified: false, primary: true };
+
+        return { id: "primary", address: "", verified: false, primary: true };
     }, [emails]);
+
 
     const secondaryEmails = useMemo<EmailItem[]>(
         () => emails.filter((e) => !e.primary),
@@ -143,8 +250,9 @@ export default function AccountSettings(): JSX.Element {
     const canSave = useMemo<boolean>(() => {
         const hasEmailErrors = Object.keys(emailErrors).length > 0;
         const hasPasswordError = Boolean(passwordError);
-        return isDirty && !hasEmailErrors && !hasPasswordError && !isSaving;
-    }, [isDirty, emailErrors, passwordError, isSaving]);
+        return (isDirtyAccount || isDirtyPassword) && !hasEmailErrors && !hasPasswordError && !isSaving;
+    }, [isDirtyAccount, isDirtyPassword, emailErrors, passwordError, isSaving]);
+
 
     const setPrimary = (id: string): void => {
         setEmails((prev) =>
@@ -173,13 +281,41 @@ export default function AccountSettings(): JSX.Element {
         });
     };
 
-    const resendVerification = (id: string): void => {
-        const e = emails.find((x) => x.id === id);
-        setBanner({
-            type: "success",
-            message: `Email de vérification envoyé à ${maskEmail(e?.address ?? "")}.`,
-        });
+    const resendVerification = async (): Promise<void> => {
+        try {
+            setBanner({ type: "info", message: "Envoi de l'email de vérification..." });
+
+            const BACK_URL = import.meta.env.VITE_BACK_URL || "http://localhost:3005";
+
+            const res = await fetch(`${BACK_URL}/api/auth/send-verification-email`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ email: primaryEmail.address }),
+            });
+
+            const raw = await res.text();
+            let data: any = null;
+            try { data = JSON.parse(raw); } catch { /* pas du JSON */ }
+
+            if (!res.ok) {
+                console.error("send-verification-email failed:", res.status, raw);
+                throw new Error(data?.message || raw || `HTTP ${res.status}`);
+            }
+
+            setBanner({
+                type: "success",
+                message: `Email de vérification envoyé à ${maskEmail(primaryEmail.address)}.`,
+            });
+        } catch (error: any) {
+            setBanner({
+                type: "error",
+                message: error?.message || "Erreur lors de l'envoi.",
+            });
+        }
     };
+
+
 
     const signOutSession = (id: string): void => {
         setSessions((prev) => prev.filter((s) => s.id !== id));
@@ -191,104 +327,96 @@ export default function AccountSettings(): JSX.Element {
         setBanner({ type: "success", message: "Toutes les autres sessions ont été déconnectées." });
     };
 
+    // Changer le mot de passe 
     const handleSave = async (): Promise<void> => {
         if (!canSave) return;
         setIsSaving(true);
         setBanner({ type: "info", message: "Enregistrement..." });
 
-        await new Promise<void>((resolve) => setTimeout(resolve, 650));
+        try {
 
-        setIsSaving(false);
-        initialSnapshotRef.current = JSON.stringify({ emails, twoFAEnabled });
-        setCurrentPassword("");
-        setNewPassword("");
-        setConfirmPassword("");
-        setBanner({ type: "success", message: "Modifications enregistrées." });
+            const wantsPwChange = Boolean(currentPassword || newPassword || confirmPassword);
+
+            if (wantsPwChange) {
+                if (passwordError) throw new Error(passwordError);
+
+                // Sois via authClient si dispo
+                if (typeof (authClient as any).changePassword === "function") {
+                    try {
+                        const r = await (authClient as any).changePassword({
+                            currentPassword,
+                            newPassword,
+                            revokeOtherSessions: true,
+                        });
+
+                        // si la lib renvoie un objet error
+                        if (r?.error) {
+                            throw new Error(r.error?.message || "Mot de passe actuel incorrect.");
+                        }
+                    } catch (e: any) {
+                        // si la lib throw directement
+                        throw new Error(e?.message?.toLowerCase?.().includes("password")
+                            ? "Mot de passe actuel incorrect."
+                            : "Impossible de changer le mot de passe."
+                        );
+                    }
+
+                } else {
+                    // sois appel direct endpoint Better Auth
+                    const BACK_URL = import.meta.env.VITE_BACK_URL || "http://localhost:3005";
+
+                    const res = await fetch(`${BACK_URL}/api/auth/change-password`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        credentials: "include",
+                        body: JSON.stringify({
+                            currentPassword,
+                            newPassword,
+                            revokeOtherSessions: true,
+                        }),
+                    });
+
+                    const raw = await res.text();
+                    let data: any = null;
+                    try { data = JSON.parse(raw); } catch { }
+
+                    if (!res.ok) {
+                        if (res.status === 401 || res.status === 400) {
+                            throw new Error("Mot de passe actuel incorrect.");
+                        }
+                        throw new Error(data?.message || raw || `HTTP ${res.status}`);
+                    }
+                }
+            }
+
+            // reset
+            initialSnapshotRef.current = JSON.stringify({ emails, twoFAEnabled });
+            setCurrentPassword("");
+            setNewPassword("");
+            setConfirmPassword("");
+
+            setBanner({ type: "success", message: "Modifications enregistrées." });
+        } catch (error: any) {
+            setBanner({ type: "error", message: error?.message || "Erreur lors de l'enregistrement." });
+        } finally {
+            setIsSaving(false);
+        }
     };
 
-    const Section = ({ title, subtitle, children, right }: SectionProps): JSX.Element => (
-        <div className="border-b border-[#2a3f42] py-6">
-            <div className={`w-full ${isMobile ? "flex flex-col gap-2" : "flex items-start justify-between gap-6"}`}>
-                <div className="min-w-0">
-                    <p className="text-lg font-semibold">{title}</p>
-                    {subtitle ? <p className="text-sm opacity-80 mt-1">{subtitle}</p> : null}
-                </div>
-                {right ? <div className={`${isMobile ? "" : "shrink-0"}`}>{right}</div> : null}
-            </div>
-            <div className="mt-5">{children}</div>
-        </div>
-    );
-
-    const Row = ({ label, children }: RowProps): JSX.Element => (
-        <div className={`w-full ${isMobile ? "flex flex-col gap-2" : "flex items-center gap-6"}`}>
-            <p className={`${isMobile ? "w-full" : "w-60"} font-semibold`}>{label}</p>
-            <div className="w-full min-w-0">{children}</div>
-        </div>
-    );
-
-    const Input = ({ className = "", ...props }: InputProps): JSX.Element => (
-        <input
-            {...props}
-            className={[
-                "w-full bg-[#2C474B] rounded-xl outline-none",
-                "h-12 px-4",
-                "focus:ring-2 focus:ring-white/20",
-                className,
-            ].join(" ")}
-        />
-    );
-
-    const Button = ({ variant = "solid", className = "", ...props }: ButtonProps): JSX.Element => {
-        const base =
-            "inline-flex items-center justify-center rounded-xl transition select-none disabled:opacity-50 disabled:cursor-not-allowed";
-        const solid = "bg-[#2C474B] hover:bg-white hover:text-black";
-        const ghost = "bg-transparent hover:bg-white/10 ";
-        const danger = "bg-transparent hover:bg-[#FFB856]/15  text-[#FFB856]";
-        const styles = variant === "ghost" ? ghost : variant === "danger" ? danger : solid;
-
-        return <button {...props} className={[base, styles, "h-11 px-4", className].join(" ")} />;
-    };
-
-    const Pill = ({ children, tone = "neutral" }: PillProps): JSX.Element => {
-        const base = "inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold";
-        const neutral = "bg-[#FFB856] text-[#115E66]";
-        const success = "bg-primary text-[#2C474B] ";
-        const warn = "bg-[#FFB856] text-[#115E66]";
-        const styles = tone === "success" ? success : tone === "warn" ? warn : neutral;
-        return <span className={[base, styles].join(" ")}>{children}</span>;
-    };
-
-
-    const Banner = (): JSX.Element | null => {
-        if (!banner.message) return null;
-
-        const tone =
-            banner.type === "success"
-                ? "border-primary/25 bg-primary/98 text-[#2C474B] font-semibold"
-                : banner.type === "error"
-                    ? "border-red-400/25 bg-red-400 text-red-100"
-                    : "border-white/10 bg-white/5 text-white/90";
-
-        return (
-            <div className={`mb-5 rounded-2xl border px-4 py-3 ${tone}`}>
-                <p className="text-sm">{banner.message}</p>
-            </div>
-        );
-    };
     const [bannerPosition, setBannerPosition] = useState("top")
 
     return (
         <div className="w-full">
             <div className="px-2 py-5">
-                {bannerPosition === "top" &&
-                    <Banner />
-                }
+                {bannerPosition === "top" && <Banner banner={banner} />}
+
                 <Section
+                    isMobile={isMobile}
                     title="Adresse mail"
                     subtitle="Gérez votre email principal et vos adresses secondaires."
                     right={
                         <div className="flex items-center gap-2">
-                            {isDirty ? <Pill tone="warn">Modifications non enregistrées</Pill> : <Pill>À jour</Pill>}
+                            {(isDirtyAccount || isDirtyPassword) ? <Pill tone="warn">Modifications non enregistrées</Pill> : <Pill>À jour</Pill>}
                             <Button onClick={() => { handleSave(); setBannerPosition("top") }} disabled={!canSave} className="min-w-[120px]">
                                 {isSaving ? "..." : "Enregistrer"}
                             </Button>
@@ -296,7 +424,7 @@ export default function AccountSettings(): JSX.Element {
                     }
                 >
                     <div className="flex flex-col gap-4">
-                        <Row label="Email principal">
+                        <Row isMobile={isMobile} label="Email principal">
                             <div className="flex flex-col gap-2">
                                 <Input
                                     type="email"
@@ -313,7 +441,7 @@ export default function AccountSettings(): JSX.Element {
                                     {!primaryEmail.verified ? (
                                         <Button
                                             variant="ghost"
-                                            onClick={() => resendVerification(primaryEmail.id)}
+                                            onClick={() => void resendVerification()}
                                             className="h-9 px-3 text-sm"
                                             type="button"
                                         >
@@ -328,7 +456,7 @@ export default function AccountSettings(): JSX.Element {
                             </div>
                         </Row>
 
-                        <Row label="Adresses secondaires">
+                        <Row isMobile={isMobile} label="Adresses secondaires">
                             <div className="flex flex-col gap-3">
                                 {secondaryEmails.length === 0 ? (
                                     <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
@@ -356,7 +484,7 @@ export default function AccountSettings(): JSX.Element {
                                                     {!e.verified ? (
                                                         <Button
                                                             variant="ghost"
-                                                            onClick={() => resendVerification(e.id)}
+                                                            onClick={() => void resendVerification()}
                                                             className="h-9 px-3 text-sm"
                                                             type="button"
                                                         >
@@ -405,9 +533,9 @@ export default function AccountSettings(): JSX.Element {
                     </div>
                 </Section>
 
-                <Section title="Mot de passe" subtitle="Mettez à jour votre mot de passe pour sécuriser votre compte.">
+                <Section isMobile={isMobile} title="Mot de passe" subtitle="Mettez à jour votre mot de passe pour sécuriser votre compte.">
                     <div className="flex flex-col gap-4">
-                        <Row label="Mot de passe actuel">
+                        <Row isMobile={isMobile} label="Mot de passe actuel">
                             <Input
                                 type={showPw ? "text" : "password"}
                                 value={currentPassword}
@@ -416,7 +544,7 @@ export default function AccountSettings(): JSX.Element {
                             />
                         </Row>
 
-                        <Row label="Nouveau mot de passe">
+                        <Row isMobile={isMobile} label="Nouveau mot de passe">
                             <Input
                                 type={showPw ? "text" : "password"}
                                 value={newPassword}
@@ -425,7 +553,7 @@ export default function AccountSettings(): JSX.Element {
                             />
                         </Row>
 
-                        <Row label="Confirmer">
+                        <Row isMobile={isMobile} label="Confirmer">
                             <div className="flex flex-col gap-2">
                                 <Input
                                     type={showPw ? "text" : "password"}
@@ -451,6 +579,7 @@ export default function AccountSettings(): JSX.Element {
                 </Section>
 
                 <Section
+                    isMobile={isMobile}
                     title="Authentification à deux facteurs (2FA)"
                     subtitle="Ajoutez une couche de sécurité supplémentaire."
                     right={<Pill tone={twoFAEnabled ? "success" : "warn"}>{twoFAEnabled ? "Activée" : "Désactivée"}</Pill>}
@@ -490,6 +619,7 @@ export default function AccountSettings(): JSX.Element {
                 </Section>
 
                 <Section
+                    isMobile={isMobile}
                     title="Sessions actives"
                     subtitle="Gérez vos appareils connectés."
                     right={
@@ -530,7 +660,7 @@ export default function AccountSettings(): JSX.Element {
                     </div>
                 </Section>
 
-                <Section title="Suppression du compte" subtitle="Action irréversible : soyez sûr avant de continuer.">
+                <Section isMobile={isMobile} title="Suppression du compte" subtitle="Action irréversible : soyez sûr avant de continuer.">
                     <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
                         <p className="text-sm text-white">
                             Supprimer votre compte effacera vos données et désactivera l’accès.
@@ -554,7 +684,7 @@ export default function AccountSettings(): JSX.Element {
                                         await authClient.deleteUser({
                                             callbackURL: window.location.origin + "/"
                                         });
-                                        
+
 
                                         setBanner({
                                             type: "success",
@@ -597,7 +727,7 @@ export default function AccountSettings(): JSX.Element {
                             setConfirmPassword("");
                             setBanner({ type: "info", message: "Modifications annulées." });
                         }}
-                        disabled={!isDirty || isSaving}
+                        disabled={!(isDirtyAccount || isDirtyPassword) || isSaving}
                     >
                         Annuler
                     </Button>
@@ -609,10 +739,9 @@ export default function AccountSettings(): JSX.Element {
 
                 </div>
 
-                {bannerPosition === "bottom" &&
-                    <Banner />
-                }
+                {bannerPosition === "bottom" && <Banner banner={banner} />}
             </div>
         </div>
     );
 }
+

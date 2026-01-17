@@ -9,9 +9,12 @@ const { Pool } = pg;
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-
+  ssl: { rejectUnauthorized: false },
 });
 
+pool.on("error", (err) => {
+  console.error("PG pool error:", err);
+});
 
 const adapter = new PrismaPg(pool);
 
@@ -157,6 +160,33 @@ export const auth = betterAuth({
       });
     },
   },
+
+  emailVerification: {
+    sendVerificationEmail: async ({ user, url }) => {
+      const front = process.env.FRONT_URL || "http://localhost:5173";
+      const callbackURL = `${front}/account`; 
+
+      const verifyUrl =
+        url + (url.includes("?") ? "&" : "?") + "callbackURL=" + encodeURIComponent(callbackURL);
+
+      await sendMail({
+        to: user.email,
+        subject: "Vérifiez votre adresse email",
+        html: `
+        <h2>Vérification de votre email</h2>
+        <p>Bonjour ${user.name || ""},</p>
+        <p>Merci de confirmer votre adresse email en cliquant sur le bouton :</p>
+        <p>
+          <a href="${verifyUrl}" style="background:#0ea5e9;color:white;padding:12px 24px;text-decoration:none;border-radius:6px;">
+            Vérifier mon email
+          </a>
+        </p>
+        <p><small>Si vous n'êtes pas à l'origine de cette demande, ignorez ce message.</small></p>
+      `,
+      });
+    },
+  },
+
 
 
   // socialProviders: {
