@@ -298,8 +298,8 @@ export default function PaymentPage() {
 
                 {/* BOUTON PAYER */}
                 <div className="flex justify-center">
-                    <button className="w-[250px] h-[55px] bg-[#98EAF3] rounded-xl mt-6 mb-10" type='button' onClick={() => triggerPayment && triggerPayment()}>
-                        <span className="text-[#115E66] font-bold text-2xl" >Payer</span>
+                    <button className="w-[250px] h-[55px] bg-[#98EAF3] rounded-xl mt-6 mb-10 cursor-pointer" type='button' onClick={() => triggerPayment && triggerPayment()}>
+                        <span className="text-[#115E66] font-bold text-2xl">Payer</span>
                     </button>
                 </div>
 

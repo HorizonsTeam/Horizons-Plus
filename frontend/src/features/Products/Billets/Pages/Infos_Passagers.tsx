@@ -77,15 +77,16 @@ export default function Infos_Passagers() {
         />
       ))}
 
-      <div className="w-full items-center bg-[#133A40] rounded-2xl border-2 border-[#2C474B] mt-10 p-4 mb-8">
-        <button className="w-full" onClick={Ajouter_Passager}>
-          <div className="flex justify-between">
-            <p className="font-bold mt-1">Autre passager</p>
-            <div className="h-8 w-8 bg-white rounded-2xl flex justify-center items-center ">
-              <h1 className="text-[#133A40] text-4xl font-bold">+</h1>
-            </div>
+      <div
+        onClick={Ajouter_Passager}
+        className="w-full cursor-pointer bg-[#133A40] rounded-2xl border-2 border-[#2C474B] mt-10 p-4 mb-8"
+      >
+        <div className="flex justify-between">
+          <p className="font-bold mt-1">Autre passager</p>
+          <div className="h-8 w-8 bg-white rounded-2xl flex justify-center items-center">
+            <h1 className="text-[#133A40] text-4xl font-bold">+</h1>
           </div>
-        </button>
+        </div>
       </div>
       <div  className='flex justify-center'>
       <Link
@@ -93,7 +94,7 @@ export default function Infos_Passagers() {
         state={{ journey, selectedClass, passagersCount: passagers.length, formattedDepartureDate, passagersData, }}
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
       >
-        <button className="w-80 h-15 bg-[#98EAF3] rounded-xl mt-4 ml-3">
+        <button className="w-80 h-15 bg-[#98EAF3] rounded-xl mt-4 ml-3 cursor-pointer">
           <span className="text-[#115E66] font-bold text-xl">Continuer</span>
         </button>
       </Link>

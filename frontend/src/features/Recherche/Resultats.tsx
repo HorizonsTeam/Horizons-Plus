@@ -30,7 +30,7 @@ export default function Resultats() {
 
     const navigate = useNavigate();
 
-    const [transport, setTransport] = useState<"plane" | "train">();
+    const [transport, setTransport] = useState<"plane" | "train" | null>(null);
 
     const handleRetour = () => navigate(-1);
 
@@ -99,12 +99,17 @@ export default function Resultats() {
                 if (data.error) {
                     setErrorMessage(data.error);
                     setJourneyData([]);
-                } else {
-                    setErrorMessage(null);
-                    setJourneyData(data);
+                    return;
                 }
 
-                setTransport(data[0].simulated ? "plane" : "train");
+                setErrorMessage(null);
+                setJourneyData(data);
+
+                if (Array.isArray(data) && data.length > 0) {
+                    setTransport(data[0].simulated ? "plane" : "train");
+                } else {
+                    setTransport(null);
+                }
             })
             .catch(err => {
                 console.error('Fetch journeys error:', err);

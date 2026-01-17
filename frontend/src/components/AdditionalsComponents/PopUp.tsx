@@ -9,14 +9,16 @@ type PopupProps = {
   setPopupIsDisplayed?: Dispatch<SetStateAction<boolean>>;
   isLoading?: boolean;
   isLoadingMsg?:string;
+  isSuccess?: boolean;
 };
 
 export default function PopUp({
   message,
   Btn,
   setPopupIsDisplayed,
-  isLoading ,
-  isLoadingMsg
+  isLoading,
+  isLoadingMsg,
+  isSuccess,
 }: PopupProps) {
   const isMobile = useIsMobile();
 
@@ -44,9 +46,11 @@ export default function PopUp({
             </>
           ) : (
             <div className="grid gap-5">
-              <div className="flex justify-center">
-                <img src={CheckMarkSVG} alt="" />
-              </div>
+              {isSuccess && (
+                <div className="flex items-center justify-center w-15 h-15 mx-auto">
+                  <img src={CheckMarkSVG} alt="" />
+                </div>
+              )}
 
               <p className={`text-center font-semibold ${isMobile ? "text-sm" : "text-xl"}`}>
                 {message}

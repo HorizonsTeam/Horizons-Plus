@@ -2,7 +2,7 @@ export function analyzeJourney(journey) {
     const transportSections = journey.sections.filter(
         (section) => section.type === "public_transport"
     );
-    return transportSections.length - 1;
+    return transportSections.length - 1 < 0 ? 0 : transportSections.length - 1;
 }
 
 export function computeJourneyDistanceMeters(journey) {

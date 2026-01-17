@@ -211,7 +211,7 @@ export default function FiltreBloc({
           <button
             onClick={() => { updateFilters(); setFiltreMobileIsOn?.(false); window.scrollTo(0, 0);}}
             className={[
-              "text-sm font-bold bg-primary text-secondary rounded-lg hover:bg-[#6ACDD8] transition-all duration-300",
+              "text-sm font-bold bg-primary text-secondary rounded-lg hover:bg-[#6ACDD8] transition-all duration-300 cursor-pointer",
               isMobile ? "px-3 py-3 w-[48%]" : "p-2",
             ].join(" ")}
           >
@@ -220,7 +220,7 @@ export default function FiltreBloc({
 
           <button
             className={[
-              "text-sm font-bold bg-[#FFB856] text-secondary rounded-lg hover:bg-[#C28633] transition-all duration-300",
+              "text-sm font-bold bg-[#FFB856] text-secondary rounded-lg hover:bg-[#C28633] transition-all duration-300 cursor-pointer",
               isMobile ? "px-3 py-3 w-[48%]" : "p-2",
             ].join(" ")}
             onClick={() => {resetFilters(); setFiltreMobileIsOn?.(false); window.scrollTo(0, 0);}}

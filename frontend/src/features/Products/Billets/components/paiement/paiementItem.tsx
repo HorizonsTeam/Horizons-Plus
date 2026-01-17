@@ -12,7 +12,7 @@ export default function ModeDePaiementItem({ IsSelected, cardName, cardDescripti
     return (
         <div
             onClick={onClick}
-            className={`w-full h-20 rounded-xl p-4 text-left transition -ml-2 mb-2 border-3
+            className={`w-full h-20 rounded-xl p-4 text-left transition -ml-2 mb-2 border-3 cursor-pointer
         ${IsSelected ? "border-[#98EAF3] text-[#98EAF3]" : "border-[#2C474B] text-white"}
          hover:border-[#98EAF3]`}
         >
