@@ -157,15 +157,9 @@ export default function Resultats() {
         return Math.min(...journeyList.map(j => j.price));
     }, [journeyList]);
     const isMobile = useIsMobile();
-    /* Les Filtres */
 
 
-    const [hasBike, setHasBike] = useState<boolean>(false);
-    const [hasAnimal, setHasAnimal] = useState<boolean>(false);
-    const [hasWifi, setHasWifi] = useState<boolean>(false);
-    const [hasFood, setHasFood] = useState<boolean>(false);
-    const [isNightTrain, setIsNightTrain] = useState<boolean>(false);
-
+   
 
 
     const timeToMinutes = (hhmm: string) => {
@@ -196,14 +190,14 @@ export default function Resultats() {
         timeArrivalOption: string;
     };
 
-    const [draftFilters, setDraftFilters] = useState<Filters>({
+    const [filters, setFilters] = useState<Filters>({
         stopType: "Tout type",
         priceOption: "",
         timeDeparturOption: "",
         timeArrivalOption: "",
     });
 
-    const [appliedFilters, setAppliedFilters] = useState<Filters>(draftFilters);
+
 
     const applyFilters = (
         list: Journey[],
@@ -249,8 +243,9 @@ export default function Resultats() {
         return out;
     };
     const displayedJourneys = useMemo(() => {
-        return applyFilters(journeyList, appliedFilters, transport);
-    }, [journeyList, appliedFilters, transport]);
+        return applyFilters(journeyList, filters, transport);
+    }, [journeyList, filters, transport]);
+
 
     const ErrorBtn = 
             <div className=' flex w-full gap-10'>
@@ -340,50 +335,39 @@ export default function Resultats() {
                     {!isMobile && 
 
                         <FiltreBloc
-                            stopType={draftFilters.stopType}
+                            stopType={filters.stopType}
                             setStopType={(v) =>
-                                setDraftFilters((prev) => ({ ...prev, stopType: v }))
+                                setFilters(prev => ({ ...prev, stopType: v }))
                             }
 
-                            priceOption={draftFilters.priceOption}
+                            priceOption={filters.priceOption}
                             setPriceOption={(v) =>
-                                setDraftFilters((prev) => ({ ...prev, priceOption: v }))
+                                setFilters(prev => ({ ...prev, priceOption: v }))
                             }
 
-                            timeDeparturOption={draftFilters.timeDeparturOption}
+                            timeDeparturOption={filters.timeDeparturOption}
                             setTimedeparturOption={(v) =>
-                                setDraftFilters((prev) => ({ ...prev, timeDeparturOption: v }))
+                                setFilters(prev => ({ ...prev, timeDeparturOption: v }))
                             }
 
-                            timeArrivalOption={draftFilters.timeArrivalOption}
+                            timeArrivalOption={filters.timeArrivalOption}
                             setTimeArrivalOption={(v) =>
-                                setDraftFilters((prev) => ({ ...prev, timeArrivalOption: v }))
+                                setFilters(prev => ({ ...prev, timeArrivalOption: v }))
                             }
 
-                            hasBike={hasBike}
-                            setHasBike={setHasBike}
-                            hasAnimal={hasAnimal}
-                            setHasAnimal={setHasAnimal}
-                            hasWifi={hasWifi}
-                            setHasWifi={setHasWifi}
-                            hasFood={hasFood}
-                            setHasFood={setHasFood}
-                            isNightTrain={isNightTrain}
-                            setIsNightTrain={setIsNightTrain}
-
-                            onUpdateFilters={() => setAppliedFilters(draftFilters)}
-                            resetFilters={() => {
-                                setDraftFilters({
+                            resetFilters={() =>
+                                setFilters({
                                     stopType: "Tout type",
                                     priceOption: "",
                                     timeDeparturOption: "",
                                     timeArrivalOption: "",
-                                });
-                                setAppliedFilters(draftFilters);
-                            }}
+                                })
+                            }
+
                             Isloading={IsLoading}
-                            
                         />
+
+
 
                     }
                     {isMobile && (
@@ -415,49 +399,41 @@ export default function Resultats() {
                                 ].join(" ")}
                             >
                                 <div className="h-full w-full max-w-sm">
-                                <FiltreBloc
-                                    stopType={draftFilters.stopType}
-                                    setStopType={(v) => setDraftFilters((prev) => ({ ...prev, stopType: v }))}
+                                    <FiltreBloc
+                                        stopType={filters.stopType}
+                                        setStopType={(v) =>
+                                            setFilters(prev => ({ ...prev, stopType: v }))
+                                        }
 
-                                    priceOption={draftFilters.priceOption}
-                                    setPriceOption={(v) => setDraftFilters((prev) => ({ ...prev, priceOption: v }))}
+                                        priceOption={filters.priceOption}
+                                        setPriceOption={(v) =>
+                                            setFilters(prev => ({ ...prev, priceOption: v }))
+                                        }
 
-                                    timeDeparturOption={draftFilters.timeDeparturOption}
-                                    setTimedeparturOption={(v) =>
-                                        setDraftFilters((prev) => ({ ...prev, timeDeparturOption: v }))
-                                    }
+                                        timeDeparturOption={filters.timeDeparturOption}
+                                        setTimedeparturOption={(v) =>
+                                            setFilters(prev => ({ ...prev, timeDeparturOption: v }))
+                                        }
 
-                                    timeArrivalOption={draftFilters.timeArrivalOption}
-                                    setTimeArrivalOption={(v) =>
-                                        setDraftFilters((prev) => ({ ...prev, timeArrivalOption: v }))
-                                    }
+                                        timeArrivalOption={filters.timeArrivalOption}
+                                        setTimeArrivalOption={(v) =>
+                                            setFilters(prev => ({ ...prev, timeArrivalOption: v }))
+                                        }
 
-                                    hasBike={hasBike}
-                                    setHasBike={setHasBike}
-                                    hasAnimal={hasAnimal}
-                                    setHasAnimal={setHasAnimal}
-                                    hasWifi={hasWifi}
-                                    setHasWifi={setHasWifi}
-                                    hasFood={hasFood}
-                                    setHasFood={setHasFood}
-                                    isNightTrain={isNightTrain}
-                                    setIsNightTrain={setIsNightTrain}
+                                        resetFilters={() =>
+                                            setFilters({
+                                                stopType: "Tout type",
+                                                priceOption: "",
+                                                timeDeparturOption: "",
+                                                timeArrivalOption: "",
+                                            })
+                                        }
 
-                                    onUpdateFilters={() => setAppliedFilters(draftFilters)}
-                                    resetFilters={() => {
-                                        const reset = {
-                                            stopType: "Tout type" as const,
-                                            priceOption: "",
-                                            timeDeparturOption: "",
-                                            timeArrivalOption: "",
-                                        };
-                                        setDraftFilters(reset);
-                                        setAppliedFilters(reset);
-                                    }}
+                                        Isloading={IsLoading}
+                                    />
 
-                                    setFiltreMobileIsOn={setFiltreMobileIsOn}
-                                    Isloading={IsLoading}
-                                />
+
+
                             </div>
                         </div>
                         </>
