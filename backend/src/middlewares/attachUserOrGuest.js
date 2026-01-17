@@ -1,5 +1,6 @@
 import auth from '../../dist/auth.js';
 import { fromNodeHeaders } from 'better-auth/node';
+import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 
 export async function attachUserOrGuest(req, res, next) {
@@ -20,8 +21,10 @@ export async function attachUserOrGuest(req, res, next) {
                 guestId = uuidv4();
                 res.cookie('guestId', guestId, {
                     httpOnly: true,
-                    sameSite: 'lax',
-                    maxAge: 30 * 24 * 60 * 60 * 1000, // 30 jours
+                    secure: true,
+                    sameSite: 'none',
+                    maxAge: 30 * 24 * 60 * 60 * 1000,
+                    path: '/',
                 });
             }
 
