@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import Error from "../../components/AdditionalsComponents/Error.tsx";
 import { useNavigate } from "react-router-dom";
 import { Loader } from "lucide-react";
+import Popup from "../../components/AdditionalsComponents/PopUp.tsx";
 
 const base = `${import.meta.env.VITE_API_URL || "http://localhost:3005"}`;
 
@@ -63,7 +64,17 @@ export default function Panier() {
 
         return () => clearTimeout(timer);
     }, [panierItems.length]);
-
+    const [isItemDeleted, setIsItemDeleted] = useState(false);
+    const Popup_btn = 
+    (
+        <button
+            type="button"
+            className="px-4 py-2 bg-[#98EAF3] text-[#0C2529] font-semibold rounded-full"
+            onClick={() => setIsItemDeleted(false)}
+        >
+            Fermer
+        </button>
+    )
 
     return (
         <div className="min-h-screen bg-[#133A40]">
@@ -76,7 +87,7 @@ export default function Panier() {
 
             <div className="px-4 pb-10 space-y-5 ">
                 {panierItems.map((item) => (
-                    <Traincard key={item.id} item={item} onDeleted={handleItemDeleted}  />
+                <Traincard key={item.id} item={item} onDeleted={handleItemDeleted}  setisItemDeleted={setIsItemDeleted} />
                 ))}
 
                 { displayError && (
@@ -91,6 +102,9 @@ export default function Panier() {
                 {
                     DeleteItemDownload &&
                     <Loader size={80}></Loader>
+                }
+                {isItemDeleted &&   
+                    <Popup message="L'élément a été supprimé avec succès." Btn={Popup_btn} />
                 }
 
             </div>

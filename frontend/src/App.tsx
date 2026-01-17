@@ -41,13 +41,6 @@ function App() {
           <Route path="UserInfoPageMobile" element={<UserInfoPageMobile />} />
           <Route path="AccountSettings" element={<AccountSettings />} />
           <Route path="reservations" element={<ReservationsPages />} />
-          
-         
-
-
-           
-
-
         </Route>
 
       </Routes>

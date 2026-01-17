@@ -47,4 +47,5 @@ export type BackendPanierResponse = {
 export type TrainCardProps = {
     item: PanierItem;
     onDeleted: (id: number) => void;
+    setisItemDeleted?: React.Dispatch<React.SetStateAction<boolean>>;
 }

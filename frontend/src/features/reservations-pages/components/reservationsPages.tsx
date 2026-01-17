@@ -1,4 +1,3 @@
-// ReservationsPages.tsx
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { Reservation, TabType } from "../types/reservations";
