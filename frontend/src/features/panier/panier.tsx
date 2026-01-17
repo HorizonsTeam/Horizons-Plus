@@ -1,16 +1,24 @@
-import ReturnBtn from '../../assets/ReturnBtn.svg';
-import Traincard from './ProductCards/Train';
-import type { PanierItem, BackendPanierItem, BackendPanierResponse } from './types.ts';
-import { useEffect, useState } from 'react';
+import ReturnBtn from "../../assets/ReturnBtn.svg";
+import Traincard from "./ProductCards/Train";
+import type { PanierItem, BackendPanierItem, BackendPanierResponse } from "./types.ts";
+import { useEffect, useState } from "react";
+import Error from "../../components/AdditionalsComponents/Error.tsx";
+import { useNavigate } from "react-router-dom";
+import { Loader } from "lucide-react";
 
 const base = `${import.meta.env.VITE_API_URL || "http://localhost:3005"}`;
 
-export default function Panier () {
+export default function Panier() {
     const [panierItems, setPanierItems] = useState<PanierItem[]>([]);
-    
+    const navigate = useNavigate();
+
     const handleItemDeleted = (id: number) => {
-        setPanierItems(prev => prev.filter(item => item.id !== id));
-    }
+        setDeleteItemDownload(true);
+        setPanierItems((prev) => prev.filter((item) => item.id !== id));
+        setDeleteItemDownload(false);
+    };
+    const [DeleteItemDownload, setDeleteItemDownload] = useState<boolean>(false);
+
 
     useEffect(() => {
         async function loadPanier() {
@@ -19,9 +27,7 @@ export default function Panier () {
                     method: "GET",
                     credentials: "include",
                 });
-
                 const data: BackendPanierResponse = await res.json();
-                console.log("Panier data:", data);
 
                 const items: PanierItem[] = data.items.map((item: BackendPanierItem) => ({
                     id: item.panier_item_id,
@@ -37,11 +43,10 @@ export default function Panier () {
                     ajouteLe: new Date(item.ajoute_le),
                     dateVoyage: new Date(item.date_voyage),
                     typeTransport: item.transport_type,
-                }))
+                }));
 
                 setPanierItems(items);
-            }
-            catch (error) {
+            } catch (error) {
                 console.error("Erreur lors de la récupération du panier :", error);
             }
         }
@@ -49,23 +54,47 @@ export default function Panier () {
         loadPanier();
     }, []);
 
+    const [displayError, setDisplayError] = useState(false);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDisplayError(panierItems.length === 0);
+        }, 2000); 
+
+        return () => clearTimeout(timer);
+    }, [panierItems.length]);
+
+
     return (
-        <>
-            <div className='relative mt-4'>
-                <img src={ReturnBtn} alt="Return Button" className='absolute left-4 mt-5 transform -translate-y-1/2' />
-                <h1 className='text-3xl text-[#98EAF3] font-bold text-center'>Panier</h1>
+        <div className="min-h-screen bg-[#133A40]">
+            <div className="relative pt-6 pb-4">
+                <button onClick={() => navigate(-1)} className="absolute left-4 top-6">
+                    <img src={ReturnBtn} alt="Return Button" className="h-8 w-8" />
+                </button>
+                <h1 className="text-3xl text-[#98EAF3] font-bold text-center">Panier</h1>
             </div>
-            
-            {panierItems.map((item) => (
-                <Traincard 
-                    key={item.id} 
-                    item={item} 
-                    onDeleted={handleItemDeleted}
-                />
-            ))}
-        </>
-    )
-}   
 
+            <div className="px-4 pb-10 space-y-5 ">
+                {panierItems.map((item) => (
+                    <Traincard key={item.id} item={item} onDeleted={handleItemDeleted}  />
+                ))}
 
+                { displayError && (
+                    <div className="max-w-2xl mx-auto">
+                        <Error errorMessage="Votre panier est vide." />
+                    </div>
+                )}
+                {
+                    !displayError && panierItems.length === 0 &&
+                    <Loader size={60} className="mx-auto" />
+                }
+                {
+                    DeleteItemDownload &&
+                    <Loader size={80}></Loader>
+                }
 
+            </div>
+
+        </div>
+    );
+}

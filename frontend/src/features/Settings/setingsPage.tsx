@@ -166,7 +166,6 @@ export default function Setings(): JSX.Element {
                             type="button"
                             className="mt-10 h-14 bg-[#FFB856] text-[#115E66] font-semibold px-4 rounded-xl"
                             onClick={() => {
-                                // TODO: brancher ton endpoint logout + navigate
                                 navigate("/");
                             }}
                         >

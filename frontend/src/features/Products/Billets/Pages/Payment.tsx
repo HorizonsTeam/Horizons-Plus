@@ -179,7 +179,7 @@ export default function PaymentPage() {
 
                 {/* Intégration de Stripe elements */}
                 {/* MODE DE PAIEMENT */}
-
+                <div className='z-2'>
                 {!loadingStripe && clientSecret && (
                     <Elements
                         stripe={stripePromise}
@@ -187,6 +187,7 @@ export default function PaymentPage() {
                             clientSecret,
                             appearance: { theme: "night" }
                         }}
+                        
                     >
                         <ModeDePaiementCard
                             clientSecret={clientSecret}
@@ -199,7 +200,7 @@ export default function PaymentPage() {
                     </Elements>
                 )}
 
-
+                </div>
 
                 {/* OPTIONS SUPPLÉMENTAIRES */}
                 <div className={` ${isMobile ? '' : 'm-20'} bg-[#133A40] border-2 border-[#2C474B] rounded-2xl p-5 mb-8 `}>

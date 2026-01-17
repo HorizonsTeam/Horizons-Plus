@@ -4,8 +4,7 @@ import Checkbox from "../../../components/AdditionalsComponents/Checkbox";
 import useIsMobile from "../../../components/layouts/UseIsMobile";
 import Close from "../../../assets/close.svg";
 
-export type StopType = "direct" | "correspondance" | undefined;
-
+export type StopType = "Tout type" | "Direct" | "Correspondance" ;
 type FiltreBlocProps = {
   stopType?: StopType;
   setStopType?: (v: StopType) => void;
@@ -79,11 +78,11 @@ export default function FiltreBloc({
   return (
     <div
       className={[
-        "w-full mb-5 rounded-lg flex max-w-120 mt- shadow-2xl relative overflow-hidden",
-        Isloading ? "bg-[#2C474B] pointer-events-none" : "bg-[#0C2529]",
+        "w-full  rounded-lg flex max-w-120  shadow-2xl relative overflow-hidden",
+        Isloading ? "bg-[#2C474B] pointer-events-none" : "bg-[#0C2529] ",
         isMobile
-          ? "h-full m-0 rounded-none max-w-none max-h-none"
-          : "max-h-230",
+          ? "h-full m-0 rounded-none max-w-none "
+          : "max-h-240 overflow-y-auto overscroll-contain",
 
         Isloading
           ? "after:content-[''] after:absolute after:inset-0 after:translate-x-[-100%] after:animate-[shimmer_1.2s_infinite] " +
@@ -94,9 +93,10 @@ export default function FiltreBloc({
     >
       <div
         className={[
+
           "w-full",
           isMobile
-            ? "h-full overflow-y-auto overscroll-contain"
+            ? " overflow-y-auto overscroll-contain h-full"
             : "",
             Isloading ? "opacity-0 " : "",
         ].join(" ")}
@@ -104,14 +104,14 @@ export default function FiltreBloc({
         {/* Header */}
         <div
           className={[
-            "border-b-2 border-[#98EAF3] p-4 flex items-center",
-            isMobile ? "justify-between sticky top-0 bg-[#0C2529] z-10" : "justify-center",
+            "border-b-2 border-[#98EAF3] p-4 flex items-center z-80 max-w-full",
+            isMobile ? "justify-between sticky top-0 bg-[#0C2529] mt-15" : "justify-center ",
           ].join(" ")}
         >
           <p className="text-2xl text-primary font-semibold">Filtres</p>
 
           {isMobile && (
-            <button
+            <button 
               type="button"
               className="text-xl font-bold px-4 py-2  text-white rounded-full cursor-pointer"
               onClick={() => { setFiltreMobileIsOn?.(false); }}
@@ -128,16 +128,18 @@ export default function FiltreBloc({
             isMobile ? "py-4 px-4" : "py-6 p-6",
           ].join(" ")}
         >
-          <p className="text-xl font-bold">Escales</p>
+          <p className="text-xm font-bold">Tout type de trajet ? </p>
 
           <div className={["w-full flex justify-end", isMobile ? "mr-0" : "mr-6"].join(" ")}>
-            <TripTypeSwitch
-              value={stopType ?? "direct"}
-              onChange={setStopType ?? (() => { })}
-              a="direct"
-              b="correspondance"
-              label="Correspondances"
+            <TripTypeSwitch<StopType>
+              value={stopType || "Tout type"}
+              onChange={(v) => setStopType?.(v)}
+              a="Direct"
+              b="Tout type"
+              label=" Avec et sans Escales"
+
             />
+
           </div>
         </div>
 
@@ -203,7 +205,7 @@ export default function FiltreBloc({
         <div
           className={[
             "w-full flex justify-between border-t-2 border-primary p-6",
-            isMobile ? "fixed bottom-0 left-0 right-0 bg-[#0C2529] z-20 p-4" : "mt-15",
+            isMobile ? "fixed bottom-0 left-0 right-0 bg-[#0C2529] z-90 p-4" : "mt-15",
           ].join(" ")}
         >
           <button
