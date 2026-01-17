@@ -4,7 +4,8 @@ import { useState } from 'react';
 import { authClient } from '../../../lib/auth-clients';
 import type React from 'react';
 import useIsMobile from '../../../components/layouts/UseIsMobile';
-
+import Error from '../../../components/AdditionalsComponents/Error';
+import PopUp from '../../../components/AdditionalsComponents/PopUp';
 export default function Login() {
 
   const navigate = useNavigate();
@@ -53,6 +54,7 @@ export default function Login() {
   const signInWithGoogle = async () => {
     setErrorMsg("Connexion avec Google pas encore disponible. Merci de vous connecter normalement. :)")
   };
+  const BtnError = <button className="bg-[#98EAF3] text-[#115E66] w-full h-10 rounded-lg max-w-md font-bold -mb-3" onClick={()=> navigate('/login')}>Veuillez réessayer</button>
 
   return (
     <PageTransition>
@@ -61,7 +63,10 @@ export default function Login() {
 
           Connectez-vous
         </h1>
-
+        { errorMsg && 
+          
+        <PopUp message={errorMsg} Btn={BtnError}  />
+}
 
         <form
           onSubmit={handleSubmit}
@@ -71,7 +76,7 @@ export default function Login() {
           {/* bloc erreur */}
           {errorMsg && (
             <div className="w-full max-w-md bg-red-600/20 text-red-200 p-3 rounded">
-              {errorMsg}
+              <Error errorMessage={errorMsg} />
             </div>
           )}
 
@@ -94,7 +99,6 @@ export default function Login() {
             required
           />
 
-          {/* A faire cette fonctionnalité de la partie Authentification */}
           <div className="w-full max-w-md text-right">
             <a href="/mdpoublie" className="text-sm text-[#98EAF3] hover:underline">
               Mot de passe oublié ?
@@ -109,6 +113,10 @@ export default function Login() {
           >
             {isLoading ? "Connexion..." : "Se Connecter"}
           </button>
+          {
+            isLoading &&
+            <PopUp message={"connextion"} isLoading={isLoading} isLoadingMsg={" chargement "} Btn={BtnError}  ></PopUp>
+          }
 
           {/* Ou */}
           <div className="flex items-center justify-center w-full max-w-md my-10 mb-17 gap-3">

@@ -11,7 +11,7 @@ type ErrorProps = {
 export default function Error({ errorMessage, errorBtns}: ErrorProps) {
     return (
         <>
-            <div className="text-center text-red-400 font-bold py-10">
+            <div className="text-center text-red-400 font-bold py-10 w-full">
 
 
                 <div className='flex justify-center'>
@@ -26,7 +26,7 @@ export default function Error({ errorMessage, errorBtns}: ErrorProps) {
                         
                         }
 
-                        <div className='flex w-full justify-between mt-10'>
+                        <div className=' w-full mt-10'>
                             {errorBtns}
                         </div>
                     </div>

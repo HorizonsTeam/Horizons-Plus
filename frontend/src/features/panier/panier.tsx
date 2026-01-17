@@ -4,6 +4,7 @@ import type { PanierItem, BackendPanierItem, BackendPanierResponse } from "./typ
 import { useEffect, useState } from "react";
 import Error from "../../components/AdditionalsComponents/Error.tsx";
 import { useNavigate } from "react-router-dom";
+import { Loader } from "lucide-react";
 
 const base = `${import.meta.env.VITE_API_URL || "http://localhost:3005"}`;
 
@@ -12,8 +13,12 @@ export default function Panier() {
     const navigate = useNavigate();
 
     const handleItemDeleted = (id: number) => {
+        setDeleteItemDownload(true);
         setPanierItems((prev) => prev.filter((item) => item.id !== id));
+        setDeleteItemDownload(false);
     };
+    const [DeleteItemDownload, setDeleteItemDownload] = useState<boolean>(false);
+
 
     useEffect(() => {
         async function loadPanier() {
@@ -49,6 +54,17 @@ export default function Panier() {
         loadPanier();
     }, []);
 
+    const [displayError, setDisplayError] = useState(false);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDisplayError(panierItems.length === 0);
+        }, 2000); 
+
+        return () => clearTimeout(timer);
+    }, [panierItems.length]);
+
+
     return (
         <div className="min-h-screen bg-[#133A40]">
             <div className="relative pt-6 pb-4">
@@ -58,17 +74,27 @@ export default function Panier() {
                 <h1 className="text-3xl text-[#98EAF3] font-bold text-center">Panier</h1>
             </div>
 
-            <div className="px-4 pb-10 space-y-5">
+            <div className="px-4 pb-10 space-y-5 ">
                 {panierItems.map((item) => (
-                    <Traincard key={item.id} item={item} onDeleted={handleItemDeleted} />
+                    <Traincard key={item.id} item={item} onDeleted={handleItemDeleted}  />
                 ))}
 
-                {panierItems.length === 0 && (
+                { displayError && (
                     <div className="max-w-2xl mx-auto">
                         <Error errorMessage="Votre panier est vide." />
                     </div>
                 )}
+                {
+                    !displayError && panierItems.length === 0 &&
+                    <Loader size={60} className="mx-auto" />
+                }
+                {
+                    DeleteItemDownload &&
+                    <Loader size={80}></Loader>
+                }
+
             </div>
+
         </div>
     );
 }

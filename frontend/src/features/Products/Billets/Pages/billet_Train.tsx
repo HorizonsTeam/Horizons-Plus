@@ -15,6 +15,7 @@ import type { LocationState } from '../types.ts';
 import Correspendances from '../components/Recap/Correspendances.tsx';
 import type { Stop, Leg } from '../components/Recap/Correspendances.tsx';
 import RoadDetails from '../components/Recap/RoadDetails.tsx';
+import PopUp from '../../../../components/AdditionalsComponents/PopUp.tsx';
 
 const base = `${import.meta.env.VITE_API_URL || "http://localhost:3005"}`;
 
@@ -100,12 +101,17 @@ export default function Billet_Train_recap() {
 
     const stops: Stop[] = journey.stops;
     const legs: Leg[] = journey.legs;
+    const [isAddedPanierDesplayed, setisAddesPanierDesplayed] = useState(false);
+    const [Isloading, SetIsloading] = useState(false)
 
-    console.log(stops);
-    console.log(legs);
 
     async function handleClick() {
+
         try {
+
+            SetIsloading(true);
+            setisAddesPanierDesplayed(true);
+            console.log('debut')
             const siegeRestant = randomSiegeRestant();
 
             const res = await fetch(`${base}/api/panier/add`, {
@@ -125,17 +131,28 @@ export default function Billet_Train_recap() {
                     dateVoyage: isoDate,
                     transportType: journey.simulated === true ? "AVION" : "TRAIN",
                 }),
+
+
             });
 
+            SetIsloading(false);
             if (!res.ok) {
                 throw new Error(`HTTP error! status: ${res.status}`);
             }
+            
+            console.log("fin")
 
             console.log("Billet ajouté au panier avec succès.");
         } catch (error) {
             console.error("Erreur lors de l'ajout au panier :", error);
         }
     }
+
+
+    const BtnOverlay = <>
+        <button className="w-full h-16 bg-[#98EAF3] rounded-xl hover:bg-[#98EAF3]/90 transition" onClick={() => { navigate('/panier'); window.scroll({ top: 0, behavior: "smooth" }) }}> Accéder au panier </button>
+    </>
+    
 
     return (
         <div className="w-full  min-h-screen flex flex-col">
@@ -148,7 +165,6 @@ export default function Billet_Train_recap() {
 
             <div className="flex-1 w-full px-4 pb-8 space-y-5">
 
-                {/*Carte + Détails */}
                 <div className={`w-full grid gap-5 ${isMobile ? 'grid-cols-1' : 'grid-cols-2'}`}>
                     {!isMobile && (
                         <div className="w-full rounded-2xl  overflow-hidden">
@@ -254,6 +270,11 @@ export default function Billet_Train_recap() {
                         </Link>
                     </div>
                 </div>
+                {
+                    isAddedPanierDesplayed &&
+
+                    <PopUp message='Votre produit est bien ajouter au Panier ' setPopupIsDisplayed={setisAddesPanierDesplayed} Btn={BtnOverlay} isLoading={Isloading}  />
+                }
 
             </div>
         </div>

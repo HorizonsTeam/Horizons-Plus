@@ -101,7 +101,7 @@ export default function Header() {
   }, [isMenuOpen]);
 
   return (
-    <header className="bg-[#103035] sticky top-0 z-50 text-white border-b border-[#4A6367]">
+    <header className="bg-[#103035] sticky top-0 z-51 text-white border-b border-[#4A6367]">
 
       {/* --- HEADER --- */}
       <div className="max-w-7xl mx-auto px-4">
