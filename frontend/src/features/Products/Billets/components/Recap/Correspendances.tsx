@@ -40,7 +40,7 @@ export type Stop = {
     lng: number;
 };
 
-export type LegMode = "rail" | "air";
+export type LegMode = "rail" | "air" | "walking" | "waiting";
 
 export type Leg = {
     fromIndex: number; // index dans stops
@@ -285,10 +285,11 @@ type CorrespendancesProps =
 
 export default function Correspendances({ stops, legs }: CorrespendancesProps) {
     
+    const safeLegs: Leg[] = Array.isArray(legs) ? legs : [];
 
     return (
         <div className=" max-h-screen overflow-hidden">
-            <RouteMap stops={stops} legs={legs}  className=""/>
+            <RouteMap stops={stops} legs={safeLegs}  className=""/>
         </div>
     );
 }

@@ -26,7 +26,7 @@ const AutocompleteInput = forwardRef<HTMLInputElement, AutocompleteInputProps>(
         const innerWrapperRef = useRef<HTMLDivElement | null>(null);
         const API_BASE_ = import.meta.env.VITE_API_URL || "";
 
-        // ✅ ref wrapper (div) : interne + externe (wrapperRef)
+        //  ref wrapper : interne + externe 
         const setWrapperRefs = (node: HTMLDivElement | null) => {
             innerWrapperRef.current = node;
 
@@ -62,7 +62,7 @@ const AutocompleteInput = forwardRef<HTMLInputElement, AutocompleteInputProps>(
             return () => clearTimeout(timeout);
         }, [value, API_BASE_]);
 
-        // ✅ click outside (plus fiable en pointerdown capture)
+        //  click outside 
         useEffect(() => {
             const onPointerDown = (e: PointerEvent) => {
                 const wrapper = innerWrapperRef.current;
@@ -102,8 +102,7 @@ const AutocompleteInput = forwardRef<HTMLInputElement, AutocompleteInputProps>(
 
         const handleBlurInternal = (e: React.FocusEvent<HTMLInputElement>) => {
             onBlur?.(e);
-            // ❌ ne pas setIsFocused(false) ici, sinon click sur suggestion = blur = ça ferme trop tôt
-            // le click outside gère la fermeture
+            
         };
 
         return (
@@ -121,11 +120,10 @@ const AutocompleteInput = forwardRef<HTMLInputElement, AutocompleteInputProps>(
                     onKeyDown={handleKeyDown}
                     autoComplete="off"
                     className={className}
-                    // ✅ FIX double click : force focus au premier clic
                     onMouseDownCapture={(e) => {
                         const el = e.currentTarget;
                         if (document.activeElement !== el) {
-                            e.preventDefault(); // empêche sélection/blur bizarre
+                            e.preventDefault(); 
                             el.focus();
                         }
                     }}
