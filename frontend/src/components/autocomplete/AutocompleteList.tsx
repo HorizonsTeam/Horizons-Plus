@@ -6,7 +6,7 @@ import airportIcon from '../../assets/airport.png';
 import type { SuggestionType } from './types';
 
 
-function AutocompleteList({ suggestions, selectedIndex, onSelect, className }: AutocompleteListProps) {
+function AutocompleteList({ suggestions, selectedIndex, onSelect, OncloseFocus, className }: AutocompleteListProps) {
     useEffect(() => {
         const ref = itemsRef.current[selectedIndex];
         if (ref) {
@@ -40,7 +40,13 @@ function AutocompleteList({ suggestions, selectedIndex, onSelect, className }: A
             {suggestions.map((s, i) => (
                 <li
                     key={s.id}
-                    onClick={() => onSelect(s)}
+                    onMouseDown={(e) => {
+                        e.preventDefault();
+                    }}
+                    onClick={() => {
+                        onSelect(s);
+                        OncloseFocus();
+                    }}                    
                     className={`
                             flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-150
                             hover:bg-[#1b3a3d] hover:scale-[1.02] active:scale-[0.99]
