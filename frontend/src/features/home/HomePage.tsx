@@ -304,7 +304,7 @@ export default function HomePage() {
                 {[TrainNoel, TrainMontagne, TrainStation].map((img, index) => (
                   <SwiperSlide
                     key={index}
-                    className="!w-full !h-full flex"  // 👈 force full width/height
+                    className="!w-full !h-full flex"  
                   >
                     <div className="w-full h-full">
                       <img
