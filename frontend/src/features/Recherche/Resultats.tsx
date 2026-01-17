@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useMemo, type JSX } from 'react';
+import { useState, useEffect, useMemo} from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import FiltreBloc from './Filtres/FiltresBloc.tsx';
 import ReturnBtn from '../../assets/ReturnBtn.svg';
@@ -197,7 +197,7 @@ export default function Resultats() {
     };
 
     const [draftFilters, setDraftFilters] = useState<Filters>({
-        stopType: "direct",
+        stopType: "Tout type",
         priceOption: "",
         timeDeparturOption: "",
         timeArrivalOption: "",
@@ -220,10 +220,13 @@ export default function Resultats() {
         }
 
         // Escales
-        if (filters.stopType === "direct") {
+        if (filters.stopType === "Direct") {
             out = out.filter(j => j.numberOfTransfers === 0);
-        } else if (filters.stopType === "correspondance") {
+        } else if (filters.stopType === "Correspondance") {
             out = out.filter(j => j.numberOfTransfers > 0);
+        }
+        else if (filters.stopType === "Tout type") {
+            // ne rien faire
         }
 
         // Horaires (bucket)
@@ -249,14 +252,13 @@ export default function Resultats() {
         return applyFilters(journeyList, appliedFilters, transport);
     }, [journeyList, appliedFilters, transport]);
 
-    const ErrorBtn = () : JSX.Element => {
-        return (
-            <>
-                <button className="text-sm font-bold bg-primary text-secondary p-4 rounded-lg hover:bg-[#6ACDD8] transition-all duration-300 " onClick={() => { setBoxIsOn(!BoxIsOn); scrollTo({ top: 0, behavior: "smooth" }) }}>Modifier le trajet</button>
-                <button className="text-sm font-bold bg-[#FFB856] text-secondary p-4 rounded-lg hover:bg-[#C28633] transition-all duration-300" onClick={() => { setTransport("plane"); scrollTo({ top: 0, behavior: "smooth" }) }}>Voir les vols</button>
-            </>
-        );
-    };
+    const ErrorBtn = 
+            <div className=' flex w-full gap-10'>
+                <button className="text-sm font-bold bg-primary text-secondary p-4 rounded-lg hover:bg-[#6ACDD8] transition-all duration-300 cursor-pointer " onClick={() => { setBoxIsOn(!BoxIsOn); scrollTo({ top: 0, behavior: "smooth" }) }}>Modifier le trajet</button>
+                <button className="text-sm font-bold bg-[#FFB856] text-secondary p-4 rounded-lg hover:bg-[#C28633] transition-all duration-300 cursor-pointer " onClick={() => { setTransport("plane"); scrollTo({ top: 0, behavior: "smooth" }) }}>Voir les vols</button>
+            </div>
+      
+
     const [FiltreMobileIsOn, setFiltreMobileIsOn] = useState<boolean>(false);
     const Onscrolle = useIsScrolling();
     return (
@@ -372,7 +374,7 @@ export default function Resultats() {
                             onUpdateFilters={() => setAppliedFilters(draftFilters)}
                             resetFilters={() => {
                                 setDraftFilters({
-                                    stopType: "direct",
+                                    stopType: "Tout type",
                                     priceOption: "",
                                     timeDeparturOption: "",
                                     timeArrivalOption: "",
@@ -444,7 +446,7 @@ export default function Resultats() {
                                     onUpdateFilters={() => setAppliedFilters(draftFilters)}
                                     resetFilters={() => {
                                         const reset = {
-                                            stopType: "direct" as const,
+                                            stopType: "Tout type" as const,
                                             priceOption: "",
                                             timeDeparturOption: "",
                                             timeArrivalOption: "",
@@ -467,7 +469,7 @@ export default function Resultats() {
                     
                     {
                         displayedJourneys.length === 0 && !IsLoading ? (
-                            <Error errorMessage={errorMessage}  errorBtns={ErrorBtn()}  />
+                            <Error errorMessage={errorMessage}  errorBtns={ErrorBtn}   />
 
 
 

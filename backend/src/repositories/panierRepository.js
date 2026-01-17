@@ -32,6 +32,7 @@ export async function createPassager({ panier_id, nom, email, date_naissance = n
             ${telephone},
             ${user_id}
         )
+
         RETURNING *;
     `;
 }

@@ -156,7 +156,7 @@ export default function QuickModificationOverlay({
         <div
             className={`
 
-        fixed bottom-0 left-0 w-full bg-[#103035] border-2 border-[#4A6367] rounded-t-4xl 
+        fixed bottom-0 left-0 w-full bg-[#103035] border-2 border-[#4A6367] rounded-t-4xl  z-50
         transition-all duration-500 h-95 p-4  max-w-150
         ${BoxIsOn ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"}
       `}
@@ -172,7 +172,7 @@ export default function QuickModificationOverlay({
                         }
                         onSelect={setDeparture}
                         className="search-input w-full bg-[#2C474B] text-white placeholder-slate-400 rounded-xl px-4 py-3.5 text-sm outline-none border-none focus:ring-2 focus:ring-cyan-400/30"
-                        AutocompleteListClassname={`absolute ${listWidthClass} autocomplete-suggestions left-0 right-0 z-50 mt-5 rounded-xl bg-[#0f2628] border border-[#1b3a3d] shadow-xl backdrop-blur-md max-h-60 overflow-y-auto text-left divide-y divide-[#1e3c3f] overflow-x-hidden`}
+                        AutocompleteListClassname={`absolute ${listWidthClass} autocomplete-suggestions left-0 right-0 z-100 mt-5 rounded-xl bg-[#0f2628] border border-[#1b3a3d] shadow-xl backdrop-blur-md max-h-60 overflow-y-auto text-left divide-y divide-[#1e3c3f] overflow-x-hidden`}
                     />
 
                     <button
