@@ -37,11 +37,8 @@ type FiltreBlocProps = {
 export default function FiltreBloc({
   stopType,
   setStopType,
-  priceOption,
   setPriceOption,
-  timeDeparturOption,
   setTimedeparturOption,
-  timeArrivalOption,
   setTimeArrivalOption,
   hasBike,
   setHasBike,
@@ -53,27 +50,13 @@ export default function FiltreBloc({
   setHasFood,
   isNightTrain,
   setIsNightTrain,
-  onUpdateFilters,
   resetFilters,
   setFiltreMobileIsOn,
   Isloading ,
 }: FiltreBlocProps) {
   const isMobile = useIsMobile();
 
-  const updateFilters = () => {
-    onUpdateFilters?.();
-    console.log({
-      stopType,
-      priceOption,
-      timeDeparturOption,
-      timeArrivalOption,
-      hasBike,
-      hasAnimal,
-      hasWifi,
-      hasFood,
-      isNightTrain,
-    });
-  };
+  
 
   return (
     <div
@@ -208,15 +191,7 @@ export default function FiltreBloc({
             isMobile ? "fixed bottom-0 left-0 right-0 bg-[#0C2529] z-90 p-4" : "mt-15",
           ].join(" ")}
         >
-          <button
-            onClick={() => { updateFilters(); setFiltreMobileIsOn?.(false); window.scrollTo(0, 0);}}
-            className={[
-              "text-sm font-bold bg-primary text-secondary rounded-lg hover:bg-[#6ACDD8] transition-all duration-300",
-              isMobile ? "px-3 py-3 w-[48%]" : "p-2",
-            ].join(" ")}
-          >
-            Appliquer
-          </button>
+          
 
           <button
             className={[
