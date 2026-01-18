@@ -175,7 +175,7 @@ router.post("/send-confirmation", authMiddleware, async (req, res) => {
     ];
 
     const result = await client.query(query, values);
-    console.log("✅ Réservation créée:", result.rows[0].ticket_id);
+    console.log("Réservation créée:", result.rows[0].ticket_id);
 
     const html = `
       <h2>Votre billet Horizons+ est confirmé !</h2>
