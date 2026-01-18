@@ -95,11 +95,9 @@ export default function PaiementForm({
 
           const data = await response.json();
           console.log("Réservation créée:", data.ticketId);
-          alert(`Réservation créée ! Votre ID billet : ${data.ticketId}`);
           onSuccess();
         } catch (error) {
           console.error("Erreur:", error);
-          alert("Erreur lors de la création de la réservation");
         }
       }
     } finally {
