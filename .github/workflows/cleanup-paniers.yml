@@ -2,15 +2,20 @@ name: Cleanup expired paniers
 
 on:
   schedule:
-    - cron: '0 3 * * *'   # tous les jours à 03h
-  workflow_dispatch:      # bouton "Run" manuel
+    - cron: '0 3 * * *'
+  workflow_dispatch:
 
 jobs:
   cleanup:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
       - name: Cleanup expired paniers
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           psql "$DATABASE_URL" -c "
           UPDATE panier
