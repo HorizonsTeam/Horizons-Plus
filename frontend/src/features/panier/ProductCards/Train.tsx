@@ -102,7 +102,7 @@ export default function TrainCard({ item, onDeleted, setisItemDeleted }: TrainCa
         <div className="shrink-0 text-right">
           <p className="text-2xl font-extrabold">{prix}€</p>
           <p className="mt-1 text-xs font-semibold text-emerald-300">
-            Il reste {item.siegeRestant}
+            Il reste {item.siegeRestant} places
           </p>
 
           <div className="mt-3 flex items-center justify-end gap-2">

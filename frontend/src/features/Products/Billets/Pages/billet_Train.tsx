@@ -2,7 +2,7 @@ import ReturnBtn from '../../../../assets/ReturnBtn.svg';
 import clockIco from '../../../../assets/clock.svg';
 import checkMarck from '../../../../assets/checkMarck.svg';
 import ClassCard from '../components/Recap/Classcard.tsx';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Inclus from '../components/Recap/Inclus.tsx';
 import icoWifi from '../../../../assets/wifi.svg'
 import priseIco from '../../../../assets/Prises.svg'
@@ -52,6 +52,9 @@ export default function Billet_Train_recap() {
     const isoDate = parseFrenchDate(formattedDepartureDate);
     const departTimestamp = combineDateAndTime(isoDate, journey.departureTime);
     const arriveeTimestamp = combineDateAndTime(isoDate, journey.arrivalTime);
+    const [basePrice] = useState<number>(journey.price);
+    const [price, setPrice] = useState<number>(basePrice);
+    const [isClassSelected, setIsClassSelected] = useState<boolean>(false);
 
     const navigate = useNavigate();
     const handleretour = () => {
@@ -80,35 +83,34 @@ export default function Billet_Train_recap() {
         },
     ];
 
-    // const stops: Stop[] = [
-    //     { kind: "station", city: "Paris", placeName: "Paris Gare de Lyon", arrival: "08:12", lat: 48.8443, lng: 2.3730 },
-    //     { kind: "station", city: "Lyon", placeName: "Lyon Part-Dieu", arrival: "10:05", lat: 45.7606, lng: 4.8619 },
-    //     { kind: "station", city: "Avignon", placeName: "Avignon TGV", arrival: "11:13", lat: 43.9210, lng: 4.7860 },
-    //     { kind: "station", city: "Aix-en-Provence", placeName: "Aix-en-Provence TGV", arrival: "11:45", lat: 43.4550, lng: 5.3170 },
-    //     { kind: "station", city: "Marseille", placeName: "Marseille Saint-Charles", arrival: "12:10", lat: 43.3026, lng: 5.3796 },
-    //     { kind: "airport", city: "Marignane", placeName: "Marseille Provence Airport (MRS)", arrival: "13:05", lat: 43.4393, lng: 5.2214 },
-    //     { kind: "airport", city: "New York", placeName: "John F. Kennedy Intl Airport (JFK)", arrival: "16:40", lat: 40.6413, lng: -73.7781 },
-    // ];
-
-    // const legs: Leg[] = [
-    //     { fromIndex: 0, toIndex: 1, mode: "rail" },
-    //     { fromIndex: 1, toIndex: 2, mode: "rail" },
-    //     { fromIndex: 2, toIndex: 3, mode: "rail" },
-    //     { fromIndex: 3, toIndex: 4, mode: "rail" },
-    //     { fromIndex: 4, toIndex: 5, mode: "rail" },
-    //     { fromIndex: 5, toIndex: 6, mode: "air" },
-    // ];
+    useEffect(() => {
+        switch (selectedClass) {
+            case 'Économie':
+                setPrice(basePrice);
+                setIsClassSelected(false);
+                break;
+            case 'Confort':
+                setPrice(Math.round((basePrice * 1.5) * 100) / 100);
+                setIsClassSelected(true);
+                break;
+            case 'Business':
+                setPrice(Math.round((basePrice * 2) * 100) / 100);
+                setIsClassSelected(true);
+                break;
+            case 'Première':
+                setPrice(Math.round((basePrice * 3) * 100) / 100);
+                setIsClassSelected(true);
+                break;
+        }
+    }, [selectedClass, basePrice]);
 
     const stops: Stop[] = journey.stops;
     const legs: Leg[] = journey.legs;
     const [isAddedPanierDesplayed, setisAddesPanierDesplayed] = useState(false);
     const [Isloading, SetIsloading] = useState(false)
 
-
     async function handleClick() {
-
         try {
-
             SetIsloading(true);
             setisAddesPanierDesplayed(true);
             console.log('debut')
@@ -127,12 +129,10 @@ export default function Billet_Train_recap() {
                     arriveeLieu: journey.arrivalName,
                     classe: selectedClass,
                     siegeRestant,
-                    prix: journey.price,
+                    prix: price,
                     dateVoyage: isoDate,
                     transportType: journey.simulated === true ? "AVION" : "TRAIN",
                 }),
-
-
             });
 
             SetIsloading(false);
@@ -148,12 +148,10 @@ export default function Billet_Train_recap() {
         }
     }
 
-
     const BtnOverlay = <>
         <button className="w-full h-16 bg-[#98EAF3] rounded-xl hover:bg-[#98EAF3]/90 transition" onClick={() => { navigate('/panier'); window.scroll({ top: 0, behavior: "smooth" }) }}> Accéder au panier </button>
     </>
     
-
     return (
         <div className="w-full  min-h-screen flex flex-col">
             <div className="relative w-full flex justify-center items-center py-6">
@@ -244,10 +242,31 @@ export default function Billet_Train_recap() {
                 <Serinita_card />
 
                 {/*Total et boutons */}
-                <div className="w-full">
-                    <div className="flex justify-between items-center mb-6 px-4">
+                <div className="w-full">  
+                    <div className="flex justify-between items-center mb-6">
                         <p className="font-bold text-3xl">Total :</p>
-                        <p className="font-bold text-3xl">{journey.price * passagersCount} €</p>
+
+                        <div className="text-right">
+                            {/* Prix avant sélection de classe */}
+                            {isClassSelected && (
+                                <p className="text-gray-400 text-sm line-through">
+                                    {basePrice} €
+                                </p>
+                            )}
+                            
+                            {/* Prix final */}
+                            <p className="font-bold text-3xl">{price} €</p>
+
+                            {/* Augmentation */}
+                            {isClassSelected && (
+                                <>
+                                    {/* Montant ajouté */}
+                                    <p className="text-green-400 font-semibold text-sm mt-1">
+                                    Soit +{Math.round(((price - basePrice) * 100) / 100)} €
+                                    </p>
+                                </>
+                            )}
+                        </div>
                     </div>
 
                     <div className="flex flex-col gap-3 items-center">

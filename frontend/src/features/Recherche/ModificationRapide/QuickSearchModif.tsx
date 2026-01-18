@@ -116,16 +116,18 @@ export default function QuickModificationOverlay({
 
         navigate(
             `/Recherche?fromId=${encodeURIComponent(departure.id)}
-        &fromName=${encodeURIComponent(departure.name)}
-        &fromLat=${encodeURIComponent(departure.lat)}
-        &fromLon=${encodeURIComponent(departure.lon)}
-        &toId=${encodeURIComponent(arrival.id)}
-        &toName=${encodeURIComponent(arrival.name)}
-        &toLat=${encodeURIComponent(arrival.lat)}
-        &toLon=${encodeURIComponent(arrival.lon)}
-        &departureDate=${encodeURIComponent(departureDate)}
-        &arrivalDate=${encodeURIComponent(tripType === "roundtrip" ? returnDate || "" : "")}
-        &passagers=${encodeURIComponent(passagers)}`.replace(/\s+/g, "")
+            &fromName=${encodeURIComponent(departure.name)}
+            &fromLat=${encodeURIComponent(departure.lat)}
+            &fromLon=${encodeURIComponent(departure.lon)}
+            &toId=${encodeURIComponent(arrival.id)}
+            &toName=${encodeURIComponent(arrival.name)}
+            &toLat=${encodeURIComponent(arrival.lat)}
+            &toLon=${encodeURIComponent(arrival.lon)}
+            &fromSource=${encodeURIComponent(departure.source)}
+            &toSource=${encodeURIComponent(arrival.source)}
+            &departureDate=${encodeURIComponent(departureDate)}
+            &arrivalDate=${encodeURIComponent(tripType === "roundtrip" ? returnDate || "" : "")}
+            &passagers=${encodeURIComponent(passagers)}`.replace(/\s+/g, "")
         );
 
         
@@ -155,11 +157,10 @@ export default function QuickModificationOverlay({
     return (
         <div
             className={`
-
-        fixed bottom-0 left-0 w-full bg-[#103035] border-2 border-[#4A6367] rounded-t-4xl  z-50
-        transition-all duration-500 h-95 p-4  max-w-150
-        ${BoxIsOn ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"}
-      `}
+                fixed bottom-0 left-0 w-full bg-[#103035] border-2 border-[#4A6367] rounded-t-4xl  z-50
+                transition-all duration-500 h-95 p-4  max-w-150
+                ${BoxIsOn ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"}
+            `}
         >
             <div className="grid justify-center gap-2  py-4 mb-8">
                 <div className="flex justify-center gap-5">
