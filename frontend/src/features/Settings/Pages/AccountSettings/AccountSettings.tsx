@@ -192,10 +192,9 @@ export default function AccountSettings(): JSX.Element {
         setEmails(nextEmails);
 
         // si tu ne stockes pas 2FA dans user, laisse false
-        const next2FA = Boolean((session.user as any).twoFAEnabled ?? false);
+        const next2FA = Boolean((session.user as any).twoFactorEnabled ?? false);
         setTwoFAEnabled(next2FA);
 
-        // IMPORTANT: snapshot après init
         initialSnapshotRef.current = JSON.stringify({ emails: nextEmails, twoFAEnabled: next2FA });
     }, [session]);
 
@@ -405,6 +404,51 @@ export default function AccountSettings(): JSX.Element {
 
     const [bannerPosition, setBannerPosition] = useState("top")
 
+    const handleToggle2FA = async () => {
+        try {
+            const password =
+                currentPassword || prompt("Entrez votre mot de passe pour gérer la 2FA :") || "";
+
+            if (!password) {
+                setBanner({ type: "error", message: "Mot de passe requis pour la 2FA." });
+                return;
+            }
+
+            setIsSaving(true);
+            setBanner({ type: "info", message: "Mise à jour 2FA..." });
+
+            if (!twoFAEnabled) {
+                // activer
+                const { error } = await (authClient as any).twoFactor.enable({
+                    password,
+                    issuer: "Horizons+",
+                });
+
+                if (error) throw new Error(error.message);
+                setTwoFAEnabled(true);
+                setBanner({ type: "success", message: "2FA activée." });
+            }
+            else {
+                // désactiver
+                const { error } = await (authClient as any).twoFactor.disable({ password });
+
+                if (error) throw new Error(error.message);
+
+                setTwoFAEnabled(false);
+                setBanner({ type: "success", message: "2FA désactivée." });
+            }
+
+            // snapshot à jour
+            initialSnapshotRef.current = JSON.stringify({ emails, twoFAEnabled: !twoFAEnabled });
+        }
+        catch (e: any) {
+            setBanner({ type: "error", message: e?.message || "Erreur 2FA." });
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+
     return (
         <div className="w-full">
             <div className="px-2 py-5">
@@ -592,16 +636,7 @@ export default function AccountSettings(): JSX.Element {
                         </div>
 
                         <div className="flex items-center gap-2">
-                            <Button
-                                type="button"
-                                onClick={() => {
-                                    setTwoFAEnabled((v: boolean) => !v);
-                                    setBanner({
-                                        type: "info",
-                                        message: !twoFAEnabled ? "2FA activée (non sauvegardé)." : "2FA désactivée (non sauvegardé).",
-                                    });
-                                }}
-                            >
+                            <Button type="button" onClick={() => void handleToggle2FA()}>
                                 {twoFAEnabled ? "Désactiver la 2FA" : "Activer la 2FA"}
                             </Button>
 

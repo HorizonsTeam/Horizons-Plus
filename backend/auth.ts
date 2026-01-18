@@ -4,6 +4,7 @@ import { PrismaClient } from "@prisma/client";
 import { sendMail } from "./server/mailer.js";
 import { PrismaPg } from "@prisma/adapter-pg";
 import pg from "pg";
+import { twoFactor } from "better-auth/plugins"
 
 const { Pool } = pg;
 
@@ -44,6 +45,29 @@ const isProd = process.env.NODE_ENV === "production";
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, { provider: "postgresql" }),
+
+  appName: "Horizons+",
+  plugins: [
+    twoFactor({
+      skipVerificationOnEnable: true,
+      otpOptions: {
+        async sendOTP({ user, otp }) {
+          await sendMail({
+            to: user.email,
+            subject: "Votre code de connexion (2FA)",
+            html: `
+              <div style="font-family:Arial,sans-serif">
+                <h2>Code de vérification</h2>
+                <p>Voici votre code (valide quelques minutes) :</p>
+                <p style="font-size:28px; font-weight:700; letter-spacing:6px">${otp}</p>
+                <p>Si vous n’êtes pas à l’origine de cette demande, ignorez ce message.</p>
+              </div>
+            `,
+          });
+        },
+      },
+    }),
+  ],
 
   // BaseURL pointe vers la racine
   baseURL: getBaseURL(),
@@ -164,7 +188,7 @@ export const auth = betterAuth({
   emailVerification: {
     sendVerificationEmail: async ({ user, url }) => {
       const front = process.env.FRONT_URL || "http://localhost:5173";
-      const callbackURL = `${front}/account`; 
+      const callbackURL = `${front}/account`;
 
       const verifyUrl =
         url + (url.includes("?") ? "&" : "?") + "callbackURL=" + encodeURIComponent(callbackURL);
