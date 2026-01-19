@@ -203,7 +203,7 @@ export default function PaymentPage() {
                 </div>
 
                 {/* OPTIONS SUPPLÉMENTAIRES */}
-                <div className={` ${isMobile ? '' : 'm-20'} bg-[#133A40] border-2 border-[#2C474B] rounded-2xl p-5 mb-8 `}>
+                <div className={` ${isMobile ? '' : 'm-20'} bg-[#133A40] border-2 border-[#2C474B] rounded-2xl p-2 mb-8 `}>
                     <p className="font-bold mb-4">Options supplémentaires</p>
 
                     {/* insurance */}
@@ -227,20 +227,25 @@ export default function PaymentPage() {
 
                     {/* CODE PROMO */}
                     <div className="flex items-center gap-4 mt-6">
+                        <div className='grid gap-4 '>
                         <p className="font-bold w-32">Code promo</p>
-                        <input
-                            type="text"
-                            value={code}
-                            onChange={(e) => setCode(e.target.value)}
-                            placeholder='EX: NOEL10'
-                            className="flex-1 bg-[#103035] h-[45px] rounded-xl p-3 outline-none focus:ring-2 focus:ring-[#98EAF3] font-semibold"
-                        />
-                        <button
-                            onClick={handleValidatePromo}
-                            className="bg-[#98EAF3] text-[#103035] font-bold px-5 h-[45px] rounded-xl hover:bg-[#7cdbe6] transition-colors cursor-pointer"
-                        >
-                            Valider
-                        </button>
+                            <div className='flex py-4'>
+                            <input
+                                type="text"
+                                value={code}
+                                onChange={(e) => setCode(e.target.value)}
+                                placeholder='EX: NOEL10'
+                                    className="flex-1 bg-[#103035] h-[45px] rounded-tl-xl rounded-bl-xl p-3 outline-none focus:ring-2 focus:ring-[#98EAF3] font-semibold"
+                            />
+
+                            <button
+                                onClick={handleValidatePromo}
+                                    className="bg-[#98EAF3] text-[#103035] font-bold px-5 h-[44.5px] rounded-tr-xl rounded-br-xl hover:bg-[#7cdbe6] transition-colors cursor-pointer py-2 "
+                            >
+                                Valider
+                            </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

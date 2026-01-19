@@ -21,7 +21,7 @@ export default function PanierBtn({ nombresArticles = 2 }: PanierBtnProps) {
 
     return (
         <div
-            className="fixed bottom-2 right-2 z-15 w-20 h-20 flex justify-center bg-[#FFB856] rounded-3xl py-6 gap-1"
+            className="fixed bottom-2 right-2 z-50 w-20 h-20 flex justify-center bg-[#FFB856] rounded-3xl py-6 gap-1"
             onClick={() => {
                 navigate('/panier');
                 window.scrollTo({ top: 0, behavior: 'smooth' });

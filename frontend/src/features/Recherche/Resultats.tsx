@@ -430,6 +430,7 @@ export default function Resultats() {
                                         }
 
                                         Isloading={IsLoading}
+                                        setFiltreMobileIsOn={setFiltreMobileIsOn}
                                     />
 
 
