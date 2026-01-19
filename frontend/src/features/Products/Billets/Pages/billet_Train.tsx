@@ -106,14 +106,16 @@ export default function Billet_Train_recap() {
 
     const stops: Stop[] = journey.stops;
     const legs: Leg[] = journey.legs;
-    const [isAddedPanierDesplayed, setisAddesPanierDesplayed] = useState(false);
+    const [isAddedPanierDesplayed, setisAddedPanierDesplayed] = useState(false);
     const [Isloading, SetIsloading] = useState(false)
+    const [isErrorPopupDisplayed, setIsErrorPopupDisplayed] = useState(false);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     async function handleClick() {
         try {
             SetIsloading(true);
-            setisAddesPanierDesplayed(true);
-            console.log('debut')
+            setErrorMessage(null);
+
             const siegeRestant = randomSiegeRestant();
 
             const res = await fetch(`${base}/api/panier/add`, {
@@ -136,26 +138,42 @@ export default function Billet_Train_recap() {
             });
 
             SetIsloading(false);
-            if (!res.ok) {
-                throw new Error(`HTTP error! status: ${res.status}`);
-            }
             
-            console.log("fin")
+            const data = await res.json();
 
+            if (!res.ok) {
+                throw new Error(data.error || "Erreur lors de l'ajout au panier");
+            }
+
+            setisAddedPanierDesplayed(true);
             console.log("Billet ajouté au panier avec succès.");
+
         } catch (error) {
             console.error("Erreur lors de l'ajout au panier :", error);
+            setErrorMessage(error instanceof Error ? error.message : String(error));
+            setIsErrorPopupDisplayed(true);
+        } finally {
+            SetIsloading(false);
         }
     }
 
     const BtnOverlay = <>
-        <button className="w-full h-16 bg-[#98EAF3] rounded-xl hover:bg-[#98EAF3]/90 transition" onClick={() => { navigate('/panier'); window.scroll({ top: 0, behavior: "smooth" }) }}> Accéder au panier </button>
+        <button className="w-full h-16 bg-[#98EAF3] rounded-xl hover:bg-[#98EAF3]/90 transition cursor-pointer" onClick={() => { navigate('/panier'); window.scroll({ top: 0, behavior: "smooth" }) }}>Accéder au panier</button>
     </>
     
+    const ErrorBtnOverlay = (
+        <button
+            className="w-full h-16 bg-[#FFB856] rounded-xl hover:bg-[#FFB856]/90 transition cursor-pointer"
+            onClick={() => setIsErrorPopupDisplayed(false)}
+        >
+            Fermer
+        </button>
+    );
+
     return (
         <div className="w-full  min-h-screen flex flex-col">
             <div className="relative w-full flex justify-center items-center py-6">
-                <button onClick={handleretour} className="absolute left-4">
+                <button onClick={handleretour} className="absolute left-4 cursor-pointer">
                     <img src={ReturnBtn} alt="Return Button" className="w-6 h-6" />
                 </button>
                 <h1 className="text-3xl text-[#98EAF3] font-medium">Récapitulatif</h1>
@@ -261,7 +279,7 @@ export default function Billet_Train_recap() {
                             {isClassSelected && (
                                 <>
                                     {/* Montant ajouté */}
-                                    <p className="text-green-400 font-semibold text-sm mt-1">
+                                    <p className="text-primary font-semibold text-sm mt-1">
                                     Soit +{Math.round(((price - basePrice) * 100) / 100)} €
                                     </p>
                                 </>
@@ -271,7 +289,7 @@ export default function Billet_Train_recap() {
 
                     <div className="flex flex-col gap-3 items-center">
                         <button
-                            className="w-full max-w-xs h-16 bg-[#FFB856] rounded-xl hover:bg-[#FFB856]/90 transition"
+                            className="w-full max-w-xs h-16 bg-[#FFB856] rounded-xl hover:bg-[#FFB856]/90 transition cursor-pointer"
                             onClick={handleClick}
                         >
                             <span className="text-[#115E66] font-bold text-lg">Ajouter au panier</span>
@@ -283,7 +301,7 @@ export default function Billet_Train_recap() {
                             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
                             className="w-full max-w-xs"
                         >
-                            <button className="w-full h-16 bg-[#98EAF3] rounded-xl hover:bg-[#98EAF3]/90 transition">
+                            <button className="w-full h-16 bg-[#98EAF3] rounded-xl hover:bg-[#98EAF3]/90 transition cursor-pointer">
                                 <span className="text-[#115E66] font-bold text-lg">Continuer</span>
                             </button>
                         </Link>
@@ -291,10 +309,24 @@ export default function Billet_Train_recap() {
                 </div>
                 {
                     isAddedPanierDesplayed &&
-
-                    <PopUp message='Votre produit est bien ajouter au Panier ' setPopupIsDisplayed={setisAddesPanierDesplayed} Btn={BtnOverlay} isLoading={Isloading}  />
+                    <PopUp 
+                        message='Votre billet a été ajouté au panier' 
+                        setPopupIsDisplayed={setisAddedPanierDesplayed} 
+                        Btn={BtnOverlay} 
+                        isLoading={Isloading} 
+                        isSuccess={true} 
+                    />
                 }
-
+                {
+                    isErrorPopupDisplayed &&
+                    <PopUp
+                        message={`Erreur : ${errorMessage}`}
+                        setPopupIsDisplayed={setIsErrorPopupDisplayed}
+                        Btn={ErrorBtnOverlay}
+                        isLoading={Isloading}
+                        isSuccess={false}
+                    />
+                }
             </div>
         </div>
     );

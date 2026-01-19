@@ -47,24 +47,27 @@ searchJourneys.get("/journeys", async (req, res) => {
 
         const data = await response.json();
 
-        // CAS 1 : Pas de résultats SNCF -> génération fictive uniquement
-        if (data.error || !data.journeys || data.journeys.length === 0) {
+        // CAS 1A : Erreur API SNCF (clé invalide, rate limit, serveur KO)
+        if (data.error && data.error.id !== "no_solution") {
+            console.log("Erreur API SNCF réelle → génération fictive");
             return res.json(
                 generationJourneysFictif({
-                    from: { 
-                        name: fromName, 
-                        lat: Number(fromLat), 
-                        lon: Number(fromLon), 
-                        source: fromSource 
-                    },
-                    to: { 
-                        name: toName, 
-                        lat: Number(toLat), 
-                        lon: Number(toLon), 
-                        source: toSource 
-                    },
+                    from: { name: fromName, lat: Number(fromLat), lon: Number(fromLon), source: fromSource },
+                    to: { name: toName, lat: Number(toLat), lon: Number(toLon), source: toSource },
                 })
             );
+        }
+
+        // CAS 1B : Pas de solution trouvée (trajet impossible / pas de train)
+        if (data.error && data.error.id === "no_solution") {
+            console.log("Aucun trajet SNCF disponible → renvoi []");
+            return res.json([]);
+        }
+
+        // CAS 1C : Pas de journeys mais pas d’erreur
+        if (!data.journeys || data.journeys.length === 0) {
+            console.log("Journeys vide → renvoi []");
+            return res.json([]);
         }
 
         // CAS 2 : Résultats SNCF existent -> on les mappe
@@ -93,10 +96,13 @@ searchJourneys.get("/journeys", async (req, res) => {
             const trainType = transportSection?.display_informations?.physical_mode || "TER";
             const numberOfTransfers = analyzeJourney(journey);
 
-            const price =
-                journey.fare?.total.value != 0
-                    ? (journey.fare.total.value / 100).toFixed(2)
-                    : calculerPrixFictif(distanceM, numberOfTransfers, trainType);
+            let price;
+
+            if (journey.fare?.total?.value != null && journey.fare.total.value > 0) {
+                price = (journey.fare.total.value / 100).toFixed(2);
+            } else {
+                price = calculerPrixFictif(distanceM, numberOfTransfers, trainType);
+            }
 
             const departureTime = journey.departure_date_time
                 .split("T")[1]

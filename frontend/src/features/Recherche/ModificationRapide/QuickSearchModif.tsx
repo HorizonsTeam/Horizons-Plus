@@ -24,7 +24,7 @@ type ModificationProps = {
     setErrorMessage: (value: string | null) => void;
 
     setJourneyData: (value: any[]) => void;
-    setTransport: (value: "train" | "plane" | undefined) => void;
+    setTransport: (value: "train" | "plane") => void;
 };
 
 const makeSuggestion = (name: string): Suggestion => ({

@@ -15,7 +15,7 @@ export default function CarteReduction({ fermer }: props) {
                 <h1 className="text-white font-bold ">Carte de réduction / abonnement</h1>
 
                 <button
-                    className="text-white text-xl font-bold px-3 py-1  rounded-lg" onClick={fermer}>
+                    className="text-white text-xl font-bold px-3 py-1 rounded-lg cursor-pointer" onClick={fermer}>
                         <img src={closeSVG} alt="Close" className="h-6 w-6" />
                 </button>
             </div>
@@ -24,7 +24,6 @@ export default function CarteReduction({ fermer }: props) {
 
                 <div className="flex flex-col space-y-3">
                     <>
-                    
                         <CarteSelect />
                     </>
                 </div>
@@ -42,7 +41,7 @@ export default function CarteReduction({ fermer }: props) {
                     <label className="text-white text-sm">Date d'expiration</label>
                     <input
                         type="date"
-                        className="h-10 rounded-md px-3 bg-[#103035] border-2 border-[#2C474B] text-white"
+                        className="h-10 rounded-md px-3 bg-[#103035] border-2 border-[#2C474B] text-white cursor-pointer"
                     />
                 </div>
             </div>
