@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { authClient } from "../../../lib/auth-clients";
 
 export default function TwoFactor() {
-  const navigate = useNavigate();
   const [code, setCode] = useState("");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -53,7 +51,7 @@ export default function TwoFactor() {
       if (r?.error) throw new Error(r.error?.message || "Code invalide ou expiré.");
 
       sessionStorage.removeItem(OTP_SENT_KEY);
-      navigate("/");
+      window.location.assign("/");
     } catch (e: any) {
       setErrorMsg(e?.message || "Code invalide.");
     } finally {

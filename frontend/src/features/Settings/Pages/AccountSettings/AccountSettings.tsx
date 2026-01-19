@@ -284,7 +284,7 @@ export default function AccountSettings(): JSX.Element {
         try {
             setBanner({ type: "info", message: "Envoi de l'email de vérification..." });
 
-            const BACK_URL = import.meta.env.VITE_BACK_URL || "http://localhost:3005";
+            const BACK_URL = import.meta.env.VITE_API_URL || "http://localhost:3005";
 
             const res = await fetch(`${BACK_URL}/api/auth/send-verification-email`, {
                 method: "POST",
@@ -362,9 +362,9 @@ export default function AccountSettings(): JSX.Element {
 
                 } else {
                     // sois appel direct endpoint Better Auth
-                    const BACK_URL = import.meta.env.VITE_BACK_URL || "http://localhost:3005";
+                    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3005";
 
-                    const res = await fetch(`${BACK_URL}/api/auth/change-password`, {
+                    const res = await fetch(`${API_URL}/api/auth/change-password`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         credentials: "include",
