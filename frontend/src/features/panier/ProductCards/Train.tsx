@@ -20,7 +20,7 @@ function durationLabel(start: string, end: string): string {
   const a = parseHHMM(start);
   const b = parseHHMM(end);
   if (!a || !b) return "—";
-  let startMin = a.h * 60 + a.m;
+  const startMin = a.h * 60 + a.m;
   let endMin = b.h * 60 + b.m;
   if (endMin < startMin) endMin += 24 * 60;
   const d = endMin - startMin;
@@ -29,7 +29,7 @@ function durationLabel(start: string, end: string): string {
   return `${hh}h${String(mm).padStart(2, "0")}`;
 }
 
-export default function TrainCard({ item, onDeleted, setisItemDeleted }: TrainCardProps) {
+export default function TrainCard({ item, onDeleted }: TrainCardProps) {
   const navigate = useNavigate();
 
   const handleDeletePanierItem = async (): Promise<void> => {

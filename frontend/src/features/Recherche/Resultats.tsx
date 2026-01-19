@@ -30,7 +30,7 @@ export default function Resultats() {
 
     const navigate = useNavigate();
 
-    const [transport, setTransport] = useState<"plane" | "train" | null>(null);
+    const [transport, setTransport] = useState<"plane" | "train">("train");
 
     const handleRetour = () => navigate(-1);
 
@@ -107,8 +107,6 @@ export default function Resultats() {
 
                 if (Array.isArray(data) && data.length > 0) {
                     setTransport(data[0].simulated ? "plane" : "train");
-                } else {
-                    setTransport(null);
                 }
             })
             .catch(err => {
@@ -162,10 +160,6 @@ export default function Resultats() {
         return Math.min(...journeyList.map(j => j.price));
     }, [journeyList]);
     const isMobile = useIsMobile();
-
-
-   
-
 
     const timeToMinutes = (hhmm: string) => {
         const [h, m] = hhmm.split(":").map(Number);
@@ -257,7 +251,6 @@ export default function Resultats() {
                 <button className="text-sm font-bold bg-primary text-secondary p-4 rounded-lg hover:bg-[#6ACDD8] transition-all duration-300 cursor-pointer " onClick={() => { setBoxIsOn(!BoxIsOn); scrollTo({ top: 0, behavior: "smooth" }) }}>Modifier le trajet</button>
                 <button className="text-sm font-bold bg-[#FFB856] text-secondary p-4 rounded-lg hover:bg-[#C28633] transition-all duration-300 cursor-pointer " onClick={() => { setTransport("plane"); scrollTo({ top: 0, behavior: "smooth" }) }}>Voir les vols</button>
             </div>
-      
 
     const [FiltreMobileIsOn, setFiltreMobileIsOn] = useState<boolean>(false);
     const Onscrolle = useIsScrolling();
@@ -443,10 +436,6 @@ export default function Resultats() {
                         </div>
                         </>
                     )}
-
-                     
-                    
-
                     
                     {
                         displayedJourneys.length === 0 && !IsLoading ? (

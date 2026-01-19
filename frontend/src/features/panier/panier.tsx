@@ -87,7 +87,7 @@ export default function Panier() {
 
             <div className="px-4 pb-10 space-y-5 ">
                 {panierItems.map((item) => (
-                <Traincard key={item.id} item={item} onDeleted={handleItemDeleted}  setisItemDeleted={setIsItemDeleted} />
+                <Traincard key={item.id} item={item} onDeleted={handleItemDeleted} />
                 ))}
 
                 { displayError && (
