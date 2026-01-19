@@ -32,7 +32,7 @@ export default function TripTypeSwitch<T extends string>({
                 aria-checked={isB}
                 onClick={toggle}
                 className={[
-                    "relative inline-flex items-center",
+                    "relative inline-flex items-center cursor-pointer",
                     "h-7 w-12 rounded-full transition-colors",
                     isB ? "bg-[#98EAF3]" : "bg-white/15 ring-1 ring-white/10",
                 ].join(" ")}

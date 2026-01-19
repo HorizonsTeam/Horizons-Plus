@@ -113,7 +113,7 @@ function Row({ label, children, isMobile }: RowProps & { isMobile: boolean }): J
 
 function Button({ variant = "solid", className = "", ...props }: ButtonProps): JSX.Element {
     const base =
-        "inline-flex items-center justify-center rounded-xl transition select-none disabled:opacity-50 disabled:cursor-not-allowed";
+        "inline-flex items-center justify-center rounded-xl transition select-none disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer";
     const solid = "bg-[#2C474B] hover:bg-white hover:text-black";
     const ghost = "bg-transparent hover:bg-white/10 ";
     const danger = "bg-transparent hover:bg-[#FFB856]/15  text-[#FFB856]";
@@ -284,7 +284,7 @@ export default function AccountSettings(): JSX.Element {
         try {
             setBanner({ type: "info", message: "Envoi de l'email de vérification..." });
 
-            const BACK_URL = import.meta.env.VITE_BACK_URL || "http://localhost:3005";
+            const BACK_URL = import.meta.env.VITE_API_URL || "http://localhost:3005";
 
             const res = await fetch(`${BACK_URL}/api/auth/send-verification-email`, {
                 method: "POST",
@@ -362,9 +362,9 @@ export default function AccountSettings(): JSX.Element {
 
                 } else {
                     // sois appel direct endpoint Better Auth
-                    const BACK_URL = import.meta.env.VITE_BACK_URL || "http://localhost:3005";
+                    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3005";
 
-                    const res = await fetch(`${BACK_URL}/api/auth/change-password`, {
+                    const res = await fetch(`${API_URL}/api/auth/change-password`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         credentials: "include",
@@ -566,7 +566,7 @@ export default function AccountSettings(): JSX.Element {
 
                                 <Button
                                     onClick={addSecondaryEmail}
-                                    className="w-fit"
+                                    className="w-fit cursor-pointer"
                                     type="button"
                                     disabled={Object.keys(emailErrors).length > 0 && secondaryEmails.some((e) => !e.address.trim())}
                                 >
@@ -610,7 +610,7 @@ export default function AccountSettings(): JSX.Element {
                                     <button
                                         type="button"
                                         onClick={() => setShowPw((v: boolean) => !v)}
-                                        className="text-sm underline underline-offset-4 opacity-90 hover:opacity-100"
+                                        className="text-sm underline underline-offset-4 opacity-90 hover:opacity-100 cursor-pointer"
                                     >
                                         {showPw ? "Masquer" : "Afficher"}
                                     </button>
@@ -663,6 +663,7 @@ export default function AccountSettings(): JSX.Element {
                             variant="danger"
                             onClick={signOutAll}
                             disabled={sessions.filter((s) => !s.current).length === 0}
+                            className="cursor-pointer"
                         >
                             Déconnecter les autres
                         </Button>
@@ -684,7 +685,7 @@ export default function AccountSettings(): JSX.Element {
                                 </div>
 
                                 {!s.current ? (
-                                    <Button type="button" variant="ghost" onClick={() => signOutSession(s.id)} className="shrink-0">
+                                    <Button type="button" variant="ghost" onClick={() => signOutSession(s.id)} className="shrink-0 cursor-pointer">
                                         Déconnecter
                                     </Button>
                                 ) : (
@@ -734,7 +735,7 @@ export default function AccountSettings(): JSX.Element {
                                         });
                                     }
                                 }}
-                                className="min-w-[200px]"
+                                className="min-w-[200px] cursor-pointer"
                             >
                                 Supprimer mon compte
                             </Button>
@@ -743,6 +744,7 @@ export default function AccountSettings(): JSX.Element {
                                 type="button"
                                 variant="ghost"
                                 onClick={() => setBanner({ type: "info", message: "Action simulée : désactivation du compte." })}
+                                className="cursor-pointer"
                             >
                                 Désactiver temporairement
                             </Button>
@@ -767,7 +769,7 @@ export default function AccountSettings(): JSX.Element {
                         Annuler
                     </Button>
 
-                    <Button type="button" onClick={() => { handleSave(); setBannerPosition("bottom") }} disabled={!canSave} className="min-w-[140px]">
+                    <Button type="button" onClick={() => { handleSave(); setBannerPosition("bottom") }} disabled={!canSave} className="min-w-[140px] cursor-pointer">
                         {isSaving ? "..." : "Enregistrer"}
                     </Button>
 

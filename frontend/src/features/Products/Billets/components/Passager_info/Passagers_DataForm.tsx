@@ -60,7 +60,7 @@ export default function Passagers_Data_From({ passagerIndex, suprimer_Passager, 
                 <div className='w-full flex justify-between mb-5'>
                     <p className={`font-bold mt-4 ${passagerIndex === 1 && 'w-full text-center  '}`}>{titre}</p>
                     {passagerIndex !== 1 && (
-                        <button className="font-bold text-xl text-red" onClick={suprimer_Passager}>
+                        <button className="font-bold text-xl text-red cursor-pointer" onClick={suprimer_Passager}>
                             <img src={closeSvg} alt="" className='w-6 h-6 mt-4' />
                         </button>
                     )}
@@ -120,7 +120,7 @@ export default function Passagers_Data_From({ passagerIndex, suprimer_Passager, 
 
                             <input
                                 type="date"
-                                className="h-13 rounded-md px-3 border-3 border-[#2C474B] bg-[#103035] focus:border-[#98EAF3] focus:outline-none w-full input-date-white"
+                                className="h-13 rounded-md px-3 border-3 border-[#2C474B] bg-[#103035] focus:border-[#98EAF3] focus:outline-none w-full input-date-white cursor-pointer"
                                 value={formData.birthdate}
                                 onChange={(e) => updateField("birthdate", e.target.value)}
                                 placeholder={!formData.birthdate ? "Non renseignée" : ""}
@@ -145,18 +145,16 @@ export default function Passagers_Data_From({ passagerIndex, suprimer_Passager, 
 
                 </div>
                 {!Abonement_Reduction ? (
-                    <div className="w-full items-center bg-[#103035] rounded-2xl border-2 border-[#2C474B] mt-5  p-4">
-                        <button className='w-full' onClick={() => setAbonement_reduc(!Abonement_Reduction)}
-                        >
-                            <div className='flex justify-between'>
-                                <p className="font-bold mt-1 text-xs ">Carte de réduction / abonnement</p>
-                                <div className='h-8 w-8 bg-white rounded-2xl flex justify-center items-center '>
-                                    <h1 className='text-[#133A40]  text-4xl font-bold '>+</h1>
-
-                                </div>
+                    <div
+                        onClick={() => setAbonement_reduc(!Abonement_Reduction)}
+                        className="w-full cursor-pointer bg-[#103035] rounded-2xl border-2 border-[#2C474B] mt-5 p-4"
+                    >
+                        <div className='flex justify-between'>
+                            <p className="font-bold mt-1 text-xs">Carte de réduction / abonnement</p>
+                            <div className='h-8 w-8 bg-white rounded-2xl flex justify-center items-center'>
+                                <h1 className='text-[#133A40] text-4xl font-bold'>+</h1>
                             </div>
-                        </button>
-
+                        </div>
                     </div>)
                     : (
                         <div className="w-full items-center bg-[#103035] rounded-2xl border-2 border-[#2C474B] mt-5  p-4">

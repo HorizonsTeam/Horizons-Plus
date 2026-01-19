@@ -70,10 +70,9 @@ export default function Login() {
 
           Connectez-vous
         </h1>
-        {errorMsg &&
-
-          <PopUp message={errorMsg} Btn={BtnError} />
-        }
+        { errorMsg && 
+          
+        <PopUp message={errorMsg} Btn={BtnError} isSuccess={false} />}
 
         <form
           onSubmit={handleSubmit}
@@ -122,7 +121,7 @@ export default function Login() {
           </button>
           {
             isLoading &&
-            <PopUp message={"connextion"} isLoading={isLoading} isLoadingMsg={" chargement "} Btn={BtnError}  ></PopUp>
+            <PopUp message={"connexion"} isLoading={isLoading} isLoadingMsg={"chargement"} Btn={BtnError}  ></PopUp>
           }
 
           {/* Ou */}

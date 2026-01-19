@@ -118,7 +118,7 @@ export default function ProductCard({ journey, passagersCount, formattedDepartur
 
                         <button
                             type="button"
-                            className="mt-1 rounded-full bg-[#FFB856] px-4 py-1 text-[11px] sm:text-xs font-semibold text-[#103035]"
+                            className="mt-1 rounded-full bg-[#FFB856] px-4 py-1 text-[11px] sm:text-xs font-semibold text-[#103035] cursor-pointer"
                         >
                             Voir le détail
                         </button>
