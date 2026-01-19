@@ -191,11 +191,9 @@ export default function FiltreBloc({
             isMobile ? "fixed bottom-0 left-0 right-0 bg-[#0C2529] z-90 p-4" : "mt-15",
           ].join(" ")}
         >
-          
-
           <button
             className={[
-              "text-sm font-bold bg-[#FFB856] text-secondary rounded-lg hover:bg-[#C28633] transition-all duration-300",
+              "text-sm font-bold bg-[#FFB856] text-secondary rounded-lg hover:bg-[#C28633] transition-all duration-300 cursor-pointer",
               isMobile ? "px-3 py-3 w-[48%]" : "p-2",
             ].join(" ")}
             onClick={() => {resetFilters(); setFiltreMobileIsOn?.(false); window.scrollTo(0, 0);}}

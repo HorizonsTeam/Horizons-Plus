@@ -73,7 +73,7 @@ export default function PaymentPage() {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                amount: 5900,
+                amount: Math.round(priceTotal * 100),
                 currency: "eur"
             })
         })
@@ -251,7 +251,7 @@ export default function PaymentPage() {
 
                             {/* insurance */}
                             {insurance && (
-                                <p className="text-blue-300 font-semibold text-sm mt-1">
+                                <p className="text-[#FFB856] font-semibold text-sm mt-1">
                                     + {getInsuranceTotal(selectedClass, passagersCount).toFixed(2)} € d’assurance 
                                     ({passagersCount} passager{passagersCount > 1 ? "s" : ""})
                                 </p>
@@ -267,7 +267,7 @@ export default function PaymentPage() {
                             {promoApplied && (
                                 <>
                                     {/* Montant retiré */}
-                                    <p className="text-green-400 font-semibold text-sm mt-1">
+                                    <p className="text-primary font-semibold text-sm mt-1">
                                     – {promoType === "%" 
                                         ? ((basePrice * promoValue) / 100).toFixed(2)
                                         : promoValue
@@ -276,7 +276,7 @@ export default function PaymentPage() {
 
                                     {/* Si pourcentage, afficher aussi le % */}
                                     {promoType === "%" && (
-                                    <p className="text-green-400 font-semibold text-xs">
+                                    <p className="text-primary font-semibold text-xs">
                                         ({promoValue}% appliqués)
                                     </p>
                                     )}
@@ -288,8 +288,8 @@ export default function PaymentPage() {
 
                 {/* BOUTON PAYER */}
                 <div className="flex justify-center">
-                    <button className="w-[250px] h-[55px] bg-[#98EAF3] rounded-xl mt-6 mb-10" type='button' onClick={() => triggerPayment && triggerPayment()}>
-                        <span className="text-[#115E66] font-bold text-2xl" >Payer</span>
+                    <button className="w-[250px] h-[55px] bg-[#98EAF3] rounded-xl mt-6 mb-10 cursor-pointer" type='button' onClick={() => triggerPayment && triggerPayment()}>
+                        <span className="text-[#115E66] font-bold text-2xl">Payer</span>
                     </button>
                 </div>
 

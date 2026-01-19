@@ -73,7 +73,7 @@ export default function Header() {
   ];
 
   const menuItemsPrivate = [
-    { label: "Mes réservations", icon: Reservation_ico, path: "/" },
+    { label: "Mes réservations", icon: Reservation_ico, path: "/reservations" },
     { label: "Panier", icon: Panier_Ico, path: "/panier" },
     { label: "Mes cartes de réduction", icon: Carte_Reduc_Ico, path: "/" },
     { label: "Paramètres", icon: Parametres_Ico, path: "/Settings" },

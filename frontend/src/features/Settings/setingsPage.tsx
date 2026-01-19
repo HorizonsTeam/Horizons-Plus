@@ -74,7 +74,7 @@ export default function Setings(): JSX.Element {
         <button
             type="button"
             onClick={onClick}
-            className="w-full border-b-2 border-[#2C474B] h-20"
+            className="w-full border-b-2 border-[#2C474B] h-20 cursor-pointer hover:bg-[#133A40] rounded-xl transition"
         >
             <div className="w-full flex justify-start items-center gap-4">
                 <img src={icon} alt="" className="h-6 w-8" />
@@ -91,7 +91,7 @@ export default function Setings(): JSX.Element {
         <div className={`${isMobile ? "w-full flex justify-center" : "w-full flex justify-start gap-5 p-4"}`}>
             <div className={`w-full ${!isMobile ? "max-w-[420px]" : ""}`}>
                 <div className="relative mt-4 flex justify-center items-center m-2">
-                    <button type="button" onClick={handleRetour}>
+                    <button type="button" onClick={handleRetour} className="cursor-pointer">
                         <img
                             src={ReturnBtn}
                             alt="Return Button"
@@ -153,18 +153,19 @@ export default function Setings(): JSX.Element {
                             }}
                         />
 
-                        <button type="button" className="w-full h-20">
-                            <div className="w-full flex justify-start items-center gap-4">
-                                <img src={SecuIco} alt="" className="h-6 w-8" />
-                                <p className={`text-xl font-bold ${selectedSetting === "Security" && !isMobile ? "text-[#98EAF3]" : ""}`}>
-                                    Sécurité
-                                </p>
-                            </div>
-                        </button>
+                        <SidebarItem
+                            icon={SecuIco}
+                            label="Sécurité"
+                            active={selectedSetting === "Security" && !isMobile}
+                            onClick={() => {
+                                if (isMobile) navigate("/Security");
+                                else setSelectedSetting("Security");
+                            }}
+                        />
 
                         <button
                             type="button"
-                            className="mt-10 h-14 bg-[#FFB856] text-[#115E66] font-semibold px-4 rounded-xl"
+                            className="mt-10 h-14 bg-[#FFB856] text-[#115E66] font-semibold px-4 rounded-xl cursor-pointer hover:bg-[#ffb347] transition"
                             onClick={() => {
                                 navigate("/");
                             }}
@@ -182,7 +183,7 @@ export default function Setings(): JSX.Element {
                             <div className="flex w-full justify-center h-20 mt-10">
                                 <button
                                     type="button"
-                                    className={`w-full text-2xl font-semibold border-b-4 rounded-tr-3xl transition-colors duration-300 ${profileTab === "profil"
+                                    className={`w-full text-2xl font-semibold border-b-4 rounded-tr-3xl transition-colors duration-300 cursor-pointer ${profileTab === "profil"
                                             ? "bg-[#133A40] text-[#98EAF3] border-b-[#98EAF3]"
                                             : "bg-transparent border-b-white"
                                         }`}
@@ -193,7 +194,7 @@ export default function Setings(): JSX.Element {
 
                                 <button
                                     type="button"
-                                    className={`w-full text-2xl font-semibold border-b-4 rounded-tl-3xl transition-colors duration-300 ${profileTab === "adresse"
+                                    className={`w-full text-2xl font-semibold border-b-4 rounded-tl-3xl transition-colors duration-300 cursor-pointer ${profileTab === "adresse"
                                             ? "bg-[#133A40] text-[#98EAF3] border-b-[#98EAF3]"
                                             : "bg-transparent border-b-white"
                                         }`}

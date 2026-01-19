@@ -1,9 +1,10 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import terIco from "../../../assets/ter_ico.svg";
 import SiegeIco from "../../../assets/siege_ico.svg";
 import trashcan from "../../../assets/trashcan.svg";
 import type { TrainCardProps, PanierItem } from "../types.ts";
+import PopUp from "../../../components/AdditionalsComponents/PopUp.tsx";
 
 const base = `${import.meta.env.VITE_API_URL || "http://localhost:3005"}`;
 
@@ -31,37 +32,14 @@ function durationLabel(start: string, end: string): string {
 
 export default function TrainCard({ item, onDeleted, setisItemDeleted }: TrainCardProps) {
   const navigate = useNavigate();
-
-  // 🔹 nouvelle partie pour update global state
   const { setPanierItems } = useOutletContext<{
     panierItems: PanierItem[];
     setPanierItems: React.Dispatch<React.SetStateAction<PanierItem[]>>;
   }>();
 
-  const handleDeletePanierItem = async (): Promise<void> => {
-    try {
-      const res = await fetch(`${base}/api/panier/delete`, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ itemId: item.id }),
-      });
-
-      if (!res.ok) throw new Error("Erreur lors de la suppression");
-
-      // ✅ mise à jour instantanée du panier global
-      setPanierItems?.(prev => prev.filter(p => p.id !== item.id));
-
-      // garde tes props existantes
-      onDeleted(item.id);
-      setisItemDeleted?.(true);
-
-      console.log(`Item ${item.id} supprimé avec succès.`);
-    } catch (error) {
-      console.error("Erreur lors de la suppression du panier :", error);
-      alert("Impossible de supprimer l'item.");
-    }
-  };
+  const [popupMsg, setPopupMsg] = useState<string | null>(null);
+  const [popupMode, setPopupMode] = useState<"good" | "bad" | "question">("question");
+  const [popupBtn, setPopupBtn] = useState<React.ReactNode>(null);
 
   const duree = useMemo(() => durationLabel(item.departHeure, item.arriveeHeure), [
     item.departHeure,
@@ -77,70 +55,124 @@ export default function TrainCard({ item, onDeleted, setisItemDeleted }: TrainCa
     navigate(`/train/${item.id}`);
   };
 
+  const handleDeletePanierItem = async (): Promise<void> => {
+    try {
+      const res = await fetch(`${base}/api/panier/delete`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ itemId: item.id }),
+      });
+
+      if (!res.ok) throw new Error("Erreur lors de la suppression");
+
+      setPanierItems?.(prev => prev.filter(p => p.id !== item.id));
+      onDeleted(item.id);
+      setisItemDeleted?.(true);
+
+      // PopUp succès
+      setPopupMsg("Billet supprimé avec succès !");
+      setPopupMode("good");
+      setPopupBtn(
+        <button
+          className="bg-[#98EAF3] text-[#115E66] w-full h-10 rounded-lg font-bold"
+          onClick={() => setPopupMsg(null)}
+        >
+          OK
+        </button>
+      );
+
+    } catch (error) {
+      console.error("Erreur lors de la suppression du panier :", error);
+
+      setPopupMsg("Impossible de supprimer le billet.");
+      setPopupMode("bad");
+      setPopupBtn(
+        <button
+          className="bg-[#98EAF3] text-[#115E66] w-full h-10 rounded-lg font-bold"
+          onClick={() => setPopupMsg(null)}
+        >
+          Réessayer
+        </button>
+      );
+    }
+  };
+
   return (
-    <article className="w-full rounded-3xl border border-[#2C474B] bg-[#0C2529] text-white px-4 py-4 sm:px-6">
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center rounded-full bg-[#98EAF3] text-[#0C2529] font-bold text-xs px-3 py-1">
-              Direct
-            </span>
-            <span className="text-xs text-white/60">TER</span>
-            <span className="text-xs text-white/40">•</span>
-            <span className="text-xs text-white/60">n°{item.id}</span>
-          </div>
-
-          <h3 className="mt-2 text-lg sm:text-xl font-semibold text-[#98EAF3] truncate">
-            {item.departLieu} → {item.arriveeLieu}
-          </h3>
-
-          <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-white/80">
-            <span className="font-semibold">{item.departHeure}</span>
-            <span className="text-white/40">→</span>
-            <span className="font-semibold">{item.arriveeHeure}</span>
-            <span className="text-white/40">•</span>
-            <span>{duree}</span>
-          </div>
-
-          <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-white/70">
-            <div className="flex items-center gap-2">
-              <img src={terIco} alt="" className="h-4 w-4" />
-              <span>{item.classe}</span>
+    <>
+      <article className="w-full rounded-3xl border border-[#2C474B] bg-[#0C2529] text-white px-4 py-4 sm:px-6">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="inline-flex items-center rounded-full bg-[#98EAF3] text-[#0C2529] font-bold text-xs px-3 py-1">
+                Direct
+              </span>
+              <span className="text-xs text-white/60">TER</span>
+              <span className="text-xs text-white/40">•</span>
+              <span className="text-xs text-white/60">n°{item.id}</span>
             </div>
-            <div className="flex items-center gap-2">
-              <img src={SiegeIco} alt="" className="h-4 w-4" />
-              <span>{item.siegeRestant} places</span>
+
+            <h3 className="mt-2 text-lg sm:text-xl font-semibold text-[#98EAF3] truncate">
+              {item.departLieu} → {item.arriveeLieu}
+            </h3>
+
+            <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-white/80">
+              <span className="font-semibold">{item.departHeure}</span>
+              <span className="text-white/40">→</span>
+              <span className="font-semibold">{item.arriveeHeure}</span>
+              <span className="text-white/40">•</span>
+              <span>{duree}</span>
+            </div>
+
+            <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-white/70">
+              <div className="flex items-center gap-2">
+                <img src={terIco} alt="" className="h-4 w-4" />
+                <span>{item.classe}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <img src={SiegeIco} alt="" className="h-4 w-4" />
+                <span>{item.siegeRestant} places</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="shrink-0 text-right">
+            <p className="text-2xl font-extrabold">{prix}€</p>
+            <p className="mt-1 text-xs font-semibold text-emerald-300">
+              Il reste {item.siegeRestant}
+            </p>
+
+            <div className="mt-3 flex items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={handleVoirDetail}
+                className="h-9 px-4 rounded-full bg-[#FFB856] text-[#0C2529] font-bold text-sm hover:brightness-110 transition"
+              >
+                Détail
+              </button>
+
+              <button
+                type="button"
+                onClick={handleDeletePanierItem}
+                className="h-9 w-9 rounded-2xl bg-[#133A40] border border-[#2C474B] flex items-center justify-center hover:border-red-400/60 hover:bg-red-500/10 transition"
+                aria-label="Supprimer"
+                title="Supprimer"
+              >
+                <img src={trashcan} alt="" className="h-5 w-5" />
+              </button>
             </div>
           </div>
         </div>
+      </article>
 
-        <div className="shrink-0 text-right">
-          <p className="text-2xl font-extrabold">{prix}€</p>
-          <p className="mt-1 text-xs font-semibold text-emerald-300">
-            Il reste {item.siegeRestant}
-          </p>
-
-          <div className="mt-3 flex items-center justify-end gap-2">
-            <button
-              type="button"
-              onClick={handleVoirDetail}
-              className="h-9 px-4 rounded-full bg-[#FFB856] text-[#0C2529] font-bold text-sm hover:brightness-110 transition"
-            >
-              Détail
-            </button>
-
-            <button
-              type="button"
-              onClick={handleDeletePanierItem}
-              className="h-9 w-9 rounded-2xl bg-[#133A40] border border-[#2C474B] flex items-center justify-center hover:border-red-400/60 hover:bg-red-500/10 transition"
-              aria-label="Supprimer"
-              title="Supprimer"
-            >
-              <img src={trashcan} alt="" className="h-5 w-5" />
-            </button>
-          </div>
-        </div>
-      </div>
-    </article>
+      {popupMsg && (
+        <PopUp
+          message={popupMsg}
+          Btn={popupBtn}
+          setPopupIsDisplayed={setPopupMsg as any}
+          mode={popupMode}
+        />
+      )}
+    </>
   );
 }

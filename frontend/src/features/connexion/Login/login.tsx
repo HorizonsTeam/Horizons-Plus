@@ -13,10 +13,11 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const [isLoading, setIsLoading] = useState(false);
+  // popup et loader
   const [popupMsg, setPopupMsg] = useState<string | null>(null);
   const [popupMode, setPopupMode] = useState<"good" | "bad" | "question">("question");
   const [popupBtn, setPopupBtn] = useState<React.ReactNode>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const closePopup = () => setPopupMsg(null);
 
@@ -28,10 +29,7 @@ export default function Login() {
       setPopupMsg("Veuillez entrer votre email et votre mot de passe.");
       setPopupMode("bad");
       setPopupBtn(
-        <button
-          className="bg-[#98EAF3] text-[#115E66] w-full h-10 rounded-lg font-bold"
-          onClick={closePopup}
-        >
+        <button className="bg-[#98EAF3] text-[#115E66] w-full h-10 rounded-lg font-bold" onClick={closePopup}>
           OK
         </button>
       );
@@ -44,13 +42,20 @@ export default function Login() {
     setPopupBtn(null);
 
     try {
-      await authClient.signIn.email({
+      const result = await authClient.signIn.email({
         email,
         password,
         rememberMe: true,
         callbackURL: "/",
       });
 
+      // Cas 2FA
+      if ((result as any)?.data?.twoFactorRedirect) {
+        navigate("/two-factor", { state: { email } });
+        return;
+      }
+
+      // Succès
       setPopupMsg("Connexion réussie !");
       setPopupMode("good");
       setPopupBtn(
@@ -61,15 +66,13 @@ export default function Login() {
           Continuer
         </button>
       );
+
     } catch (err: any) {
       console.error("signin error", err);
       setPopupMsg(err?.message || "Identifiants invalides.");
       setPopupMode("bad");
       setPopupBtn(
-        <button
-          className="bg-[#98EAF3] text-[#115E66] w-full h-10 rounded-lg font-bold"
-          onClick={closePopup}
-        >
+        <button className="bg-[#98EAF3] text-[#115E66] w-full h-10 rounded-lg font-bold" onClick={closePopup}>
           Réessayer
         </button>
       );
@@ -82,10 +85,7 @@ export default function Login() {
     setPopupMsg("Connexion avec Google pas encore disponible. Merci de vous connecter normalement. :)");
     setPopupMode("question");
     setPopupBtn(
-      <button
-        className="bg-[#98EAF3] text-[#115E66] w-full h-10 rounded-lg font-bold"
-        onClick={closePopup}
-      >
+      <button className="bg-[#98EAF3] text-[#115E66] w-full h-10 rounded-lg font-bold" onClick={closePopup}>
         OK
       </button>
     );
@@ -94,9 +94,7 @@ export default function Login() {
   return (
     <PageTransition>
       <div className={`text-center min-h-screen flex flex-col mt-17 lg:mt-13 gap-6 ${isMobile ? 'w-full px-4' : 'w-full'}`}>
-        <h1 className="text-4xl font-bold text-[#98EAF3] mb-5 lg:mb-10">
-          Connectez-vous
-        </h1>
+        <h1 className="text-4xl font-bold text-[#98EAF3] mb-5 lg:mb-10">Connectez-vous</h1>
 
         <form onSubmit={handleSubmit} className="flex flex-col items-center mt-1 space-y-4">
           <input
@@ -107,7 +105,6 @@ export default function Login() {
             onChange={(e) => setEmail(e.target.value)}
             required
           />
-
           <input
             type="password"
             placeholder="Mot de passe"
@@ -118,9 +115,7 @@ export default function Login() {
           />
 
           <div className="w-full max-w-md text-right">
-            <Link to="/mdpoublie" className="text-sm text-[#98EAF3] hover:underline">
-              Mot de passe oublié ?
-            </Link>
+            <Link to="/mdpoublie" className="text-sm text-[#98EAF3] hover:underline">Mot de passe oublié ?</Link>
           </div>
 
           <button
@@ -156,7 +151,7 @@ export default function Login() {
           <PopUp
             message={popupMsg}
             Btn={popupBtn}
-            setPopupIsDisplayed={setPopupMsg as any} 
+            setPopupIsDisplayed={closePopup as any}
             isLoading={isLoading}
             mode={popupMode}
           />

@@ -79,7 +79,7 @@ export default function Panier() {
     return (
         <div className="min-h-screen bg-[#133A40]">
             <div className="relative pt-6 pb-4">
-                <button onClick={() => navigate(-1)} className="absolute left-4 top-6">
+                <button onClick={() => navigate(-1)} className="absolute left-4 top-6 cursor-pointer">
                     <img src={ReturnBtn} alt="Return Button" className="h-8 w-8" />
                 </button>
                 <h1 className="text-3xl text-[#98EAF3] font-bold text-center">Panier</h1>
@@ -87,7 +87,7 @@ export default function Panier() {
 
             <div className="px-4 pb-10 space-y-5 ">
                 {panierItems.map((item) => (
-                <Traincard key={item.id} item={item} onDeleted={handleItemDeleted}  setisItemDeleted={setIsItemDeleted} />
+                <Traincard key={item.id} item={item} onDeleted={handleItemDeleted} />
                 ))}
 
                 { displayError && (
