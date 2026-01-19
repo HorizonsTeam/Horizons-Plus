@@ -113,7 +113,7 @@ function Row({ label, children, isMobile }: RowProps & { isMobile: boolean }): J
 
 function Button({ variant = "solid", className = "", ...props }: ButtonProps): JSX.Element {
     const base =
-        "inline-flex items-center justify-center rounded-xl transition select-none disabled:opacity-50 disabled:cursor-not-allowed";
+        "inline-flex items-center justify-center rounded-xl transition select-none disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer";
     const solid = "bg-[#2C474B] hover:bg-white hover:text-black";
     const ghost = "bg-transparent hover:bg-white/10 ";
     const danger = "bg-transparent hover:bg-[#FFB856]/15  text-[#FFB856]";

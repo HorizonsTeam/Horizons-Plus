@@ -279,7 +279,7 @@ export default function Billet_Train_recap() {
                             {isClassSelected && (
                                 <>
                                     {/* Montant ajouté */}
-                                    <p className="text-green-400 font-semibold text-sm mt-1">
+                                    <p className="text-primary font-semibold text-sm mt-1">
                                     Soit +{Math.round(((price - basePrice) * 100) / 100)} €
                                     </p>
                                 </>
