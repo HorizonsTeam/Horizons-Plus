@@ -1,3 +1,4 @@
+
 export type SuggestionType = "city" | "stop_area" | "airport";
 
 export type Suggestion_ = {
@@ -32,6 +33,7 @@ export type AutocompleteInputProps = {
   onFocusCapture?: (e: React.FocusEvent<HTMLInputElement>) => void;
   onBlurCapture?: (e: React.FocusEvent<HTMLInputElement>) => void;
   wrapperRef?: React.Ref<HTMLDivElement>;
+  OnCloseFocus?: () => void;
 
 }
 
@@ -39,6 +41,7 @@ export type AutocompleteListProps = {
   suggestions: Suggestion[];
   selectedIndex: number;
   onSelect: (s: Suggestion) => void;
+  OncloseFocus: () => void  | undefined;
   className?: string;
 }
 

@@ -76,7 +76,7 @@ export default function PaymentPage() {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                amount: 5900,
+                amount: Math.round(priceTotal * 100),
                 currency: "eur"
             })
         })

@@ -2,7 +2,7 @@ import ReturnBtn from '../../../../assets/ReturnBtn.svg';
 import clockIco from '../../../../assets/clock.svg';
 import checkMarck from '../../../../assets/checkMarck.svg';
 import ClassCard from '../components/Recap/Classcard.tsx';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Inclus from '../components/Recap/Inclus.tsx';
 import icoWifi from '../../../../assets/wifi.svg'
 import priseIco from '../../../../assets/Prises.svg'
@@ -52,6 +52,9 @@ export default function Billet_Train_recap() {
     const isoDate = parseFrenchDate(formattedDepartureDate);
     const departTimestamp = combineDateAndTime(isoDate, journey.departureTime);
     const arriveeTimestamp = combineDateAndTime(isoDate, journey.arrivalTime);
+    const [basePrice] = useState<number>(journey.price);
+    const [price, setPrice] = useState<number>(basePrice);
+    const [isClassSelected, setIsClassSelected] = useState<boolean>(false);
 
     const navigate = useNavigate();
     const handleretour = () => {
@@ -80,6 +83,27 @@ export default function Billet_Train_recap() {
         },
     ];
 
+    useEffect(() => {
+        switch (selectedClass) {
+            case 'Économie':
+                setPrice(basePrice);
+                setIsClassSelected(false);
+                break;
+            case 'Confort':
+                setPrice(Math.round((basePrice * 1.5) * 100) / 100);
+                setIsClassSelected(true);
+                break;
+            case 'Business':
+                setPrice(Math.round((basePrice * 2) * 100) / 100);
+                setIsClassSelected(true);
+                break;
+            case 'Première':
+                setPrice(Math.round((basePrice * 3) * 100) / 100);
+                setIsClassSelected(true);
+                break;
+        }
+    }, [selectedClass, basePrice]);
+
     const stops: Stop[] = journey.stops;
     const legs: Leg[] = journey.legs;
     const [isAddedPanierDesplayed, setisAddedPanierDesplayed] = useState(false);
@@ -107,7 +131,7 @@ export default function Billet_Train_recap() {
                     arriveeLieu: journey.arrivalName,
                     classe: selectedClass,
                     siegeRestant,
-                    prix: journey.price,
+                    prix: price,
                     dateVoyage: isoDate,
                     transportType: journey.simulated === true ? "AVION" : "TRAIN",
                 }),
@@ -132,7 +156,6 @@ export default function Billet_Train_recap() {
             SetIsloading(false);
         }
     }
-
 
     const BtnOverlay = <>
         <button className="w-full h-16 bg-[#98EAF3] rounded-xl hover:bg-[#98EAF3]/90 transition cursor-pointer" onClick={() => { navigate('/panier'); window.scroll({ top: 0, behavior: "smooth" }) }}>Accéder au panier</button>
@@ -237,10 +260,31 @@ export default function Billet_Train_recap() {
                 <Serinita_card />
 
                 {/*Total et boutons */}
-                <div className="w-full">
-                    <div className="flex justify-between items-center mb-6 px-4">
+                <div className="w-full">  
+                    <div className="flex justify-between items-center mb-6">
                         <p className="font-bold text-3xl">Total :</p>
-                        <p className="font-bold text-3xl">{journey.price * passagersCount} €</p>
+
+                        <div className="text-right">
+                            {/* Prix avant sélection de classe */}
+                            {isClassSelected && (
+                                <p className="text-gray-400 text-sm line-through">
+                                    {basePrice} €
+                                </p>
+                            )}
+                            
+                            {/* Prix final */}
+                            <p className="font-bold text-3xl">{price} €</p>
+
+                            {/* Augmentation */}
+                            {isClassSelected && (
+                                <>
+                                    {/* Montant ajouté */}
+                                    <p className="text-green-400 font-semibold text-sm mt-1">
+                                    Soit +{Math.round(((price - basePrice) * 100) / 100)} €
+                                    </p>
+                                </>
+                            )}
+                        </div>
                     </div>
 
                     <div className="flex flex-col gap-3 items-center">

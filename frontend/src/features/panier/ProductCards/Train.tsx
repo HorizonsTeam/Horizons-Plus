@@ -29,7 +29,7 @@ function durationLabel(start: string, end: string): string {
   return `${hh}h${String(mm).padStart(2, "0")}`;
 }
 
-export default function TrainCard({ item, onDeleted }: TrainCardProps) {
+export default function TrainCard({ item, onDeleted, setisItemDeleted }: TrainCardProps) {
   const navigate = useNavigate();
 
   const handleDeletePanierItem = async (): Promise<void> => {

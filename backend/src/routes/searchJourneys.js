@@ -15,6 +15,8 @@ searchJourneys.get("/journeys", async (req, res) => {
         fromSource, toSource,
     } = req.query;
 
+    console.log("la query : ", req.query);
+
     if (
         !fromId || !fromName || !toId || !toName || !datetime ||
         !fromLat || !toLat || !fromLon || !toLon ||

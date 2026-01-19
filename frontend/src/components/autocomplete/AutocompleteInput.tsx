@@ -16,6 +16,7 @@ const AutocompleteInput = forwardRef<HTMLInputElement, AutocompleteInputProps>(
             onFocus,
             onBlur,
             wrapperRef,
+            OnCloseFocus, 
         },
         ref
     ) {
@@ -76,6 +77,10 @@ const AutocompleteInput = forwardRef<HTMLInputElement, AutocompleteInputProps>(
             document.addEventListener("pointerdown", onPointerDown, true);
             return () => document.removeEventListener("pointerdown", onPointerDown, true);
         }, []);
+        const selectSuggestion = (suggestion: Suggestion) => {
+            onSelect(suggestion);
+            setIsFocused(false);
+        };
 
         const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
             if (!suggestions.length) return;
@@ -83,17 +88,25 @@ const AutocompleteInput = forwardRef<HTMLInputElement, AutocompleteInputProps>(
             if (e.key === "ArrowDown") {
                 e.preventDefault();
                 setSelectedIndex((i) => Math.min(i + 1, suggestions.length - 1));
-            } else if (e.key === "ArrowUp") {
+            }
+
+            else if (e.key === "ArrowUp") {
                 e.preventDefault();
                 setSelectedIndex((i) => Math.max(i - 1, 0));
-            } else if (e.key === "Enter") {
+            }
+
+            else if (e.key === "Enter") {
                 e.preventDefault();
-                onSelect(suggestions[selectedIndex]);
-                setIsFocused(false);
-            } else if (e.key === "Escape") {
+                selectSuggestion(suggestions[selectedIndex]);
+            }
+
+            else if (e.key === "Escape") {
+                e.preventDefault();
+
                 setIsFocused(false);
             }
         };
+
 
         const handleFocusInternal = (e: React.FocusEvent<HTMLInputElement>) => {
             setIsFocused(true);
@@ -134,10 +147,11 @@ const AutocompleteInput = forwardRef<HTMLInputElement, AutocompleteInputProps>(
                     selectedIndex={selectedIndex}
                     onSelect={(s) => {
                         onChange(s.name);
-                        onSelect(s);
-                        setIsFocused(false);
+                        selectSuggestion(s);
                     }}
                     className={AutocompleteListClassname}
+                    OncloseFocus={ OnCloseFocus?? (() => setIsFocused(false)) }
+                  
                 />
             </div>
         );

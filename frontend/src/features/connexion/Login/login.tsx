@@ -34,14 +34,21 @@ export default function Login() {
     try {
       // Appel de Better AUth
       // rememberMe pour se souvenir de nous lors de la connexion
-      await authClient.signIn.email({
+      const result = await authClient.signIn.email({
         email,
         password,
         rememberMe: true,
         callbackURL: "/", // Après connexion on se dirige à l"accueil
       });
 
+      if ((result as any)?.data?.twoFactorRedirect) {
+        navigate("/two-factor", { state: { email } });
+        return;
+      }
+
+
       navigate("/")
+
     } catch (err: any) {
       console.error("signin error", err);
       setErrorMsg(err?.message || "Identifiants invalides.");
@@ -54,12 +61,12 @@ export default function Login() {
   const signInWithGoogle = async () => {
     setErrorMsg("Connexion avec Google pas encore disponible. Merci de vous connecter normalement. :)")
   };
-  const BtnError = <button className="bg-[#98EAF3] text-[#115E66] w-full h-10 rounded-lg max-w-md font-bold -mb-3" onClick={()=> navigate('/login')}>Veuillez réessayer</button>
+  const BtnError = <button className="bg-[#98EAF3] text-[#115E66] w-full h-10 rounded-lg max-w-md font-bold -mb-3" onClick={() => navigate('/login')}>Veuillez réessayer</button>
 
   return (
     <PageTransition>
       <div className={`text-center min-h-screen flex flex-col mt-17 lg:mt-13   gap-6 ${useIsMobile() ? 'w-full px-4' : 'w-full'} `}>
-                      <h1 className="text-4xl font-bold   text-[#98EAF3] mb-5 lg:mb-10">
+        <h1 className="text-4xl font-bold   text-[#98EAF3] mb-5 lg:mb-10">
 
           Connectez-vous
         </h1>

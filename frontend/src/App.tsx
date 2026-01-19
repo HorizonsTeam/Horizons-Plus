@@ -18,7 +18,7 @@ import ResetPassword from './features/connexion/ResetPassword/resetpassword.tsx'
 import AccountSettings from './features/Settings/Pages/AccountSettings/AccountSettings.tsx';
 
 import ReservationsPages from './features/reservations-pages/components/reservationsPages.tsx';
-
+import TwoFactor from './features/connexion/2AF/TwoFactor.tsx';
 
 
 function App() {
@@ -29,6 +29,7 @@ function App() {
         <Route path="/" element={<MainLayout />}>
           <Route index element={<HomePage />} />
           <Route path="login" element={<Login />} />
+          <Route path="/two-factor" element={<TwoFactor />} />
           <Route path="mdpoublie" element={<MdpOublie />} />
           <Route path="ResetPassword" element={<ResetPassword />} />
           <Route path="singin" element={<Singin />} />
@@ -41,13 +42,6 @@ function App() {
           <Route path="UserInfoPageMobile" element={<UserInfoPageMobile />} />
           <Route path="AccountSettings" element={<AccountSettings />} />
           <Route path="reservations" element={<ReservationsPages />} />
-          
-         
-
-
-           
-
-
         </Route>
 
       </Routes>
