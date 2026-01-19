@@ -1,9 +1,9 @@
 import { useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import terIco from "../../../assets/ter_ico.svg";
 import SiegeIco from "../../../assets/siege_ico.svg";
 import trashcan from "../../../assets/trashcan.svg";
-import type { TrainCardProps } from "../types.ts";
+import type { TrainCardProps, PanierItem } from "../types.ts";
 
 const base = `${import.meta.env.VITE_API_URL || "http://localhost:3005"}`;
 
@@ -32,6 +32,12 @@ function durationLabel(start: string, end: string): string {
 export default function TrainCard({ item, onDeleted, setisItemDeleted }: TrainCardProps) {
   const navigate = useNavigate();
 
+  // 🔹 nouvelle partie pour update global state
+  const { setPanierItems } = useOutletContext<{
+    panierItems: PanierItem[];
+    setPanierItems: React.Dispatch<React.SetStateAction<PanierItem[]>>;
+  }>();
+
   const handleDeletePanierItem = async (): Promise<void> => {
     try {
       const res = await fetch(`${base}/api/panier/delete`, {
@@ -40,8 +46,17 @@ export default function TrainCard({ item, onDeleted, setisItemDeleted }: TrainCa
         credentials: "include",
         body: JSON.stringify({ itemId: item.id }),
       });
+
       if (!res.ok) throw new Error("Erreur lors de la suppression");
+
+      // ✅ mise à jour instantanée du panier global
+      setPanierItems?.(prev => prev.filter(p => p.id !== item.id));
+
+      // garde tes props existantes
       onDeleted(item.id);
+      setisItemDeleted?.(true);
+
+      console.log(`Item ${item.id} supprimé avec succès.`);
     } catch (error) {
       console.error("Erreur lors de la suppression du panier :", error);
       alert("Impossible de supprimer l'item.");
@@ -116,7 +131,7 @@ export default function TrainCard({ item, onDeleted, setisItemDeleted }: TrainCa
 
             <button
               type="button"
-              onClick={() => {handleDeletePanierItem () ; setisItemDeleted?.(true);}}
+              onClick={handleDeletePanierItem}
               className="h-9 w-9 rounded-2xl bg-[#133A40] border border-[#2C474B] flex items-center justify-center hover:border-red-400/60 hover:bg-red-500/10 transition"
               aria-label="Supprimer"
               title="Supprimer"

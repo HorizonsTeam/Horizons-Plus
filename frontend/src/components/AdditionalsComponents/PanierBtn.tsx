@@ -3,10 +3,10 @@ import useIsMobile from '../layouts/UseIsMobile';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 type PanierBtnProps = {
-    nombresArticles?: number;
+    nombresArticles : number;
 };
 
-export default function PanierBtn({ nombresArticles = 2 }: PanierBtnProps) {
+export default function PanierBtn({ nombresArticles}: PanierBtnProps) {
     const isMobile = useIsMobile();
     const location = useLocation();
     const navigate = useNavigate();

@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import ReturnBtn from '../../../../assets/ReturnBtn.svg';
+import {  useLocation } from 'react-router-dom';
 import ModeDePaiementCard from '../components/paiement/ModeDePaiementCard.tsx';
 import assurance_Ico from '../../../../assets/assurance.svg';
 import useIsMobile from '../../../../components/layouts/UseIsMobile.tsx';
@@ -8,6 +7,8 @@ import { useEffect } from 'react';
 import CheckMarkSVG from '../../../../assets/CheckMark.svg';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
+import Header from '../components/Header.tsx';
+
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 import type { LocationState } from '../types.ts';
@@ -37,7 +38,6 @@ export default function PaymentPage() {
     const { state } = useLocation();
     const { journey, selectedClass, passagersCount, formattedDepartureDate, passagersData } = (state || {}) as LocationState & { passagersData: number[] };
 
-    const navigate = useNavigate();
     const isMobile = useIsMobile();
 
     const [clientSecret, setClientSecret] = useState("");
@@ -66,10 +66,7 @@ export default function PaymentPage() {
         }
     }, [ValidatePayment]);
 
-    const handleRetour = () => {
-        navigate(-1); 
-        
-    };
+    
 
     useEffect(() => {
         fetch(`${API_BASE}/api/payments/create-payment-intent`, {
@@ -148,20 +145,8 @@ export default function PaymentPage() {
             <div className={`relative w-full ${isMobile ? "px-4" : " py-10"}`}>
 
                 {/* HEADER */}
-                <div className="m-2 p-6 mb-10 -mt-3 ">
-                    <div className="relative mt-4 flex justify-center items-center">
-                        <button onClick={handleRetour}>
-                            <img
-                                src={ReturnBtn}
-                                alt="Return Button"
-                                className="absolute left-0 -translate-x-1/2 transform"
-                            />
-                        </button>
-                        <h1 className="text-3xl text-[#98EAF3] font-medium text-center">
-                            Paiement 
-                        </h1>
-                    </div>
-                </div>
+                    
+                <Header Titre="Paiement"/>
 
                 {/* A recupérer les infos - A FAIRE BACKEND */}
                 {/* RÉCAP */}
