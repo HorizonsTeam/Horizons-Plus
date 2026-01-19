@@ -1,4 +1,3 @@
-// ReservationsPages.tsx
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { Reservation, TabType } from "../types/reservations";
@@ -85,10 +84,10 @@ export default function ReservationsPages() {
   );
 
   const renderEmptyState = () => (
-    <div className="bg-white rounded-lg shadow p-8 text-center">
+    <div className="bg-[#0C2529] rounded-lg shadow p-8 text-center">
       <div className="mb-6">
-        <h2 className="text-2xl font-semibold text-gray-700 mb-2">Aucune réservation</h2>
-        <p className="text-gray-600 mb-6">Vous n'avez aucune réservation pour le moment.</p>
+        <h2 className="text-2xl font-semibold text-white mb-2">Aucune réservation</h2>
+        <p className="text-white mb-6">Vous n'avez aucune réservation pour le moment.</p>
       </div>
       <button
         onClick={() => navigate("/")}
@@ -102,8 +101,8 @@ export default function ReservationsPages() {
   const renderReservationsList = (reservations: Reservation[]) => {
     if (reservations.length === 0) {
       return (
-        <div className="text-center py-12 bg-gray-50 rounded-lg">
-          <p className="text-gray-600">
+        <div className="text-center py-12 bg-[#0C2529] rounded-lg">
+          <p className="text-white">
             {activeTab === "upcoming" 
               ? "Aucune réservation à venir" 
               : "Aucune réservation passée"
@@ -132,7 +131,7 @@ export default function ReservationsPages() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-[#103035] mb-2">Mes réservations</h1>
+        <h1 className="text-3xl font-bold text-white mb-2">Mes réservations</h1>
         <p className="text-white-600">Consultez et gérez toutes vos réservations</p>
       </div>
 

@@ -16,7 +16,7 @@ export default function CarteSelect() {
         <div className="relative">
             <button
                 onClick={() => setOpen(!open)}
-                className="w-full  h-10 bg-[#103035] border-2 border-[#2C474B] rounded-md  text-white px-3 flex justify-between items-center"
+                className="w-full  h-10 bg-[#103035] border-2 border-[#2C474B] rounded-md  text-white px-3 flex justify-between items-center cursor-pointer"
             >
                 {value || "Sélectionner une carte"}
                 <span>▼</span>

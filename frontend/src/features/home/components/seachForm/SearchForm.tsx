@@ -388,6 +388,8 @@ export default function SearchForm({ onPlaneAnimation, planeAnimDurationMs }: Se
               wrapperRef={depWrapperRef}
               onFocus={() => openFocus(depWrapperRef.current)}
               className="bg-[#243C40] text-white placeholder-slate-400 rounded-xl px-4 py-3 w-56 outline-none border-none focus:ring-2 focus:ring-cyan-400/30"
+              OnCloseFocus={closeFocus}
+
             />
 
             <button
@@ -413,13 +415,14 @@ export default function SearchForm({ onPlaneAnimation, planeAnimDurationMs }: Se
               wrapperRef={arrWrapperRef}
               onFocus={() => openFocus(arrWrapperRef.current)}
               className="bg-[#243C40] text-white placeholder-slate-400 rounded-xl px-4 py-3 w-56 outline-none border-none focus:ring-2 focus:ring-cyan-400/30"
+              OnCloseFocus={closeFocus}
             />
 
             <input
               type="date"
               value={departureDate}
               onChange={(e) => handleDateChange(e, true)}
-              className="bg-[#243C40] text-white rounded-xl px-4 py-3 outline-none border-none focus:ring-2 focus:ring-cyan-400/30 [color-scheme:dark]"
+              className="bg-[#243C40] text-white rounded-xl px-4 py-3 outline-none border-none focus:ring-2 focus:ring-cyan-400/30 [color-scheme:dark] cursor-pointer"
             />
 
             {tripType === "roundtrip" && (
@@ -446,7 +449,7 @@ export default function SearchForm({ onPlaneAnimation, planeAnimDurationMs }: Se
             <button
               disabled={isDisabled}
               onClick={goSearch}
-              className="bg-primary rounded-xl px-6 py-4 transition shadow-lg disabled:opacity-50"
+              className="bg-primary rounded-xl px-6 py-4 transition shadow-lg disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               <Search className="w-6 h-6 stroke-[2.5]" />
             </button>
