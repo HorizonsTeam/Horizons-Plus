@@ -457,6 +457,7 @@ export default function Resultats() {
                                         formattedDepartureDate={formattedDepartureDate}
                                         index={idx}
                                         IsLoading={IsLoading}
+                                        isTrain={ transport == "train"}
                                     />
                                 ))}
 

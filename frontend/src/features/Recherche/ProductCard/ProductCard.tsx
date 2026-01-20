@@ -3,9 +3,13 @@ import type { ProductCardProps } from './types.ts';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import useIsMobile from '../../../components/layouts/UseIsMobile.tsx';
+import trainIco from '../../../assets/train_ico2.svg';
+import PlaneIco from '../../../assets/plane_ico2.svg'
 
 
-export default function ProductCard({ journey, passagersCount, formattedDepartureDate, index = 0 ,IsLoading }: ProductCardProps) {
+
+
+export default function ProductCard({ journey, passagersCount, formattedDepartureDate, index = 0, IsLoading, isTrain }: ProductCardProps) {
     const hasNoTransfer = journey.numberOfTransfers === 0;
     const isMobile = useIsMobile();
 
@@ -33,7 +37,21 @@ export default function ProductCard({ journey, passagersCount, formattedDepartur
                     <div className="flex   justify-between items-center px-6 py-4 border-b border-[#2C474B]">
 
                         <div className='flex flex-col gap-4 min-w-0'>
-                            <p className=' font-bold'>Ter </p>
+                                <p className=' font-bold text-primary'>
+                                    {isTrain ? (
+                                        <img src={trainIco} alt="" />
+
+                                    )
+
+                                     : (
+                                        <img src={PlaneIco} alt="" />
+
+
+
+                                     )
+
+                                    }
+                                     </p>
                             <span className="  font-semibold">
                                 {journey.departureTime}
                             </span>
