@@ -1,15 +1,14 @@
 import { type Dispatch, type SetStateAction, type ReactNode } from "react";
 import useIsMobile from "../layouts/UseIsMobile";
-import CheckMarkSVG from "../../assets/checkMarck.svg";
-import { Loader } from "lucide-react";
+import { Loader, Check, X, User } from "lucide-react";
 
 type PopupProps = {
   message: string | null;
   Btn?: ReactNode;
   setPopupIsDisplayed?: Dispatch<SetStateAction<boolean>>;
   isLoading?: boolean;
-  isLoadingMsg?:string;
-  isSuccess?: boolean;
+  isLoadingMsg?: string;
+  mode?: "good" | "bad" | "question"; 
 };
 
 export default function PopUp({
@@ -18,11 +17,35 @@ export default function PopUp({
   setPopupIsDisplayed,
   isLoading,
   isLoadingMsg,
-  isSuccess,
+  mode = "good", 
 }: PopupProps) {
   const isMobile = useIsMobile();
 
   const close = () => setPopupIsDisplayed?.(false);
+
+  const Icon = (() => {
+    switch (mode) {
+      case "good":
+        return Check;
+      case "bad":
+        return X;
+      case "question":
+      default:
+        return User;
+    }
+  })();
+
+  const iconColor = (() => {
+    switch (mode) {
+      case "good":
+        return "text-primary";
+      case "bad":
+        return "text-red-500";
+      case "question":
+      default:
+        return "text-primary";
+    }
+  })();
 
   return (
     <div
@@ -30,33 +53,28 @@ export default function PopUp({
       onClick={close}
     >
       <div
-        className={`bg-[#2C474B] p-6 mx-5 rounded-2xl ${
-          isMobile ? "w-80" : "w-[28rem]"
-        }`}
+        className={`bg-[#2C474B] p-6 mx-5 rounded-2xl ${isMobile ? "w-80" : "w-[28rem]"} shadow-lg`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="grid gap-10">
           {isLoading ? (
             <>
-            <div className="flex justify-center">
-              <Loader className="animate-spin text-white" size={40} />
-              
-            </div>
-            <p>{isLoadingMsg}</p>
+              <div className="flex justify-center">
+                <Loader className="animate-spin text-white" size={40} />
+              </div>
+              <p className="text-center text-white/80">{isLoadingMsg}</p>
             </>
           ) : (
             <div className="grid gap-5">
-              {isSuccess && (
-                <div className="flex items-center justify-center w-15 h-15 mx-auto">
-                  <img src={CheckMarkSVG} alt="" />
-                </div>
-              )}
+              <div className="flex justify-center">
+                <Icon className={`h-10 w-10 ${iconColor}`} />
+              </div>
 
-              <p className={`text-center font-semibold ${isMobile ? "text-sm" : "text-xl"}`}>
+              <p className={`text-center font-semibold ${isMobile ? "text-sm" : "text-xl"} text-white`}>
                 {message}
               </p>
 
-              <div className="flex justify-between w-full">{Btn}</div>
+              {Btn && <div className="flex justify-between w-full">{Btn}</div>}
             </div>
           )}
         </div>

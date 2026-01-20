@@ -30,7 +30,7 @@ type FiltreBlocProps = {
 
   onUpdateFilters?: () => void;
   resetFilters: () => void;
-  setFiltreMobileIsOn?: React.Dispatch<React.SetStateAction<boolean>>;
+  setFiltreMobileIsOn? : React.Dispatch<React.SetStateAction<boolean>>;
   Isloading?: boolean;
 };
 

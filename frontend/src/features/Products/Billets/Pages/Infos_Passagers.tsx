@@ -1,14 +1,12 @@
-import ReturnBtn from '../../../../assets/ReturnBtn.svg';
-import { useNavigate } from 'react-router-dom';
 import { Link, useLocation } from 'react-router-dom';
 import Passagers_Data_From from '../components/Passager_info/Passagers_DataForm.tsx';
 import { useState, useEffect } from 'react';
 import type { LocationState } from '../types.ts';
+import Header from '../components/Header.tsx';
 
 const API_BASE = import.meta.env.VITE_API_URL || '';
 
 export default function Infos_Passagers() {
-  const navigate = useNavigate();
 
   const { state } = useLocation();
   const { journey, selectedClass, passagersCount, formattedDepartureDate } = (state || {}) as LocationState;
@@ -24,12 +22,7 @@ export default function Infos_Passagers() {
       .catch(() => setCurrentUser(null));
   }, []);
 
-  const handleretour = () => 
-    {
-      navigate(-1);
-      window.scrollTo({ top: 0, behavior: "smooth" }); 
-    }
-
+ 
   const [passagers, setPassagers] = useState<number[]>(Array.from({ length: passagersCount || 1 }, (_, i) => i + 1));
 
   const Ajouter_Passager = () => {
@@ -51,22 +44,12 @@ export default function Infos_Passagers() {
 };
 
   return (
-    <div className="flex-wrap m-2 p-3  -mt-3 ">
-      <div className="m-2 p-3 -mt-3  ">
-        <div className="relative mt-4 flex justify-center items-center">
-          <button onClick={handleretour}>
-            <img
-              src={ReturnBtn}
-              alt="Return Button"
-              className="absolute left-0 -translate-x-1/2 mx-4 transform"
-            />
-          </button>
-          <h1 className="text-3xl text-[#98EAF3] font-medium text-center">
-            Informations voyageurs
-          </h1>
-        </div>
-      </div>
+    <>
+      <div className="w-full items-center  mt-10 p-4  mb-8">
 
+      <Header Titre='Informations'/>
+
+      <div className="w-full ">
       {passagers.map((num) => (
         <Passagers_Data_From
           key={num}
@@ -76,6 +59,7 @@ export default function Infos_Passagers() {
           user={currentUser} 
         />
       ))}
+      </div>
 
       <div
         onClick={Ajouter_Passager}
@@ -100,5 +84,6 @@ export default function Infos_Passagers() {
       </Link>
     </div>
     </div>
+    </>    
   );
 }

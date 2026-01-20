@@ -1,9 +1,10 @@
-import { useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useMemo, useState } from "react";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import terIco from "../../../assets/ter_ico.svg";
 import SiegeIco from "../../../assets/siege_ico.svg";
 import trashcan from "../../../assets/trashcan.svg";
-import type { TrainCardProps } from "../types.ts";
+import type { TrainCardProps, PanierItem } from "../types.ts";
+import PopUp from "../../../components/AdditionalsComponents/PopUp.tsx";
 
 const base = `${import.meta.env.VITE_API_URL || "http://localhost:3005"}`;
 
@@ -20,7 +21,7 @@ function durationLabel(start: string, end: string): string {
   const a = parseHHMM(start);
   const b = parseHHMM(end);
   if (!a || !b) return "—";
-  const startMin = a.h * 60 + a.m;
+  let startMin = a.h * 60 + a.m;
   let endMin = b.h * 60 + b.m;
   if (endMin < startMin) endMin += 24 * 60;
   const d = endMin - startMin;
@@ -29,24 +30,16 @@ function durationLabel(start: string, end: string): string {
   return `${hh}h${String(mm).padStart(2, "0")}`;
 }
 
-export default function TrainCard({ item, onDeleted }: TrainCardProps) {
+export default function TrainCard({ item }: TrainCardProps) {
   const navigate = useNavigate();
+  const { setPanierItems } = useOutletContext<{
+    panierItems: PanierItem[];
+    setPanierItems: React.Dispatch<React.SetStateAction<PanierItem[]>>;
+  }>();
 
-  const handleDeletePanierItem = async (): Promise<void> => {
-    try {
-      const res = await fetch(`${base}/api/panier/delete`, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ itemId: item.id }),
-      });
-      if (!res.ok) throw new Error("Erreur lors de la suppression");
-      onDeleted(item.id);
-    } catch (error) {
-      console.error("Erreur lors de la suppression du panier :", error);
-      alert("Impossible de supprimer l'item.");
-    }
-  };
+  const [popupMsg, setPopupMsg] = useState<string | null>(null);
+  const [popupMode, setPopupMode] = useState<"good" | "bad" | "question">("question");
+  const [popupBtn, setPopupBtn] = useState<React.ReactNode>(null);
 
   const duree = useMemo(() => durationLabel(item.departHeure, item.arriveeHeure), [
     item.departHeure,
@@ -62,12 +55,48 @@ export default function TrainCard({ item, onDeleted }: TrainCardProps) {
     navigate(`/train/${item.id}`);
   };
 
+  const handleDeletePanierItem = async (): Promise<void> => {
+    try {
+      const res = await fetch(`${base}/api/panier/delete`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ itemId: item.id }),
+      });
+
+      if (!res.ok) throw new Error("Erreur lors de la suppression");
+
+      setPanierItems(prev => prev.filter(p => p.id !== item.id));
+
+      setPopupMsg("Billet supprimé avec succès !");
+      setPopupMode("good");
+      setPopupBtn(
+        <button
+          className="bg-[#98EAF3] text-[#115E66] w-full h-10 rounded-lg font-bold"
+          onClick={() => setPopupMsg(null)}
+        >
+          OK
+        </button>
+      );
+    } catch (error) {
+      console.error("Erreur lors de la suppression du panier :", error);
+
+      setPopupMsg("Impossible de supprimer le billet.");
+      setPopupMode("bad");
+      setPopupBtn(
+        <button
+          className="bg-[#98EAF3] text-[#115E66] w-full h-10 rounded-lg font-bold"
+          onClick={() => setPopupMsg(null)}
+        >
+          Réessayer
+        </button>
+      );
+    }
+  };
+
   return (
-    <div
-      onClick={handleVoirDetail}
-      className="w-full rounded-3xl border border-[#2C474B] bg-[#0C2529] text-white px-4 py-4 sm:px-6 cursor-pointer"
-    >
-      <article>
+    <>
+      <article className="w-full rounded-3xl border border-[#2C474B] bg-[#0C2529] text-white px-4 py-4 sm:px-6">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
@@ -112,22 +141,16 @@ export default function TrainCard({ item, onDeleted }: TrainCardProps) {
             <div className="mt-3 flex items-center justify-end gap-2">
               <button
                 type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleVoirDetail();
-                }}
-                className="h-9 px-4 rounded-full bg-[#FFB856] text-[#0C2529] font-bold text-sm hover:brightness-110 transition cursor-pointer"
+                onClick={handleVoirDetail}
+                className="h-9 px-4 rounded-full bg-[#FFB856] text-[#0C2529] font-bold text-sm hover:brightness-110 transition"
               >
                 Détail
               </button>
 
               <button
                 type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDeletePanierItem();
-                }}
-                className="h-9 w-9 rounded-2xl bg-[#133A40] border border-[#2C474B] flex items-center justify-center hover:border-red-400/60 hover:bg-red-500/10 transition cursor-pointer"
+                onClick={handleDeletePanierItem}
+                className="h-9 w-9 rounded-2xl bg-[#133A40] border border-[#2C474B] flex items-center justify-center hover:border-red-400/60 hover:bg-red-500/10 transition"
                 aria-label="Supprimer"
                 title="Supprimer"
               >
@@ -137,6 +160,15 @@ export default function TrainCard({ item, onDeleted }: TrainCardProps) {
           </div>
         </div>
       </article>
-    </div>
+
+      {popupMsg && (
+        <PopUp
+          message={popupMsg}
+          Btn={popupBtn}
+          setPopupIsDisplayed={setPopupMsg as any}
+          mode={popupMode}
+        />
+      )}
+    </>
   );
 }

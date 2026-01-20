@@ -4,89 +4,99 @@ import { useState } from 'react';
 import { authClient } from '../../../lib/auth-clients';
 import type React from 'react';
 import useIsMobile from '../../../components/layouts/UseIsMobile';
-import Error from '../../../components/AdditionalsComponents/Error';
 import PopUp from '../../../components/AdditionalsComponents/PopUp';
+
 export default function Login() {
-
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
-  // états des champs
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // états des UI
+  // popup et loader
+  const [popupMsg, setPopupMsg] = useState<string | null>(null);
+  const [popupMode, setPopupMode] = useState<"good" | "bad" | "question">("question");
+  const [popupBtn, setPopupBtn] = useState<React.ReactNode>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  // Soumission du formulaire
+  const closePopup = () => setPopupMsg(null);
+
   const handleSubmit = async (e: React.FormEvent) => {
-
     e.preventDefault();
-    setErrorMsg(null);
+    setPopupMsg(null);
 
     if (!email || !password) {
-
-      setErrorMsg("Veuillez entrer votre email et votre mot de passe.");
+      setPopupMsg("Veuillez entrer votre email et votre mot de passe.");
+      setPopupMode("bad");
+      setPopupBtn(
+        <button className="bg-[#98EAF3] text-[#115E66] w-full h-10 rounded-lg font-bold" onClick={closePopup}>
+          OK
+        </button>
+      );
       return;
     }
 
     setIsLoading(true);
+    setPopupMsg("Connexion en cours...");
+    setPopupMode("question");
+    setPopupBtn(null);
+
     try {
-      // Appel de Better AUth
-      // rememberMe pour se souvenir de nous lors de la connexion
       const result = await authClient.signIn.email({
         email,
         password,
         rememberMe: true,
-        callbackURL: "/", // Après connexion on se dirige à l"accueil
+        callbackURL: "/",
       });
 
+      // Cas 2FA
       if ((result as any)?.data?.twoFactorRedirect) {
         navigate("/two-factor", { state: { email } });
         return;
       }
 
-
-      navigate("/")
+      // Succès
+      setPopupMsg("Connexion réussie !");
+      setPopupMode("good");
+      setPopupBtn(
+        <button
+          className="bg-[#98EAF3] text-[#115E66] w-full h-10 rounded-lg font-bold"
+          onClick={() => { closePopup(); navigate("/"); }}
+        >
+          Continuer
+        </button>
+      );
 
     } catch (err: any) {
       console.error("signin error", err);
-      setErrorMsg(err?.message || "Identifiants invalides.");
+      setPopupMsg(err?.message || "Identifiants invalides.");
+      setPopupMode("bad");
+      setPopupBtn(
+        <button className="bg-[#98EAF3] text-[#115E66] w-full h-10 rounded-lg font-bold" onClick={closePopup}>
+          Réessayer
+        </button>
+      );
     } finally {
       setIsLoading(false);
     }
-
   };
 
-  const signInWithGoogle = async () => {
-    setErrorMsg("Connexion avec Google pas encore disponible. Merci de vous connecter normalement. :)")
+  const signInWithGoogle = () => {
+    setPopupMsg("Connexion avec Google pas encore disponible. Merci de vous connecter normalement. :)");
+    setPopupMode("question");
+    setPopupBtn(
+      <button className="bg-[#98EAF3] text-[#115E66] w-full h-10 rounded-lg font-bold" onClick={closePopup}>
+        OK
+      </button>
+    );
   };
-  const BtnError = <button className="bg-[#98EAF3] text-[#115E66] w-full h-10 rounded-lg max-w-md font-bold -mb-3" onClick={() => navigate('/login')}>Veuillez réessayer</button>
 
   return (
     <PageTransition>
-      <div className={`text-center min-h-screen flex flex-col mt-17 lg:mt-13   gap-6 ${useIsMobile() ? 'w-full px-4' : 'w-full'} `}>
-        <h1 className="text-4xl font-bold   text-[#98EAF3] mb-5 lg:mb-10">
+      <div className={`text-center min-h-screen flex flex-col mt-17 lg:mt-13 gap-6 ${isMobile ? 'w-full px-4' : 'w-full'}`}>
+        <h1 className="text-4xl font-bold text-[#98EAF3] mb-5 lg:mb-10">Connectez-vous</h1>
 
-          Connectez-vous
-        </h1>
-        { errorMsg && 
-          
-        <PopUp message={errorMsg} Btn={BtnError} isSuccess={false} />}
-
-        <form
-          onSubmit={handleSubmit}
-          className={`flex flex-col items-center  mt-1  space-y-4 `}
-        >
-
-          {/* bloc erreur */}
-          {errorMsg && (
-            <div className="w-full max-w-md bg-red-600/20 text-red-200 p-3 rounded">
-              <Error errorMessage={errorMsg} />
-            </div>
-          )}
-
-
+        <form onSubmit={handleSubmit} className="flex flex-col items-center mt-1 space-y-4">
           <input
             type="email"
             placeholder="E-mail"
@@ -95,7 +105,6 @@ export default function Login() {
             onChange={(e) => setEmail(e.target.value)}
             required
           />
-
           <input
             type="password"
             placeholder="Mot de passe"
@@ -106,49 +115,48 @@ export default function Login() {
           />
 
           <div className="w-full max-w-md text-right">
-            <a href="/mdpoublie" className="text-sm text-[#98EAF3] hover:underline">
-              Mot de passe oublié ?
-            </a>
+            <Link to="/mdpoublie" className="text-sm text-[#98EAF3] hover:underline">Mot de passe oublié ?</Link>
           </div>
 
-          {/* Submit */}
           <button
             type="submit"
             disabled={isLoading}
-            className="bg-[#98EAF3] text-[#115E66] w-full h-10 rounded-lg max-w-md font-bold -mb-3"
+            className="bg-[#98EAF3] text-[#115E66] w-full h-10 rounded-lg max-w-md font-bold"
           >
             {isLoading ? "Connexion..." : "Se connecter"}
           </button>
-          {
-            isLoading &&
-            <PopUp message={"connexion"} isLoading={isLoading} isLoadingMsg={"chargement"} Btn={BtnError}  ></PopUp>
-          }
 
-          {/* Ou */}
-          <div className="flex items-center justify-center w-full max-w-md my-10 mb-17 gap-3">
+          <div className="flex items-center justify-center w-full max-w-md my-10 gap-3">
             <div className="flex-grow h-px bg-[#98EAF3]"></div>
             <span className="mx-4 text-[#98EAF3] font-medium text-2xl">Ou</span>
             <div className="flex-grow h-px bg-[#98EAF3]"></div>
           </div>
 
-          {/* Connexion Google */}
           <button
             type="button"
             onClick={signInWithGoogle}
             disabled={isLoading}
-            className="bg-[#FFFFFF] text-[#115E66] w-full h-10 rounded-lg max-w-md font-bold flex items-center justify-center  mb-10 -mt-10 gap-2"
+            className="bg-[#FFFFFF] text-[#115E66] w-full h-10 rounded-lg max-w-md font-bold flex items-center justify-center gap-2"
           >
             <img src="src/assets/Google_Favicon_2025.svg" alt="google logo" className="mr-2 w-6 h-6" />
             Continuer avec Google
           </button>
 
-
-          <h2>Pas de Compte ?<Link to="/singin" className="text-[#98EAF3]"> Inscrivez-vous</Link>
+          <h2>
+            Pas de Compte ?<Link to="/singin" className="text-[#98EAF3]"> Inscrivez-vous</Link>
           </h2>
-
         </form>
-      </div>
 
+        {popupMsg && (
+          <PopUp
+            message={popupMsg}
+            Btn={popupBtn}
+            setPopupIsDisplayed={closePopup as any}
+            isLoading={isLoading}
+            mode={popupMode}
+          />
+        )}
+      </div>
     </PageTransition>
   );
 }

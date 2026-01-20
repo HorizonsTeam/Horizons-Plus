@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import ReturnBtn from '../../../../assets/ReturnBtn.svg';
+import {  useLocation } from 'react-router-dom';
 import ModeDePaiementCard from '../components/paiement/ModeDePaiementCard.tsx';
 import assurance_Ico from '../../../../assets/assurance.svg';
 import useIsMobile from '../../../../components/layouts/UseIsMobile.tsx';
@@ -8,6 +7,8 @@ import { useEffect } from 'react';
 import CheckMarkSVG from '../../../../assets/CheckMark.svg';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
+import Header from '../components/Header.tsx';
+
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 import type { LocationState } from '../types.ts';
@@ -37,7 +38,6 @@ export default function PaymentPage() {
     const { state } = useLocation();
     const { journey, selectedClass, passagersCount, formattedDepartureDate, passagersData } = (state || {}) as LocationState & { passagersData: number[] };
 
-    const navigate = useNavigate();
     const isMobile = useIsMobile();
 
     const [clientSecret, setClientSecret] = useState("");
@@ -66,10 +66,7 @@ export default function PaymentPage() {
         }
     }, [ValidatePayment]);
 
-    const handleRetour = () => {
-        navigate(-1); 
-        
-    };
+    
 
     useEffect(() => {
         fetch(`${API_BASE}/api/payments/create-payment-intent`, {
@@ -148,20 +145,8 @@ export default function PaymentPage() {
             <div className={`relative w-full ${isMobile ? "px-4" : " py-10"}`}>
 
                 {/* HEADER */}
-                <div className="m-2 p-6 mb-10 -mt-3 ">
-                    <div className="relative mt-4 flex justify-center items-center">
-                        <button onClick={handleRetour}>
-                            <img
-                                src={ReturnBtn}
-                                alt="Return Button"
-                                className="absolute left-0 -translate-x-1/2 transform"
-                            />
-                        </button>
-                        <h1 className="text-3xl text-[#98EAF3] font-medium text-center">
-                            Paiement 
-                        </h1>
-                    </div>
-                </div>
+                    
+                <Header Titre="Paiement"/>
 
                 {/* A recupérer les infos - A FAIRE BACKEND */}
                 {/* RÉCAP */}
@@ -203,7 +188,7 @@ export default function PaymentPage() {
                 </div>
 
                 {/* OPTIONS SUPPLÉMENTAIRES */}
-                <div className={` ${isMobile ? '' : 'm-20'} bg-[#133A40] border-2 border-[#2C474B] rounded-2xl p-5 mb-8 `}>
+                <div className={` ${isMobile ? '' : 'm-20'} bg-[#133A40] border-2 border-[#2C474B] rounded-2xl p-2 mb-8 `}>
                     <p className="font-bold mb-4">Options supplémentaires</p>
 
                     {/* insurance */}
@@ -227,20 +212,25 @@ export default function PaymentPage() {
 
                     {/* CODE PROMO */}
                     <div className="flex items-center gap-4 mt-6">
+                        <div className='grid gap-4 '>
                         <p className="font-bold w-32">Code promo</p>
-                        <input
-                            type="text"
-                            value={code}
-                            onChange={(e) => setCode(e.target.value)}
-                            placeholder='EX: NOEL10'
-                            className="flex-1 bg-[#103035] h-[45px] rounded-xl p-3 outline-none focus:ring-2 focus:ring-[#98EAF3] font-semibold"
-                        />
-                        <button
-                            onClick={handleValidatePromo}
-                            className="bg-[#98EAF3] text-[#103035] font-bold px-5 h-[45px] rounded-xl hover:bg-[#7cdbe6] transition-colors cursor-pointer"
-                        >
-                            Valider
-                        </button>
+                            <div className='flex py-4'>
+                            <input
+                                type="text"
+                                value={code}
+                                onChange={(e) => setCode(e.target.value)}
+                                placeholder='EX: NOEL10'
+                                    className="flex-1 bg-[#103035] h-[45px] rounded-tl-xl rounded-bl-xl p-3 outline-none focus:ring-2 focus:ring-[#98EAF3] font-semibold"
+                            />
+
+                            <button
+                                onClick={handleValidatePromo}
+                                    className="bg-[#98EAF3] text-[#103035] font-bold px-5 h-[44.5px] rounded-tr-xl rounded-br-xl hover:bg-[#7cdbe6] transition-colors cursor-pointer py-2 "
+                            >
+                                Valider
+                            </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
