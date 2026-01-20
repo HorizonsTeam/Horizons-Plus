@@ -1,39 +1,17 @@
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet} from 'react-router-dom';
 import Header from './Header';
 import Footer from './Footer';
 import PanierBtn from '../AdditionalsComponents/PanierBtn.tsx';
 import type { PanierItem, BackendPanierResponse } from "../../features/panier/types.ts";
 import { useState, useEffect } from 'react';
 import useIsMobile from './UseIsMobile.tsx';
-import PopUp from '../AdditionalsComponents/PopUp.tsx';
 const base = `${import.meta.env.VITE_API_URL || "http://localhost:3005"}`;
 
 export default function MainLayout() {
   const [panierItems, setPanierItems] = useState<PanierItem[]>([]);
   const [displayBtnPanier, setDisplayBtnPanier] = useState(false);
-  const [showPopup, setShowPopup] = useState(true);
   const isMobile = useIsMobile();
-  const navigate = useNavigate();
-
-  const PopUpBtn = (
-    <div className="w-full flex justify-between gap-4  text-xs">
-      <button
-        className="flex-1 bg-primary text-[#0C2529] font-bold py-2 px-4 rounded-2xl shadow-md hover:brightness-110 transition duration-200 focus:outline-none focus:ring-2 focus:ring-[#FFB856]/50"
-        onClick={() => { navigate('/login')}}
-      >
-        Se connecter
-      </button>
-      <button
-        className="flex-1 bg-[#133A40] text-white  font-bold py-2 px-4 rounded-2xl border border-[#2C474B]  transition duration-200 focus:outline-none focus:ring-2 focus:ring-[#FFB856]/50 cursor::pointer"
-        onClick={()=>{setShowPopup(false)}}
-      >
-        Continuer sans connexion
-      </button>
-    </div>
-  );
-
-
-
+  
   useEffect(() => {
     async function loadPanier() {
       try {
@@ -65,8 +43,7 @@ export default function MainLayout() {
 
         setPanierItems(items);
       } catch (error) {
-        console.error("Erreur lors du chargement du panier :", error);
-        setShowPopup(true);
+        console.error(error);
       }
     }
 
@@ -92,12 +69,6 @@ export default function MainLayout() {
         displayBtnPanier &&
         <PanierBtn nombresArticles={panierItems.length} />
       }
-
-      {showPopup && 
-        <PopUp message="Avez-vous un compte ?" Btn={PopUpBtn} setPopupIsDisplayed={setShowPopup} mode='question'/>
-      
-      }
-
       <Footer />
     </>
   );
