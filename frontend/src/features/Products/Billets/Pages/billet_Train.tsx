@@ -24,17 +24,19 @@ function parseFrenchDate(str: string): string {
         janvier: 0, février: 1, mars: 2, avril: 3, mai: 4, juin: 5,
         juillet: 6, août: 7, septembre: 8, octobre: 9, novembre: 10, décembre: 11
     };
+
     const parts = str.split(" ");
+
+    parts[0] = parts[0].charAt(0).toUpperCase() + parts[0].slice(1);
+
     const day = Number(parts[1]);
     const month = months[parts[2].toLowerCase()];
     const year = Number(parts[3]);
+
     const mm = String(month + 1).padStart(2, "0");
     const dd = String(day).padStart(2, "0");
-    return `${year}-${mm}-${dd}`;
-}
 
-function combineDateAndTime(dateISO: string, time: string): string {
-    return `${dateISO}T${time}:00`;
+    return `${year}-${mm}-${dd}`;
 }
 
 function randomSiegeRestant() {
@@ -46,9 +48,8 @@ export default function Billet_Train_recap() {
     const { state } = useLocation();
     const { journey, passagersCount, formattedDepartureDate } = (state || {}) as LocationState;
 
+    console.log("Billet_Train_recap received state:", state);
     const isoDate = parseFrenchDate(formattedDepartureDate);
-    const departTimestamp = combineDateAndTime(isoDate, journey.departureTime);
-    const arriveeTimestamp = combineDateAndTime(isoDate, journey.arrivalTime);
 
     const [basePrice] = useState<number>(journey.price);
     const [price, setPrice] = useState<number>(basePrice);
@@ -94,13 +95,9 @@ export default function Billet_Train_recap() {
                 credentials: "include",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    departHeure: departTimestamp,
-                    departLieu: journey.departureName,
-                    arriveeHeure: arriveeTimestamp,
-                    arriveeLieu: journey.arrivalName,
+                    journey,
                     classe: selectedClass,
                     siegeRestant,
-                    prix: price,
                     dateVoyage: isoDate,
                     transportType: journey.simulated ? "AVION" : "TRAIN",
                 }),
@@ -138,6 +135,8 @@ export default function Billet_Train_recap() {
                 ajouteLe: new Date(),
                 dateVoyage: new Date(isoDate),
                 typeTransport: journey.simulated ? "AVION" : "TRAIN",
+                journey: journey,
+
             };
             setPanierItems(prev => [...prev, newItem]);
 

@@ -1,35 +1,53 @@
+import type { Stop, Leg } from "../Products/Billets/components/Recap/Correspendances.tsx";
+import type { Journey } from "../Recherche/ProductCard/types.ts";
+
 export type TransportType = 'TRAIN' | 'AVION';
 
 export type PanierItem = {
     id: number;
     panierId: number;
     passagerId: number;
-    departHeure: string;
-    departLieu: string;
-    arriveeHeure: string;
-    arriveeLieu: string;
+
     classe: string;
     siegeRestant: string;
     prix: number;
-    ajouteLe: Date;
     dateVoyage: Date;
-    typeTransport: TransportType;
-}
+    typeTransport: string;
+
+    departHeure: string;
+    arriveeHeure: string;
+    departLieu: string;
+    arriveeLieu: string;
+
+    ajouteLe: Date;
+
+    journey: Journey;
+};
 
 export type BackendPanierItem = {
     panier_item_id: number;
     panier_id: number;
     passager_id: number;
-    depart_heure: string;
-    depart_lieu: string;
-    arrivee_heure: string;
-    arrivee_lieu: string;
-    classe: string;
-    siege_restant: string;
-    prix: string;
     ajoute_le: string;
-    date_voyage: string;
-    transport_type: 'TRAIN' | 'AVION';
+    journey_data: {
+        classe: string;
+        siegeRestant: string;
+        dateVoyage: string;
+        transportType: string;
+
+        journey: {
+            departureName: string;
+            arrivalName: string;
+            price: string;
+            departureTime: string;
+            arrivalTime: string;
+            duration: string;
+            numberOfTransfers: number;
+            simulated: boolean;
+            stops: Stop[];
+            legs: Leg[];
+        };
+    };
 };
 
 export type BackendPanierResponse = {
