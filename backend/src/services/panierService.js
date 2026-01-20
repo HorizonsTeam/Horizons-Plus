@@ -70,7 +70,7 @@ async function getPanierForUser({ userId, sessionId }) {
     };
 }
 
-async function addBilletToPanier(userId, sessionId, billetData, userData) {
+async function addBilletToPanier(userId, sessionId, journeyData, userData) {
     let panier;
         
     if (userId) {
@@ -90,9 +90,20 @@ async function addBilletToPanier(userId, sessionId, billetData, userData) {
 
     const passagerId = await ensurePrimaryPassager(userId, panierId, userData);
     console.log(userId, panierId, userData);
-    
-    await insertPanierItem(panierId, passagerId, billetData);
 
+    const j = journeyData.journey;
+
+    const uniqueKey = [
+        j.departureName,
+        j.arrivalName,
+        journeyData.dateVoyage,
+        j.departureTime,
+        j.arrivalTime,
+        journeyData.transportType
+    ].join("|");
+
+    await insertPanierItem(panierId, passagerId, journeyData, uniqueKey);
+    
     const items = await getPanierItems(panierId);
 
     return { panier: panier[0], items };
