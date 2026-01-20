@@ -56,21 +56,21 @@ export async function findPassagerByPanierId(panierId) {
 }
 
 
-export async function insertPanierItem(panierId, passagerId, billetData) {
-    const departHeure = toPgTimestamp(billetData.departHeure);
-    const arriveeHeure = toPgTimestamp(billetData.arriveeHeure);
-
+export async function insertPanierItem(panierId, passagerId, journeyData, uniqueKey) {
     return await sql`
         INSERT INTO panier_item (
-            panier_id, passager_id, depart_heure, depart_lieu, arrivee_heure, arrivee_lieu,
-            classe, siege_restant, prix, ajoute_le, date_voyage, transport_type
+            panier_id,
+            passager_id,
+            journey_data,
+            unique_key,
+            ajoute_le
         )
         VALUES (
-            ${panierId}, ${passagerId}, ${departHeure}, ${billetData.departLieu},
-            ${arriveeHeure}, ${billetData.arriveeLieu},
-            ${billetData.classe}, ${billetData.siegeRestant},
-            ${billetData.prix}, NOW(), ${billetData.dateVoyage},
-            ${billetData.transportType}
+            ${panierId},
+            ${passagerId},
+            ${journeyData}::jsonb,
+            ${uniqueKey},
+            NOW()
         )
         RETURNING *
     `;

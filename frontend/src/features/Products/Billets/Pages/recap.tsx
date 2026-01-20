@@ -7,7 +7,7 @@ export default function Recap ()
     return (
         <div> 
             <Billet_Train_recap />
-       </div>
+        </div>
     )
 
 

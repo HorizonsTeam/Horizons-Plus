@@ -34,33 +34,37 @@ export async function addBilletToPanier(req, res) {
             };
         }
         
-        const {
-            departHeure,
-            departLieu,
-            arriveeHeure,
-            arriveeLieu,
-            classe,
-            siegeRestant,
-            prix,
-            dateVoyage,
-            transportType,
+        const { 
+            journey, 
+            classe, 
+            siegeRestant, 
+            dateVoyage, 
+            transportType 
         } = req.body;
 
-        const result = await panierService.addBilletToPanier(userId, sessionId, {
-            departHeure,
-            departLieu,
-            arriveeHeure,
-            arriveeLieu,
+        const journeyData = {
             classe,
             siegeRestant,
-            prix,
             dateVoyage,
             transportType,
-        }, userData);
+            journey,
+        };
+
+        console.log("la journey : ", journeyData.journey);
+
+        const result = await panierService.addBilletToPanier(userId, sessionId, journeyData, userData);
         res.status(200).json(result);
     } catch (error) {
-        console.error("Erreur addBilletToPanier:", error);
-        res.status(500).json({ error: error.message });
+        if (error.code === "23505") {
+            const error_message = "Ce billet est déjà dans votre panier.";
+            console.error(error_message);
+            return res.status(409).json({ error: error_message });
+        }
+
+        console.error("Erreur interne :", error);
+        return res.status(500).json({
+            error: "Une erreur interne est survenue. Veuillez réessayer plus tard."
+        });
     }
 }
 
