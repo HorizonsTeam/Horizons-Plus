@@ -104,6 +104,8 @@ async function addBilletToPanier(userId, sessionId, journeyData, userData) {
 
     await insertPanierItem(panierId, passagerId, journeyData, uniqueKey);
     
+    console.log("Billet ajouté au panier");
+    
     const items = await getPanierItems(panierId);
 
     return { panier: panier[0], items };
