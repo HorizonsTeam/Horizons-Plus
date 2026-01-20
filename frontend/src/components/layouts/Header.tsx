@@ -23,21 +23,49 @@ export default function Header() {
   const API_BASE = import.meta.env.VITE_API_URL || "";
 
   // Récupération session
-  useEffect(() => {
-    fetch(`${API_BASE}/api/me`, { credentials: "include" })
-      .then((res) => (res.status === 401 ? null : res.json()))
-      .then((data) => {
+  // useEffect(() => {
+  //   fetch(`${API_BASE}/api/me`, { credentials: "include" })
+  //     .then((res) => (res.status === 401 ? null : res.json()))
+  //     .then((data) => {
+  //       if (data?.user) {
+  //         setUser(data.user);
+  //         setUserImage(data.user.image || null);
+
+  //       } else {
+  //         setUser(null)
+  //       }
+  //     })
+  //     .catch(() => setUser(null))
+  //     .finally(() => setLoadingUser(false));
+  // }, [API_BASE]);
+
+useEffect(() => {
+  const fetchUser = async () => {
+    try {
+      const response = await fetch(`${API_BASE}/api/me`, { 
+        credentials: "include" 
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
         if (data?.user) {
           setUser(data.user);
           setUserImage(data.user.image || null);
-
-        } else {
-          setUser(null)
         }
-      })
-      .catch(() => setUser(null))
-      .finally(() => setLoadingUser(false));
-  }, [API_BASE]);
+      } else if (response.status === 401) {
+        // Pas authentifié, c'est normal
+        setUser(null);
+      }
+    } catch (err) {
+      console.error('Erreur fetch user:', err);
+      setUser(null);
+    } finally {
+      setLoadingUser(false);
+    }
+  };
+
+  fetchUser();
+}, [API_BASE]);
 
   const displayName = useMemo(() => {
     if (!user?.name || user.name.trim() === "") {
