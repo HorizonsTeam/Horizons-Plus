@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import terIco from "../../../assets/ter_ico.svg";
 import SiegeIco from "../../../assets/siege_ico.svg";
@@ -7,30 +6,23 @@ import type { TrainCardProps } from "../types.ts";
 
 const base = `${import.meta.env.VITE_API_URL || "http://localhost:3005"}`;
 
-function parseHHMM(hhmm: string): { h: number; m: number } | null {
-  const m = /^(\d{1,2}):(\d{2})$/.exec(hhmm.trim());
-  if (!m) return null;
-  const h = Number(m[1]);
-  const mm = Number(m[2]);
-  if (Number.isNaN(h) || Number.isNaN(mm)) return null;
-  return { h, m: mm };
-}
+function formatFrenchLongDateFromISO(input: string | Date): string {
+  const date = input instanceof Date ? input : new Date(input);
 
-function durationLabel(start: string, end: string): string {
-  const a = parseHHMM(start);
-  const b = parseHHMM(end);
-  if (!a || !b) return "—";
-  const startMin = a.h * 60 + a.m;
-  let endMin = b.h * 60 + b.m;
-  if (endMin < startMin) endMin += 24 * 60;
-  const d = endMin - startMin;
-  const hh = Math.floor(d / 60);
-  const mm = d % 60;
-  return `${hh}h${String(mm).padStart(2, "0")}`;
+  const str = date.toLocaleDateString("fr-FR", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+
+  return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
 export default function TrainCard({ item, onDeleted }: TrainCardProps) {
   const navigate = useNavigate();
+
+  const journey = item.journey;
 
   const handleDeletePanierItem = async (): Promise<void> => {
     try {
@@ -48,23 +40,17 @@ export default function TrainCard({ item, onDeleted }: TrainCardProps) {
     }
   };
 
-  const duree = useMemo(() => durationLabel(item.departHeure, item.arriveeHeure), [
-    item.departHeure,
-    item.arriveeHeure,
-  ]);
-
-  const prix = useMemo(() => {
-    const n = Number(item.prix);
-    return Number.isFinite(n) ? n.toFixed(2) : String(item.prix);
-  }, [item.prix]);
-
   const handleVoirDetail = (): void => {
-    navigate(`/train/${item.id}`);
+    console.log("Navigating to Recap with item:", item);
+    navigate("/Recap", { state: { journey, passagersCount: 1, formattedDepartureDate: formatFrenchLongDateFromISO(item.dateVoyage) } })
   };
 
   return (
     <div
-      onClick={handleVoirDetail}
+      onClick={(e) => { 
+        e.stopPropagation(); 
+        handleVoirDetail(); 
+      }}
       className="w-full rounded-3xl border border-[#2C474B] bg-[#0C2529] text-white px-4 py-4 sm:px-6 cursor-pointer"
     >
       <article>
@@ -86,9 +72,9 @@ export default function TrainCard({ item, onDeleted }: TrainCardProps) {
             <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-white/80">
               <span className="font-semibold">{item.departHeure}</span>
               <span className="text-white/40">→</span>
-              <span className="font-semibold">{item.arriveeHeure}</span>
+              <span className="font-semibold">{item.journey.arrivalTime}</span>
               <span className="text-white/40">•</span>
-              <span>{duree}</span>
+              <span>{item.journey.duration}</span>
             </div>
 
             <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-white/70">
@@ -104,7 +90,7 @@ export default function TrainCard({ item, onDeleted }: TrainCardProps) {
           </div>
 
           <div className="shrink-0 text-right">
-            <p className="text-2xl font-extrabold">{prix}€</p>
+            <p className="text-2xl font-extrabold">{item.journey.price}€</p>
             <p className="mt-1 text-xs font-semibold text-emerald-300">
               Il reste {item.siegeRestant}
             </p>

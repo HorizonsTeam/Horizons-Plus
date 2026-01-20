@@ -6,12 +6,17 @@ import Error from "../../components/AdditionalsComponents/Error.tsx";
 import { useNavigate } from "react-router-dom";
 import { Loader } from "lucide-react";
 import Popup from "../../components/AdditionalsComponents/PopUp.tsx";
+import { useOutletContext } from "react-router-dom";
+
 
 const base = `${import.meta.env.VITE_API_URL || "http://localhost:3005"}`;
 
 export default function Panier() {
-    const [panierItems, setPanierItems] = useState<PanierItem[]>([]);
     const navigate = useNavigate();
+    const { panierItems, setPanierItems } = useOutletContext<{
+        panierItems: PanierItem[];
+        setPanierItems: React.Dispatch<React.SetStateAction<PanierItem[]>>;
+    }>();
 
     const handleItemDeleted = (id: number) => {
         setDeleteItemDownload(true);
@@ -28,23 +33,37 @@ export default function Panier() {
                     method: "GET",
                     credentials: "include",
                 });
+
                 const data: BackendPanierResponse = await res.json();
 
-                const items: PanierItem[] = data.items.map((item: BackendPanierItem) => ({
-                    id: item.panier_item_id,
-                    panierId: item.panier_id,
-                    passagerId: item.passager_id,
-                    departHeure: item.depart_heure.slice(0, 5),
-                    departLieu: item.depart_lieu,
-                    arriveeHeure: item.arrivee_heure.slice(0, 5),
-                    arriveeLieu: item.arrivee_lieu,
-                    classe: item.classe,
-                    siegeRestant: item.siege_restant,
-                    prix: parseFloat(item.prix),
-                    ajouteLe: new Date(item.ajoute_le),
-                    dateVoyage: new Date(item.date_voyage),
-                    typeTransport: item.transport_type,
-                }));
+                const items: PanierItem[] = data.items.map((item: BackendPanierItem) => {
+                    const jd = item.journey_data;
+
+                    return {
+                        id: item.panier_item_id,
+                        panierId: item.panier_id,
+                        passagerId: item.passager_id,
+
+                        classe: jd.classe,
+                        siegeRestant: jd.siegeRestant,
+                        prix: parseFloat(jd.journey.price),
+
+                        dateVoyage: new Date(jd.dateVoyage),
+                        typeTransport: jd.transportType,
+
+                        departHeure: jd.journey.departureTime,
+                        arriveeHeure: jd.journey.arrivalTime,
+                        departLieu: jd.journey.departureName,
+                        arriveeLieu: jd.journey.arrivalName,
+
+                        ajouteLe: new Date(item.ajoute_le),
+
+                        journey: {
+                            ...jd.journey, 
+                            price: parseFloat(jd.journey.price)
+                        },
+                    };
+                });
 
                 setPanierItems(items);
             } catch (error) {
@@ -87,8 +106,9 @@ export default function Panier() {
 
             <div className="px-4 pb-10 space-y-5 ">
                 {panierItems.map((item) => (
-                <Traincard key={item.id} item={item} onDeleted={handleItemDeleted} />
-                ))}
+                        <Traincard key={item.id} item={item} onDeleted={handleItemDeleted} />
+                    ))
+                }
 
                 { displayError && (
                     <div className="max-w-2xl mx-auto">
@@ -104,7 +124,7 @@ export default function Panier() {
                     <Loader size={80}></Loader>
                 }
                 {isItemDeleted &&   
-                    <Popup message="L'élément a été supprimé avec succès." Btn={Popup_btn} />
+                    <Popup message="L'élément a été supprimé avec succès." Btn={Popup_btn}  isLoading={DeleteItemDownload}/>
                 }
 
             </div>
