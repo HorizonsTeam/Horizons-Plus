@@ -20,6 +20,7 @@ export type ProductCardProps =
     formattedDepartureDate: string;
     index?: number;
     IsLoading?: boolean;
+    isTrain :boolean;
 }
 
 export type DateStringProps = {
