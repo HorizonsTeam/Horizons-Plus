@@ -9,12 +9,9 @@ import BlurBackground from "../../../../components/layouts/component/BlurBackgro
 
 type TripType = "oneway" | "roundtrip";
 
-type SearchFormProps = {
-  onPlaneAnimation: (value: boolean) => void;
-  planeAnimDurationMs: number;
-};
 
-export default function SearchForm({ onPlaneAnimation, planeAnimDurationMs }: SearchFormProps) {
+
+export default function SearchForm() {
   const [departure, setDeparture] = useState<Suggestion | null>(null);
   const [arrival, setArrival] = useState<Suggestion | null>(null);
 
@@ -216,7 +213,6 @@ export default function SearchForm({ onPlaneAnimation, planeAnimDurationMs }: Se
   const goSearch = () => {
     if (isDisabled || !departure || !arrival) return;
 
-    onPlaneAnimation(true);
 
     setTimeout(() => {
       navigate(
@@ -235,8 +231,7 @@ export default function SearchForm({ onPlaneAnimation, planeAnimDurationMs }: Se
         &passagers=${encodeURIComponent(passagerCount)}`.replace(/\s+/g, "")
       );
 
-      onPlaneAnimation(false);
-    }, planeAnimDurationMs);
+    }, );
   };
 
   return (
