@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "npx prisma generate && tsc && pnpm install",
-    "dev": "npm run build && node --watch server.js",
+    "build": "npx prisma generate && tsc",
+    "dev": "nodemon server.js",
     "start": "node server.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev -n init_auth"
