@@ -20,7 +20,6 @@ import AccountSettings from './features/Settings/Pages/AccountSettings/AccountSe
 import ReservationsPages from './features/reservations-pages/components/reservationsPages.tsx';
 import TwoFactor from './features/connexion/2AF/TwoFactor.tsx';
 
-import ProtectedRoute from './features/connexion/ProtectedRoute.tsx';
 
 function App() {
   return (
@@ -29,76 +28,22 @@ function App() {
         {/* Routes imbriquées sous ton layout principal */}
         <Route path="/" element={<MainLayout />}>
           <Route index element={<HomePage />} />
-          <Route path="login" element={ <ProtectedRoute requiredAuth={false}>
-                <Login />
-              </ProtectedRoute> } />
-          <Route path="/two-factor" element={
-            <ProtectedRoute requiredAuth={false}>
-                <TwoFactor />
-              </ProtectedRoute>
-          } />
-          <Route path="mdpoublie" element={
-            <ProtectedRoute requiredAuth={false}>
-                <MdpOublie />
-              </ProtectedRoute>
-          } />
-          <Route path="ResetPassword" element={
-            <ProtectedRoute requiredAuth={false}>
-                <ResetPassword />
-              </ProtectedRoute>
-          } />
-          <Route path="singin" element={
-             <ProtectedRoute requiredAuth={false}>
-                <Singin />
-              </ProtectedRoute>
-          } />
-          <Route path="panier" element={
-             <ProtectedRoute requiredAuth={true}>
-                <Panier />
-              </ProtectedRoute>
-          } />
-          <Route path="Recherche" element={
-            <ProtectedRoute requiredAuth={true}>
-                <Resultats />
-              </ProtectedRoute>
-          } />
-          <Route path="Recap" element={
-             <ProtectedRoute requiredAuth={true}>
-                <Recap />
-              </ProtectedRoute>
-          } />
-          <Route path="PaymentPage" element={
-            <ProtectedRoute requiredAuth={true}>
-                <PaymentPage />
-              </ProtectedRoute>
-          } />
-          <Route path="Infos_Passagers" element={
-            <ProtectedRoute requiredAuth={true}>
-                <Infos_Passagers />
-              </ProtectedRoute>
-          } />
-          <Route path="Settings" element={
-            <ProtectedRoute requiredAuth={true}>
-                <Settings />
-              </ProtectedRoute>
-          } />
-          <Route path="UserInfoPageMobile" element={
-            <ProtectedRoute requiredAuth={true}>
-                <UserInfoPageMobile />
-              </ProtectedRoute>
-          } />
-          <Route path="AccountSettings" element={
-             <ProtectedRoute requiredAuth={true}>
-                <AccountSettings />
-              </ProtectedRoute>
-          } />
-          <Route path="reservations" element={
-            <ProtectedRoute requiredAuth={true}>
-                <ReservationsPages />
-              </ProtectedRoute>
-          } />
+          <Route path="login" element={<Login />} />
+          <Route path="/two-factor" element={<TwoFactor />} />
+          <Route path="mdpoublie" element={<MdpOublie />} />
+          <Route path="ResetPassword" element={<ResetPassword />} />
+          <Route path="singin" element={<Singin />} />
+          <Route path="panier" element={<Panier />} />
+          <Route path="Recherche" element={<Resultats />} />
+          <Route path="Recap" element={<Recap />} />
+          <Route path="PaymentPage" element={<PaymentPage />} />
+          <Route path="Infos_Passagers" element={<Infos_Passagers />} />
+          <Route path="Settings" element={<Settings/>} />
+          <Route path="UserInfoPageMobile" element={<UserInfoPageMobile />} />
+          <Route path="AccountSettings" element={<AccountSettings />} />
+          <Route path="reservations" element={<ReservationsPages />} />
         </Route>
-        <Route path="*" element={<div className="text-center py-20 text-white">Page non trouvée (404)</div>} />
+
       </Routes>
     </BrowserRouter>
   );
