@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useMemo} from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import FiltreBloc from './Filtres/FiltresBloc.tsx';
 import ReturnBtn from '../../assets/ReturnBtn.svg';
@@ -30,7 +30,7 @@ export default function Resultats() {
 
     const navigate = useNavigate();
 
-    const [transport, setTransport] = useState<"plane" | "train">();
+    const [transport, setTransport] = useState<"plane" | "train">("train");
 
     const handleRetour = () => navigate(-1);
 
@@ -91,23 +91,7 @@ export default function Resultats() {
         setIsLoading(true);
         setErrorMessage(null);
 
-        const query = new URLSearchParams({
-            fromId,
-            fromName,
-            fromLat,
-            fromLon,
-            toId,
-            toName,
-            toLat,
-            toLon,
-            fromSource,
-            toSource,
-            datetime: departureDate,
-        });
-
-        if (arrivalDate) query.append("arrivalDate", arrivalDate);
-
-        fetch(`${base}/api/search/journeys?${query.toString()}`)
+        fetch(`${base}/api/search/journeys?fromId=${encodeURIComponent(fromId)}&fromName=${encodeURIComponent(fromName)}&fromLat=${encodeURIComponent(fromLat)}&fromLon=${encodeURIComponent(fromLon)}&toId=${encodeURIComponent(toId)}&toName=${encodeURIComponent(toName)}&toLat=${encodeURIComponent(toLat)}&toLon=${encodeURIComponent(toLon)}&fromSource=${encodeURIComponent(fromSource)}&toSource=${encodeURIComponent(toSource)}&datetime=${encodeURIComponent(departureDate)}`)
             .then(res => res.json())
             .then(data => {
                 console.log('API journeys response:', data);
@@ -115,22 +99,27 @@ export default function Resultats() {
                 if (data.error) {
                     setErrorMessage(data.error);
                     setJourneyData([]);
-                } else {
-                    setErrorMessage(null);
-                    setJourneyData(data);
+                    return;
                 }
 
-                
+                setErrorMessage(null);
+                setJourneyData(data);
+
+                if (Array.isArray(data) && data.length > 0) {
+                    setTransport(data[0].simulated ? "plane" : "train");
+                }
             })
             .catch(err => {
                 console.error('Fetch journeys error:', err);
                 setErrorMessage("Erreur serveur, réessayez plus tard");
                 setJourneyData([]);
             })
-            .finally(() => setIsLoading(false));
-
+            .finally(() => {
+                setTimeout(() => {
+                    setIsLoading(false);
+                }, 3000);
+            });
     }, [fromId, toId, departureDate, arrivalDate]);
-
 
     const uniqueJourneys = journeyData.filter((journey, index, self) => {
         const id = `${journey.departureName}-${journey.arrivalName}-${journey.departureTime}-${journey.arrivalTime}`;
@@ -171,10 +160,6 @@ export default function Resultats() {
         return Math.min(...journeyList.map(j => j.price));
     }, [journeyList]);
     const isMobile = useIsMobile();
-
-
-   
-
 
     const timeToMinutes = (hhmm: string) => {
         const [h, m] = hhmm.split(":").map(Number);
@@ -261,12 +246,11 @@ export default function Resultats() {
     }, [journeyList, filters, transport]);
 
 
-    const ErrorBtn = 
-            <div className=' flex w-full gap-10'>
-                <button className="text-sm font-bold bg-primary text-secondary p-4 rounded-lg hover:bg-[#6ACDD8] transition-all duration-300 cursor-pointer " onClick={() => { setBoxIsOn(!BoxIsOn); scrollTo({ top: 0, behavior: "smooth" }) }}>Modifier le trajet</button>
-                <button className="text-sm font-bold bg-[#FFB856] text-secondary p-4 rounded-lg hover:bg-[#C28633] transition-all duration-300 cursor-pointer " onClick={() => { setTransport("plane"); scrollTo({ top: 0, behavior: "smooth" }) }}>Voir les vols</button>
-            </div>
-      
+    const ErrorBtn =
+        <div className=' flex w-full gap-10'>
+            <button className="text-sm font-bold bg-primary text-secondary p-4 rounded-lg hover:bg-[#6ACDD8] transition-all duration-300 cursor-pointer " onClick={() => { setBoxIsOn(!BoxIsOn); scrollTo({ top: 0, behavior: "smooth" }) }}>Modifier le trajet</button>
+            <button className="text-sm font-bold bg-[#FFB856] text-secondary p-4 rounded-lg hover:bg-[#C28633] transition-all duration-300 cursor-pointer " onClick={() => { setTransport("plane"); scrollTo({ top: 0, behavior: "smooth" }) }}>Voir les vols</button>
+        </div>
 
     const [FiltreMobileIsOn, setFiltreMobileIsOn] = useState<boolean>(false);
     const Onscrolle = useIsScrolling();
@@ -346,7 +330,7 @@ export default function Resultats() {
                     className={`bg-[#133A40] px-2 pt-5 -mt-10 w-full pb-10 ${IsLoading ? "flex justify-center" : "flex"}`}
                     onClick={() => BoxIsOn && setBoxIsOn(false)}
                 >
-                    {!isMobile && 
+                    {!isMobile &&
 
                         <FiltreBloc
                             stopType={filters.stopType}
@@ -444,27 +428,24 @@ export default function Resultats() {
                                         }
 
                                         Isloading={IsLoading}
+                                        setFiltreMobileIsOn={setFiltreMobileIsOn}
                                     />
 
 
 
+                                </div>
                             </div>
-                        </div>
                         </>
                     )}
 
-                     
-                    
-
-                    
                     {
                         displayedJourneys.length === 0 && !IsLoading ? (
-                            <Error errorMessage={errorMessage}  errorBtns={ErrorBtn}   />
+                            <Error errorMessage={errorMessage? "erreur" : "Veulliez modifier les critaires de recherches "} errorBtns={ErrorBtn} />
 
 
 
 
-                        ) :  (
+                        ) : (
                             <div className='w-full px-4 py-4'>
 
 
@@ -494,7 +475,7 @@ export default function Resultats() {
                     setJourneyData={setJourneyData}
                     setTransport={setTransport}
                 />
-                
+
 
             </div>
 
