@@ -48,7 +48,6 @@ export default function Billet_Train_recap() {
     const { state } = useLocation();
     const { journey, passagersCount, formattedDepartureDate } = (state || {}) as LocationState;
 
-    console.log("Billet_Train_recap received state:", state);
     const isoDate = parseFrenchDate(formattedDepartureDate);
 
     const [basePrice] = useState<number>(journey.price);
