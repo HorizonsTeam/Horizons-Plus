@@ -30,7 +30,7 @@ function durationLabel(start: string, end: string): string {
   return `${hh}h${String(mm).padStart(2, "0")}`;
 }
 
-export default function TrainCard({ item, onDeleted, setisItemDeleted }: TrainCardProps) {
+export default function TrainCard({ item }: TrainCardProps) {
   const navigate = useNavigate();
   const { setPanierItems } = useOutletContext<{
     panierItems: PanierItem[];
@@ -66,11 +66,8 @@ export default function TrainCard({ item, onDeleted, setisItemDeleted }: TrainCa
 
       if (!res.ok) throw new Error("Erreur lors de la suppression");
 
-      setPanierItems?.(prev => prev.filter(p => p.id !== item.id));
-      onDeleted(item.id);
-      setisItemDeleted?.(true);
+      setPanierItems(prev => prev.filter(p => p.id !== item.id));
 
-      // PopUp succès
       setPopupMsg("Billet supprimé avec succès !");
       setPopupMode("good");
       setPopupBtn(
@@ -81,7 +78,6 @@ export default function TrainCard({ item, onDeleted, setisItemDeleted }: TrainCa
           OK
         </button>
       );
-
     } catch (error) {
       console.error("Erreur lors de la suppression du panier :", error);
 

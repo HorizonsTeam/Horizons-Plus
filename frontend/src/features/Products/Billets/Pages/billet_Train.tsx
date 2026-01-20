@@ -77,7 +77,6 @@ export default function Billet_Train_recap() {
     const stops: Stop[] = journey.stops;
     const legs: Leg[] = journey.legs;
 
-    // Etats PopUp
     const [popupMsg, setPopupMsg] = useState<string | null>(null);
     const [popupMode, setPopupMode] = useState<"good" | "bad" | "question">("question");
     const [popupBtn, setPopupBtn] = useState<React.ReactNode>(null);
@@ -115,7 +114,11 @@ export default function Billet_Train_recap() {
             setPopupBtn(
                 <button
                     className="w-full h-16 bg-[#98EAF3] rounded-xl hover:bg-[#98EAF3]/90 transition cursor-pointer"
-                    onClick={() => { setPopupMsg(null); navigate('/panier'); }}
+                    onClick={() => {
+                        setPopupMsg(null);
+                        navigate('/panier');
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
                 >
                     Accéder au panier
                 </button>

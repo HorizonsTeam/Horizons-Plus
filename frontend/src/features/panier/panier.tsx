@@ -6,12 +6,17 @@ import Error from "../../components/AdditionalsComponents/Error.tsx";
 import { useNavigate } from "react-router-dom";
 import { Loader } from "lucide-react";
 import Popup from "../../components/AdditionalsComponents/PopUp.tsx";
+import { useOutletContext } from "react-router-dom";
+
 
 const base = `${import.meta.env.VITE_API_URL || "http://localhost:3005"}`;
 
 export default function Panier() {
-    const [panierItems, setPanierItems] = useState<PanierItem[]>([]);
     const navigate = useNavigate();
+    const { panierItems, setPanierItems } = useOutletContext<{
+        panierItems: PanierItem[];
+        setPanierItems: React.Dispatch<React.SetStateAction<PanierItem[]>>;
+    }>();
 
     const handleItemDeleted = (id: number) => {
         setDeleteItemDownload(true);
@@ -104,7 +109,7 @@ export default function Panier() {
                     <Loader size={80}></Loader>
                 }
                 {isItemDeleted &&   
-                    <Popup message="L'élément a été supprimé avec succès." Btn={Popup_btn} />
+                    <Popup message="L'élément a été supprimé avec succès." Btn={Popup_btn}  isLoading={DeleteItemDownload}/>
                 }
 
             </div>
