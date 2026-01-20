@@ -115,7 +115,7 @@ export default function Header() {
           >
             Horizons+
           </Link>
-          {!isMobile && user && (
+          {!isMobile && (
             <Link
               to="/panier"  >
               <img src={Panier_Ico} alt="Panier" className="w-7 h-7 ml-10" />
@@ -224,7 +224,7 @@ export default function Header() {
 
         {/* --- MENU MOBILE  --- */}
         <div
-          className={`fixed top-[4.1rem] left-0 right-0 bottom-0 z-40 bg-[#103035]
+          className={`fixed top-[4rem] left-0 right-0 bottom-0 z-40 bg-[#103035]
         transform transition-transform duration-300 ease-in-out lg:hidden
         ${isMenuOpen ? "translate-x-0" : "translate-x-full"}`}
         >

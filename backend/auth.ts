@@ -186,17 +186,17 @@ export const auth = betterAuth({
   },
 
   emailVerification: {
-    sendVerificationEmail: async ({ user, url }) => {
-      const front = process.env.FRONT_URL || "http://localhost:5173";
-      const callbackURL = `${front}/account`;
+  sendVerificationEmail: async ({ user, url }) => {
+    const u = new URL(url);
 
-      const verifyUrl =
-        url + (url.includes("?") ? "&" : "?") + "callbackURL=" + encodeURIComponent(callbackURL);
+    u.searchParams.set("callbackURL", "/account");
 
-      await sendMail({
-        to: user.email,
-        subject: "Vérifiez votre adresse email",
-        html: `
+    const verifyUrl = u.toString();
+
+    await sendMail({
+      to: user.email,
+      subject: "Vérifiez votre adresse email",
+      html: `
         <h2>Vérification de votre email</h2>
         <p>Bonjour ${user.name || ""},</p>
         <p>Merci de confirmer votre adresse email en cliquant sur le bouton :</p>
@@ -207,10 +207,9 @@ export const auth = betterAuth({
         </p>
         <p><small>Si vous n'êtes pas à l'origine de cette demande, ignorez ce message.</small></p>
       `,
-      });
-    },
+    });
   },
-
+},
 
 
   // socialProviders: {

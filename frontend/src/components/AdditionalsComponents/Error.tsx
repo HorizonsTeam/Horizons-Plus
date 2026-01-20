@@ -19,7 +19,6 @@ export default function Error({ errorMessage, errorBtns}: ErrorProps) {
                         <div className='flex justify-center'>
                             <img src={NoResultsImage} alt="" className=' relative  h-30 w-30 ' />
                         </div>
-                        <h2 className='text-white font-bold text-2xl mt-4'>Oups...</h2>
 
                         {errorMessage && <span className="text-xl text-bold text-primary   " >{errorMessage}</span> 
 

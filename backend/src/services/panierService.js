@@ -90,11 +90,7 @@ async function addBilletToPanier(userId, sessionId, billetData, userData) {
 
     const passagerId = await ensurePrimaryPassager(userId, panierId, userData);
     console.log(userId, panierId, userData);
-    const hasDoublon = await checkPanierItemDoublon(panierId, billetData);
-    if (hasDoublon) {
-        throw new Error("Ce trajet est déjà dans le panier");
-    }
-
+    
     await insertPanierItem(panierId, passagerId, billetData);
 
     const items = await getPanierItems(panierId);
