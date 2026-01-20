@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useMemo} from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import FiltreBloc from './Filtres/FiltresBloc.tsx';
 import ReturnBtn from '../../assets/ReturnBtn.svg';
@@ -246,11 +246,11 @@ export default function Resultats() {
     }, [journeyList, filters, transport]);
 
 
-    const ErrorBtn = 
-            <div className=' flex w-full gap-10'>
-                <button className="text-sm font-bold bg-primary text-secondary p-4 rounded-lg hover:bg-[#6ACDD8] transition-all duration-300 cursor-pointer " onClick={() => { setBoxIsOn(!BoxIsOn); scrollTo({ top: 0, behavior: "smooth" }) }}>Modifier le trajet</button>
-                <button className="text-sm font-bold bg-[#FFB856] text-secondary p-4 rounded-lg hover:bg-[#C28633] transition-all duration-300 cursor-pointer " onClick={() => { setTransport("plane"); scrollTo({ top: 0, behavior: "smooth" }) }}>Voir les vols</button>
-            </div>
+    const ErrorBtn =
+        <div className=' flex w-full gap-10'>
+            <button className="text-sm font-bold bg-primary text-secondary p-4 rounded-lg hover:bg-[#6ACDD8] transition-all duration-300 cursor-pointer " onClick={() => { setBoxIsOn(!BoxIsOn); scrollTo({ top: 0, behavior: "smooth" }) }}>Modifier le trajet</button>
+            <button className="text-sm font-bold bg-[#FFB856] text-secondary p-4 rounded-lg hover:bg-[#C28633] transition-all duration-300 cursor-pointer " onClick={() => { setTransport("plane"); scrollTo({ top: 0, behavior: "smooth" }) }}>Voir les vols</button>
+        </div>
 
     const [FiltreMobileIsOn, setFiltreMobileIsOn] = useState<boolean>(false);
     const Onscrolle = useIsScrolling();
@@ -330,7 +330,7 @@ export default function Resultats() {
                     className={`bg-[#133A40] px-2 pt-5 -mt-10 w-full pb-10 ${IsLoading ? "flex justify-center" : "flex"}`}
                     onClick={() => BoxIsOn && setBoxIsOn(false)}
                 >
-                    {!isMobile && 
+                    {!isMobile &&
 
                         <FiltreBloc
                             stopType={filters.stopType}
@@ -433,19 +433,19 @@ export default function Resultats() {
 
 
 
+                                </div>
                             </div>
-                        </div>
                         </>
                     )}
-                    
+
                     {
                         displayedJourneys.length === 0 && !IsLoading ? (
-                            <Error errorMessage={errorMessage}  errorBtns={ErrorBtn}   />
+                            <Error errorMessage={errorMessage? "erreur" : "Veulliez modifier les critaires de recherches "} errorBtns={ErrorBtn} />
 
 
 
 
-                        ) :  (
+                        ) : (
                             <div className='w-full px-4 py-4'>
 
 
@@ -475,7 +475,7 @@ export default function Resultats() {
                     setJourneyData={setJourneyData}
                     setTransport={setTransport}
                 />
-                
+
 
             </div>
 
