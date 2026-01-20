@@ -11,11 +11,7 @@ export default function MainLayout() {
   const [panierItems, setPanierItems] = useState<PanierItem[]>([]);
   const [displayBtnPanier, setDisplayBtnPanier] = useState(false);
   const isMobile = useIsMobile();
-
   
-
-
-
   useEffect(() => {
     async function loadPanier() {
       try {
@@ -29,21 +25,25 @@ export default function MainLayout() {
           id: item.panier_item_id,
           panierId: item.panier_id,
           passagerId: item.passager_id,
-          departHeure: item.depart_heure.slice(0, 5),
-          departLieu: item.depart_lieu,
-          arriveeHeure: item.arrivee_heure.slice(0, 5),
-          arriveeLieu: item.arrivee_lieu,
-          classe: item.classe,
-          siegeRestant: item.siege_restant,
-          prix: parseFloat(item.prix),
+          departHeure: item.journey_data.journey.departureTime,
+          departLieu: item.journey_data.journey.departureName,
+          arriveeHeure: item.journey_data.journey.arrivalTime,
+          arriveeLieu: item.journey_data.journey.arrivalName,
+          classe: item.journey_data.classe,
+          siegeRestant: item.journey_data.siegeRestant,
+          prix: parseFloat(item.journey_data.journey.price),
           ajouteLe: new Date(item.ajoute_le),
-          dateVoyage: new Date(item.date_voyage),
-          typeTransport: item.transport_type,
+          dateVoyage: new Date(item.journey_data.dateVoyage),
+          typeTransport: item.journey_data.transportType,
+          journey: { 
+            ...item.journey_data.journey, 
+            price: parseFloat(item.journey_data.journey.price),
+          },
         }));
 
         setPanierItems(items);
       } catch (error) {
-        console.error('Vous etes pas connecter')
+        console.error(error);
       }
     }
 
@@ -69,9 +69,6 @@ export default function MainLayout() {
         displayBtnPanier &&
         <PanierBtn nombresArticles={panierItems.length} />
       }
-
-     
-
       <Footer />
     </>
   );
