@@ -30,7 +30,7 @@ export default function Resultats() {
 
     const navigate = useNavigate();
 
-    const [transport, setTransport] = useState<"plane" | "train">("train");
+    const [transport, setTransport] = useState<"plane" | "train">();
 
     const handleRetour = () => navigate(-1);
 
@@ -91,7 +91,23 @@ export default function Resultats() {
         setIsLoading(true);
         setErrorMessage(null);
 
-        fetch(`${base}/api/search/journeys?fromId=${encodeURIComponent(fromId)}&fromName=${encodeURIComponent(fromName)}&fromLat=${encodeURIComponent(fromLat)}&fromLon=${encodeURIComponent(fromLon)}&toId=${encodeURIComponent(toId)}&toName=${encodeURIComponent(toName)}&toLat=${encodeURIComponent(toLat)}&toLon=${encodeURIComponent(toLon)}&fromSource=${encodeURIComponent(fromSource)}&toSource=${encodeURIComponent(toSource)}&datetime=${encodeURIComponent(departureDate)}`)
+        const query = new URLSearchParams({
+            fromId,
+            fromName,
+            fromLat,
+            fromLon,
+            toId,
+            toName,
+            toLat,
+            toLon,
+            fromSource,
+            toSource,
+            datetime: departureDate,
+        });
+
+        if (arrivalDate) query.append("arrivalDate", arrivalDate);
+
+        fetch(`${base}/api/search/journeys?${query.toString()}`)
             .then(res => res.json())
             .then(data => {
                 console.log('API journeys response:', data);
@@ -99,27 +115,22 @@ export default function Resultats() {
                 if (data.error) {
                     setErrorMessage(data.error);
                     setJourneyData([]);
-                    return;
+                } else {
+                    setErrorMessage(null);
+                    setJourneyData(data);
                 }
 
-                setErrorMessage(null);
-                setJourneyData(data);
-
-                if (Array.isArray(data) && data.length > 0) {
-                    setTransport(data[0].simulated ? "plane" : "train");
-                }
+                
             })
             .catch(err => {
                 console.error('Fetch journeys error:', err);
                 setErrorMessage("Erreur serveur, réessayez plus tard");
                 setJourneyData([]);
             })
-            .finally(() => {
-                setTimeout(() => {
-                    setIsLoading(false);
-                }, 3000);
-            });
+            .finally(() => setIsLoading(false));
+
     }, [fromId, toId, departureDate, arrivalDate]);
+
 
     const uniqueJourneys = journeyData.filter((journey, index, self) => {
         const id = `${journey.departureName}-${journey.arrivalName}-${journey.departureTime}-${journey.arrivalTime}`;
@@ -160,6 +171,10 @@ export default function Resultats() {
         return Math.min(...journeyList.map(j => j.price));
     }, [journeyList]);
     const isMobile = useIsMobile();
+
+
+   
+
 
     const timeToMinutes = (hhmm: string) => {
         const [h, m] = hhmm.split(":").map(Number);
@@ -251,6 +266,7 @@ export default function Resultats() {
                 <button className="text-sm font-bold bg-primary text-secondary p-4 rounded-lg hover:bg-[#6ACDD8] transition-all duration-300 cursor-pointer " onClick={() => { setBoxIsOn(!BoxIsOn); scrollTo({ top: 0, behavior: "smooth" }) }}>Modifier le trajet</button>
                 <button className="text-sm font-bold bg-[#FFB856] text-secondary p-4 rounded-lg hover:bg-[#C28633] transition-all duration-300 cursor-pointer " onClick={() => { setTransport("plane"); scrollTo({ top: 0, behavior: "smooth" }) }}>Voir les vols</button>
             </div>
+      
 
     const [FiltreMobileIsOn, setFiltreMobileIsOn] = useState<boolean>(false);
     const Onscrolle = useIsScrolling();
@@ -428,7 +444,6 @@ export default function Resultats() {
                                         }
 
                                         Isloading={IsLoading}
-                                        setFiltreMobileIsOn={setFiltreMobileIsOn}
                                     />
 
 
@@ -437,6 +452,10 @@ export default function Resultats() {
                         </div>
                         </>
                     )}
+
+                     
+                    
+
                     
                     {
                         displayedJourneys.length === 0 && !IsLoading ? (
