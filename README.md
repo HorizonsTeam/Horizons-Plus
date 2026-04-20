@@ -134,50 +134,6 @@ npx prisma migrate dev --name init
 npx prisma generate
 ```
 
----
-
-## 🔑 Variables d'environnement
-
-### Backend (.env)
-
-```env
-PORT=3005
-
-# Base de données 
-DATABASE_URL="postgresql://neondb_owner:npg_APg7nIufQ0dZ@ep-young-tree-agajp6ft-pooler.c-2.eu-central-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
-    
-# Better Auth
-BETTER_AUTH_SECRET=1rFTElg16R74vSpsfEVXt8EbFbE2kVj1
-BETTER_AUTH_URL=http://localhost:3005
-
-# Vite
-FRONT_ORIGIN=http://localhost:5173
-FRONT_URL=http://localhost:5173   
-AUTH_BASE_URL=http://localhost:3005/api/auth
-
-# SMTP LOCAL (MAILTRAP SANDBOX)
-SMTP_HOST=sandbox.smtp.mailtrap.io
-SMTP_PORT=587
-SMTP_USER=8759cf80cc1de2
-SMTP_PASS=3f2306c6b03739
-SMTP_FROM="Horizons+ <no-reply@horizonsplus.com>"
-
-# Clé API NAVITIA
-NAVITIA_API_KEY=69d2722e-c5ea-425e-adc3-9d7a89477f9e
-
-# Clés API AMADEUS
-AMADEUS_API_KEY=cqDU8kuqsC7A2FEB1XHyqLPP7V5IA0At
-AMADEUS_API_SECRET=ixiRQNjFlT338zrh
-
-STRIPE_SECRET_KEY=sk_test_51SX37VLQtrac1MMTN7rOofEagoL5ywCUYdm6L8CPir1plxVpIDgyaYP1caiv3gIfcYozAN3G417J5XPyq33SPT1N00YQFuf9BB
-STRIPE_PUBLISHABLE_KEY=pk_test_51SX37VLQtrac1MMTUj6coAspaE7Kzt4hWeH2sdpdUFF7IUEeO10p7YiydBocgRIQVPTe8GACWuLXtTJHJ2lnJfbB00HlwqUoq8
-
-CLOUDINARY_SECRET=BzEPRuzLIHzmkkShT6g0rgsUBvQ
-CLOUDINARY_URL=cloudinary://752413822317222:BzEPRuzLIHzmkkShT6g0rgsUBvQ@dty7z8rxt
-```
-
----
-
 ## 👥 Équipe
 
 | Nom | Rôle | Contributions clés |
