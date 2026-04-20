@@ -1,5 +1,6 @@
 
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
 import SearchForm from './components/seachForm/SearchForm.tsx';
 import PromotionSlider from './components/PromotionSlider';
 import ImagesSwiper from '../../components/AdditionalsComponents/swipeImges';
@@ -37,7 +38,16 @@ const sectionVariants: Variants = {
 
 export default function HomePage() {
 
+  const location = useLocation();
 
+  useEffect(() => {
+    if (!location.hash) return;
+    const id = location.hash.slice(1);
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [location]);
 
   return (
 
@@ -252,7 +262,8 @@ export default function HomePage() {
 
       {/* Destinations Section */}
       <motion.section
-        className="px-4 py-12 lg:py-16 bg-dark"
+        id="destinations"
+        className="px-4 py-12 lg:py-16 bg-dark scroll-mt-20"
         variants={sectionVariants}
         initial="hidden"
         whileInView="visible"
@@ -331,6 +342,8 @@ export default function HomePage() {
         </div>
       </motion.section>
       <motion.section
+        id="promotions"
+        className="scroll-mt-20"
         variants={sectionVariants}
         initial="hidden"
         whileInView="visible"
@@ -342,7 +355,8 @@ export default function HomePage() {
 
       {/* Events Section */}
       <motion.section
-        className="px-4 py-12 lg:py-16 bg-dark"
+        id="evenements"
+        className="px-4 py-12 lg:py-16 bg-dark scroll-mt-20"
         variants={sectionVariants}
         initial="hidden"
         whileInView="visible"
