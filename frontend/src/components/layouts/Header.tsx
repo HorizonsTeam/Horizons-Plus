@@ -7,37 +7,32 @@ import Evenements_Ico from "../../assets/Evenement_Ico.svg";
 import Reservation_ico from "../../assets/Resrvation_ico.svg";
 import Carte_Reduc_Ico from "../../assets/Carte_Reduc_Ico.svg";
 import Parametres_Ico from "../../assets/Parametres_Ico.svg";
-import { authClient } from "../../lib/auth-clients";
+import { useUser } from "../../lib/user-context";
 import useIsMobile from "./UseIsMobile";
-export type User = { name?: string; email: string; image?: string; } | null;
+
+type NavItem = { label: string; icon: string; path: string };
+
+const PUBLIC_NAV: NavItem[] = [
+  { label: "Destinations", icon: Destinations_Ico, path: "/#destinations" },
+  { label: "Promotions", icon: Promotions_Ico, path: "/#promotions" },
+  { label: "Évènements", icon: Evenements_Ico, path: "/#evenements" },
+];
+
+const PROFILE_NAV: NavItem[] = [
+  { label: "Mes réservations", icon: Reservation_ico, path: "/reservations" },
+  { label: "Mes cartes de réduction", icon: Carte_Reduc_Ico, path: "/" },
+  { label: "Paramètres", icon: Parametres_Ico, path: "/Settings" },
+];
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [user, setUser] = useState<User>(null);
-  const [loadingUser, setLoadingUser] = useState(true);
+  const { user, loading: loadingUser, signOut } = useUser();
   const navigate = useNavigate();
-  const [QuickprofileDesktopIsOpen, setQuickprofileDesktopIsOpen] = useState(false);
+  const [quickProfileOpen, setQuickProfileOpen] = useState(false);
   const isMobile = useIsMobile();
-  const [userImage, setUserImage] = useState<string | null>(null);
   const [imageError, setImageError] = useState(false);
-  const API_BASE = import.meta.env.VITE_API_URL || "";
 
-  // Récupération session
-  useEffect(() => {
-    fetch(`${API_BASE}/api/me`, { credentials: "include" })
-      .then((res) => (res.status === 401 ? null : res.json()))
-      .then((data) => {
-        if (data?.user) {
-          setUser(data.user);
-          setUserImage(data.user.image || null);
-
-        } else {
-          setUser(null)
-        }
-      })
-      .catch(() => setUser(null))
-      .finally(() => setLoadingUser(false));
-  }, [API_BASE]);
+  const userImage = user?.image ?? null;
 
   const displayName = useMemo(() => {
     if (!user?.name || user.name.trim() === "") {
@@ -48,16 +43,15 @@ export default function Header() {
 
   const initials = displayName
     ? displayName
-      .split(" ")
-      .map((w) => w[0]?.toUpperCase())
-      .join("")
-      .slice(0, 2)
+        .split(" ")
+        .map((w) => w[0]?.toUpperCase())
+        .join("")
+        .slice(0, 2)
     : "";
 
   const handleLogout = async () => {
     try {
-      await authClient.signOut();
-      setUser(null);
+      await signOut();
       setIsMenuOpen(false);
       navigate("/login");
     } catch (err) {
@@ -65,34 +59,16 @@ export default function Header() {
     }
   };
 
-  const menuItemsPublic = [
-    { label: "Destinations", icon: Destinations_Ico, path: "/#destinations" },
-    { label: "Promotions", icon: Promotions_Ico, path: "/#promotions" },
-    { label: "Évènements", icon: Evenements_Ico, path: "/#evenements" },
-
-  ];
-
-  const menuItemsPrivate = [
+  const privateMobileNav: NavItem[] = [
     { label: "Mes réservations", icon: Reservation_ico, path: "/reservations" },
     { label: "Panier", icon: Panier_Ico, path: "/panier" },
     { label: "Mes cartes de réduction", icon: Carte_Reduc_Ico, path: "/" },
     { label: "Paramètres", icon: Parametres_Ico, path: "/Settings" },
-    { label: "Destinations", icon: Destinations_Ico, path: "/#destinations" },
-    { label: "Promotions", icon: Promotions_Ico, path: "/#promotions" },
-    { label: "Évènements", icon: Evenements_Ico, path: "/#evenements" },
+    ...PUBLIC_NAV,
   ];
-  const menuItemsPrivateDesktop = [
-    { label: "Destinations", icon: Destinations_Ico, path: "/#destinations" },
-    { label: "Promotions", icon: Promotions_Ico, path: "/#promotions" },
-    { label: "Évènements", icon: Evenements_Ico, path: "/#evenements" },
-  ];
-  const menuItemsProfileDesktop = [
-    { label: "Mes réservations", icon: Reservation_ico, path: "/reservations" },
-    { label: "Mes cartes de réduction", icon: Carte_Reduc_Ico, path: "/" },
-    { label: "Paramètres", icon: Parametres_Ico, path: "/Settings" },
-  ];
+  const mobileNav: NavItem[] = user ? privateMobileNav : PUBLIC_NAV;
+  const desktopNav: NavItem[] = PUBLIC_NAV;
 
-  // Empêcher scroll quand menu mobile ouvert
   useEffect(() => {
     document.body.style.overflow = isMenuOpen ? "hidden" : "";
     return () => {
@@ -102,37 +78,27 @@ export default function Header() {
 
   return (
     <header className="bg-[#103035] sticky top-0 z-51 text-white border-b border-[#4A6367]">
-
-      {/* --- HEADER --- */}
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center h-16 px-4 lg:h-20 relative">
-
-          {/* Titre centré mobile / logo desktop */}
           <Link
             to="/"
-            className="text-2xl font-bold text-[#98EAF3] lg:text-3xl 
-          absolute lg:static lg:left-auto lg:translate-x-0"
+            className="text-2xl font-bold text-[#98EAF3] lg:text-3xl absolute lg:static lg:left-auto lg:translate-x-0"
           >
             Horizons+
           </Link>
           {!isMobile && (
-            <Link
-              to="/panier"  >
+            <Link to="/panier">
               <img src={Panier_Ico} alt="Panier" className="w-7 h-7 ml-10" />
             </Link>
           )}
 
-          {/* Menu desktop */}
           <nav className="hidden lg:flex space-x-8 items-center absolute right-4">
-
-
-            {(user ? menuItemsPrivateDesktop : menuItemsPublic).map((item) => (
+            {desktopNav.map((item) => (
               <Link
                 key={item.label}
                 to={item.path}
                 className="flex items-center space-x-2 hover:text-[#98EAF3] transition-colors"
               >
-                {/* <img src={item.icon} alt="" className="w-5 h-5" /> */}
                 <span className="font-semibold">{item.label}</span>
               </Link>
             ))}
@@ -146,19 +112,12 @@ export default function Header() {
               </Link>
             )}
 
-            {!loadingUser && user && isMobile && (
-              <button
-                onClick={handleLogout}
-                className="ml-4 bg-[#FFB856] text-[#115E66] font-semibold px-4 py-2 rounded-xl"
-              >
-                Déconnexion
-              </button>
-            )}
-
-            {/* Profil connecté desktop*/}
             {!loadingUser && user && (
               <div>
-                <div className="flex items-center space-x-3 ml-6 hover:cursor-pointer relative hover:text-[#98EAF3] transition-colors hover:bg-[#4A6367]  p-2 rounded-xl " onClick={() => setQuickprofileDesktopIsOpen(!QuickprofileDesktopIsOpen)}>
+                <div
+                  className="flex items-center space-x-3 ml-6 hover:cursor-pointer relative hover:text-[#98EAF3] transition-colors hover:bg-[#4A6367] p-2 rounded-xl"
+                  onClick={() => setQuickProfileOpen(!quickProfileOpen)}
+                >
                   <div className="w-10 h-10 rounded-full overflow-hidden bg-[#98EAF3] flex items-center justify-center text-[#103035] font-bold text-lg">
                     {userImage && !imageError ? (
                       <img
@@ -169,44 +128,37 @@ export default function Header() {
                         onError={() => setImageError(true)}
                       />
                     ) : (
-                      // Affichage des initials
                       <span>{initials}</span>
                     )}
                   </div>
                   <div className="font-bold">{displayName}</div>
                 </div>
 
-                <div>
-                  <div className={`absolute top-19 right-0 z-50 ${QuickprofileDesktopIsOpen ? '' : 'hidden'}`}>
-                    <div className="bg-[#103035] border border-[#4A6367] rounded-lg shadow-lg p-4 w-60 mr-2">
-                      {menuItemsProfileDesktop.map((item) => (
-                        <Link
-                          key={item.label}
-                          to={item.path}
-                          onClick={() => setQuickprofileDesktopIsOpen(false)}
-                          className="flex items-center space-x-3 mb-3 hover:bg-[#4A6367] p-2 hover:rounded-xl border-b-1 border-[#4A6367]"
-                        >
-                          <img src={item.icon} alt="" className="w-5 h-5" />
-                          <span className="font-semibold">{item.label}</span>
-                        </Link>
-
-                      ))}
-                      <button
-                        onClick={handleLogout}
-                        className="hover:cursor-pointer bg-[#FFB856] text-[#115E66] font-semibold w-full py-2 rounded-xl"
+                <div className={`absolute top-19 right-0 z-50 ${quickProfileOpen ? "" : "hidden"}`}>
+                  <div className="bg-[#103035] border border-[#4A6367] rounded-lg shadow-lg p-4 w-60 mr-2">
+                    {PROFILE_NAV.map((item) => (
+                      <Link
+                        key={item.label}
+                        to={item.path}
+                        onClick={() => setQuickProfileOpen(false)}
+                        className="flex items-center space-x-3 mb-3 hover:bg-[#4A6367] p-2 hover:rounded-xl border-b-1 border-[#4A6367]"
                       >
-                        Déconnexion
-                      </button>
-                    </div>
+                        <img src={item.icon} alt="" className="w-5 h-5" />
+                        <span className="font-semibold">{item.label}</span>
+                      </Link>
+                    ))}
+                    <button
+                      onClick={handleLogout}
+                      className="hover:cursor-pointer bg-[#FFB856] text-[#115E66] font-semibold w-full py-2 rounded-xl"
+                    >
+                      Déconnexion
+                    </button>
                   </div>
                 </div>
               </div>
-
-
             )}
           </nav>
 
-          {/* Burger mobile */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className="lg:hidden absolute right-4 p-2"
@@ -222,21 +174,17 @@ export default function Header() {
           </button>
         </div>
 
-        {/* --- MENU MOBILE  --- */}
         <div
-          className={`fixed top-[4rem] left-0 right-0 bottom-0 z-40 bg-[#103035]
-        transform transition-transform duration-300 ease-in-out lg:hidden
-        ${isMenuOpen ? "translate-x-0" : "translate-x-full"}`}
+          className={`fixed top-[4rem] left-0 right-0 bottom-0 z-40 bg-[#103035] transform transition-transform duration-300 ease-in-out lg:hidden ${
+            isMenuOpen ? "translate-x-0" : "translate-x-full"
+          }`}
         >
           <div className="p-6 overflow-y-auto">
-
-            {/* Profil connecté mobile*/}
             {loadingUser ? (
               <div className="text-sm opacity-60">Chargement...</div>
             ) : user ? (
               <div className="mb-8">
                 <div className="flex items-center space-x-3">
-                  {/* Photo de profil ou initials */}
                   <div className="w-12 h-12 rounded-full overflow-hidden bg-[#98EAF3] flex items-center justify-center text-[#103035] font-bold text-lg">
                     {userImage && !imageError ? (
                       <img src={userImage} alt="" className="w-full h-full object-cover" onError={() => setImageError(true)} />
@@ -252,9 +200,8 @@ export default function Header() {
               </div>
             ) : null}
 
-            {/* Liens */}
             <nav className="space-y-6">
-              {(user ? menuItemsPrivate : menuItemsPublic).map((item) => (
+              {mobileNav.map((item) => (
                 <Link
                   key={item.label}
                   to={item.path}
@@ -267,7 +214,6 @@ export default function Header() {
               ))}
             </nav>
 
-            {/* Boutons bas */}
             <div className="mt-10 flex flex-col gap-4">
               {!loadingUser && !user && (
                 <>
@@ -284,7 +230,7 @@ export default function Header() {
                     onClick={() => setIsMenuOpen(false)}
                     className="block text-center py-3 bg-[#FFB856] text-[#115E66] font-bold rounded-xl"
                   >
-                    S’inscrire
+                    S'inscrire
                   </Link>
                 </>
               )}
@@ -304,5 +250,3 @@ export default function Header() {
     </header>
   );
 }
-
-
