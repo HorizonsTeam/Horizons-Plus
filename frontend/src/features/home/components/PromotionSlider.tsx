@@ -77,9 +77,13 @@ export default function PromotionSlider() {
               <div className="bg-[#2C474B] rounded-4xl overflow-hidden shadow-xl hover:shadow-2xl transition-shadow duration-300 h-full">
                 {/* Image */}
                 <div className="h-50 overflow-hidden">
-                  <img 
-                    src={destination.image} 
+                  <img
+                    src={destination.image}
                     alt={destination.title}
+                    width={800}
+                    height={400}
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover hover:scale-110 transition-transform duration-500"
                   />
                 </div>
@@ -117,50 +121,6 @@ export default function PromotionSlider() {
           </button>
         </div>
       </div>
-
-      {/* Styles personnalisés pour Swiper */}
-      <style>{`
-        .swiper-slide {
-          width: auto !important;
-          height: auto;
-        }
-        
-        .swiper-button-next,
-        .swiper-button-prev {
-          color: #fbbf24;
-          background: rgba(255, 255, 255, 0.1);
-          backdrop-filter: blur(8px);
-          width: 50px;
-          height: 50px;
-          border-radius: 50%;
-        }
-        
-        .swiper-button-next:after,
-        .swiper-button-prev:after {
-          font-size: 20px;
-        }
-        
-        .swiper-pagination-bullet {
-          background: #fbbf24;
-          opacity: 0.5;
-          width: 12px;
-          height: 12px;
-        }
-        
-        .swiper-pagination-bullet-active {
-          opacity: 1;
-          width: 32px;
-          border-radius: 6px;
-        }
-        
-        .swiper-scrollbar {
-          background: rgba(255, 255, 255, 0.1);
-        }
-        
-        .swiper-scrollbar-drag {
-          background: #fbbf24;
-        }
-      `}</style>
     </div>
   );
 }
