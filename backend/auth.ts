@@ -28,7 +28,6 @@ const getBaseURL = () => {
     return process.env.BETTER_AUTH_URL;
   }
 
-  //
   if (process.env.VERCEL_URL) {
     return `https://${process.env.VERCEL_URL}`;
   }
@@ -165,7 +164,7 @@ export const auth = betterAuth({
       user,
       metadata,
     }: {
-      user: { id: string }; // minimal type
+      user: { id: string }; 
       metadata?: { phone?: string };
     }) => {
       if (metadata?.phone) {
@@ -186,30 +185,22 @@ export const auth = betterAuth({
   },
 
   emailVerification: {
-  sendVerificationEmail: async ({ user, url }) => {
-    const u = new URL(url);
+    sendVerificationEmail: async ({ user, url }) => {
+      const u = new URL(url);
 
-    u.searchParams.set("callbackURL", "/account");
+      const front = process.env.FRONT_URL || "http://localhost:5173";
+      u.searchParams.set("callbackURL", `${front}/account`);
 
-    const verifyUrl = u.toString();
+      const verifyUrl = u.toString();
 
-    await sendMail({
-      to: user.email,
-      subject: "Vérifiez votre adresse email",
-      html: `
-        <h2>Vérification de votre email</h2>
-        <p>Bonjour ${user.name || ""},</p>
-        <p>Merci de confirmer votre adresse email en cliquant sur le bouton :</p>
-        <p>
-          <a href="${verifyUrl}" style="background:#0ea5e9;color:white;padding:12px 24px;text-decoration:none;border-radius:6px;">
-            Vérifier mon email
-          </a>
-        </p>
-        <p><small>Si vous n'êtes pas à l'origine de cette demande, ignorez ce message.</small></p>
-      `,
-    });
+      await sendMail({
+        to: user.email,
+        subject: "Vérifiez votre adresse email",
+        html: `<a href="${verifyUrl}">Vérifier mon email</a>`,
+      });
+    },
   },
-},
+
 
 
   // socialProviders: {

@@ -16,19 +16,45 @@ export default function ReservationsPages() {
   const API_BASE = import.meta.env.VITE_API_URL || "";
 
   useEffect(() => {
-    fetchReservations();
+    checkAuthAndFetch();
   }, []);
+
+  const checkAuthAndFetch = async () => {
+    try {
+      setLoading(true);
+      
+      // Vérifier l'authentification d'abord
+      const authResponse = await fetch(`${API_BASE}/api/me`, {
+        credentials: "include",
+      });
+
+      if (authResponse.status === 401) {
+        navigate("/login", { replace: true });
+        return;
+      }
+
+      if (!authResponse.ok) {
+        throw new Error("Erreur d'authentification");
+      }
+
+      await fetchReservations();
+    } catch (error) {
+      console.error("Erreur auth check:", error);
+      navigate("/login", { replace: true });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fetchReservations = async () => {
     try {
-      setLoading(true);
       const response = await fetch(`${API_BASE}/api/reservations`, {
         credentials: "include",
       });
 
       if (!response.ok) {
         if (response.status === 401) {
-          navigate("/login");
+          navigate("/login", { replace: true });
           return;
         }
         throw new Error("Erreur lors du chargement des réservations");
@@ -41,8 +67,6 @@ export default function ReservationsPages() {
       setPastReservations(past);
     } catch (error) {
       console.error("Erreur:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
