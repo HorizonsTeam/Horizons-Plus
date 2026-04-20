@@ -32,6 +32,11 @@ export default function Header() {
   const isMobile = useIsMobile();
   const [imageError, setImageError] = useState(false);
 
+  const userEmail = user?.email ?? null;
+  useEffect(() => {
+    setImageError(false);
+  }, [userEmail]);
+
   const userImage = user?.image ?? null;
 
   const displayName = useMemo(() => {
