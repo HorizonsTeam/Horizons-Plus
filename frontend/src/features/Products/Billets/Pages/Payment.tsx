@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import {  useLocation } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import ModeDePaiementCard from '../components/paiement/ModeDePaiementCard.tsx';
 import assurance_Ico from '../../../../assets/assurance.svg';
 import useIsMobile from '../../../../components/layouts/UseIsMobile.tsx';
@@ -34,10 +34,18 @@ function getInsuranceTotal(ticketClass: string, passengersCount: number) {
     return getBaseInsurancePrice(ticketClass) * passengersCount;
 }
 
+type PaymentState = LocationState & { passagersData: number[] };
+
 export default function PaymentPage() {
     const { state } = useLocation();
-    const { journey, selectedClass, passagersCount, formattedDepartureDate, passagersData } = (state || {}) as LocationState & { passagersData: number[] };
+    if (!state || !(state as PaymentState).journey) {
+        return <Navigate to="/" replace />;
+    }
+    return <PaymentPageInner state={state as PaymentState} />;
+}
 
+function PaymentPageInner({ state }: { state: PaymentState }) {
+    const { journey, selectedClass, passagersCount, formattedDepartureDate, passagersData } = state;
     const isMobile = useIsMobile();
 
     const [clientSecret, setClientSecret] = useState("");
@@ -45,6 +53,7 @@ export default function PaymentPage() {
     const [ValidatePayment, setValidatePaymentOverlay] = useState(false);
 
     const [triggerPayment, setTriggerPayment] = useState<(() => void) | null>(null);
+    const [isPaying, setIsPaying] = useState(false);
 
     const [code, setCode] = useState("");
     const basePrice = journey.price * passagersCount;
@@ -181,6 +190,7 @@ export default function PaymentPage() {
                             passagersData={passagersData}
                             journey={journey}
                             formattedDepartureDate={formattedDepartureDate}
+                            setIsPaying={setIsPaying}
                         />
                     </Elements>
                 )}
@@ -288,8 +298,21 @@ export default function PaymentPage() {
 
                 {/* BOUTON PAYER */}
                 <div className="flex justify-center">
-                    <button className="w-[250px] h-[55px] bg-[#98EAF3] rounded-xl mt-6 mb-10 cursor-pointer" type='button' onClick={() => triggerPayment && triggerPayment()}>
-                        <span className="text-[#115E66] font-bold text-2xl">Payer</span>
+                    <button
+                        className="w-[250px] h-[55px] bg-[#98EAF3] rounded-xl mt-6 mb-10 cursor-pointer flex items-center justify-center gap-3 disabled:cursor-not-allowed disabled:opacity-70"
+                        type='button'
+                        disabled={isPaying || !triggerPayment}
+                        onClick={() => triggerPayment && triggerPayment()}
+                    >
+                        {isPaying && (
+                            <svg className="animate-spin h-6 w-6 text-[#115E66]" viewBox="0 0 24 24" fill="none">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                            </svg>
+                        )}
+                        <span className="text-[#115E66] font-bold text-2xl">
+                            {isPaying ? "Paiement..." : "Payer"}
+                        </span>
                     </button>
                 </div>
 

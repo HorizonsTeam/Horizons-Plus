@@ -90,20 +90,13 @@
 
 import express from "express";
 import Stripe from "stripe";
-import pg from "pg";
+import { pool } from "../db.js";
 import { sendMail } from "../server/mailer.js";
 import { generateTicketPDF } from "../services/ticketService.js";
 import { authMiddleware } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
-// Connexion PostgreSQL directe
-const client = new pg.Client({
-  connectionString: process.env.DATABASE_URL,
-});
-
-client.connect().catch(err => console.error("Erreur connexion DB:", err));
 
 // Payment intent
 router.post("/create-payment-intent", async (req, res) => {
@@ -124,11 +117,76 @@ router.post("/create-payment-intent", async (req, res) => {
   }
 });
 
-// Confirmation email + Sauvegarde réservation EN BASE DE DONNÉES
+// Helpers
+function normalizeDate(rawDate) {
+  const d = new Date(rawDate);
+  if (!Number.isNaN(d.getTime())) return d.toISOString().split("T")[0];
+  return new Date().toISOString().split("T")[0];
+}
+
+async function createReservation({
+  ticketId,
+  userId,
+  customerName,
+  journey,
+  date,
+  time,
+  passengers,
+  price,
+  transportType,
+}) {
+  const query = `
+    INSERT INTO reservation (ticket_id, user_id, customer_name, journey, date, time, passengers, price, transport_type, status, created_at, updated_at)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW(), NOW())
+    RETURNING *
+  `;
+  const values = [
+    ticketId,
+    userId,
+    customerName,
+    journey,
+    normalizeDate(date),
+    time,
+    parseInt(passengers),
+    parseFloat(price),
+    transportType || "TRAIN",
+    "confirmed",
+  ];
+  const result = await pool.query(query, values);
+  return result.rows[0];
+}
+
+function itemHtmlBlock(item) {
+  return `
+    <div style="padding:12px;margin-bottom:12px;border:1px solid #e5e7eb;border-radius:8px;">
+      <p style="margin:0 0 6px 0;"><strong>${item.journey}</strong></p>
+      <ul style="margin:0;padding-left:18px;">
+        <li>Date : ${item.date}</li>
+        <li>Heure : ${item.time}</li>
+        <li>Classe : ${item.class || "—"}</li>
+        <li>Passagers : ${item.passengers}</li>
+        <li>Prix : ${item.price} €</li>
+        <li>ID Billet : ${item.ticketId}</li>
+      </ul>
+    </div>`;
+}
+
+// Confirmation email + Sauvegarde réservation(s)
 router.post("/send-confirmation", authMiddleware, async (req, res) => {
   try {
-    const { email, customerName, journey, date, time, price, passengers } = req.body;
     const userId = req.userId;
+    const {
+      email,
+      customerName,
+      items,
+      totalPrice,
+      // Single-mode fallback fields (backward compat)
+      journey,
+      date,
+      time,
+      price,
+      passengers,
+    } = req.body;
 
     if (!email) {
       return res.status(400).json({ error: "Email obligatoire" });
@@ -138,79 +196,94 @@ router.post("/send-confirmation", authMiddleware, async (req, res) => {
       return res.status(401).json({ error: "Non authentifié" });
     }
 
-    const ticketId = "TICKET-" + Date.now();
+    // Normalize to an array either way
+    const sourceItems = Array.isArray(items) && items.length > 0
+      ? items
+      : [{
+          journey,
+          date,
+          time,
+          price,
+          passengers: passengers ?? 1,
+          class: null,
+          transportType: "TRAIN",
+        }];
 
-    const ticketInfo = {
-      ticketId,
-      customerName,
-      journey,
-      date,
-      time,
-      price,
-      passengers,
-    };
+    const createdTickets = [];
+    const attachments = [];
 
-    const pdfBytes = await generateTicketPDF(ticketInfo);
+    for (const raw of sourceItems) {
+      const ticketId = "TICKET-" + Date.now() + "-" + Math.floor(Math.random() * 1000);
+      const ticketInfo = {
+        ticketId,
+        customerName,
+        journey: raw.journey,
+        date: raw.date,
+        time: raw.time,
+        price: raw.price,
+        passengers: raw.passengers ?? 1,
+      };
 
-    // Insère directement en base de données avec SQL
-    const query = `
-      INSERT INTO reservation (ticket_id, user_id, customer_name, journey, date, time, passengers, price, transport_type, status, created_at, updated_at)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW(), NOW())
-      RETURNING *
-    `;
+      const pdfBytes = await generateTicketPDF(ticketInfo);
 
-    // Je formate la date 
-    const dateObj = new Date(date);
-    const values = [
-      ticketId,
-      userId,
-      customerName,
-      journey,
-      dateObj.toISOString().split('T')[0],
-      time,
-      parseInt(passengers),
-      parseFloat(price),
-      "TRAIN",
-      "confirmed"
-    ];
+      await createReservation({
+        ticketId,
+        userId,
+        customerName,
+        journey: raw.journey,
+        date: raw.date,
+        time: raw.time,
+        passengers: raw.passengers ?? 1,
+        price: raw.price,
+        transportType: raw.transportType || "TRAIN",
+      });
 
-    const result = await client.query(query, values);
-    console.log("Réservation créée:", result.rows[0].ticket_id);
+      createdTickets.push({ ...ticketInfo, class: raw.class });
+      attachments.push({
+        filename: `Billet-${ticketId}.pdf`,
+        content: pdfBytes,
+        contentType: "application/pdf",
+      });
+    }
 
-    const html = `
-      <h2>Votre billet Horizons+ est confirmé !</h2>
-      <p>Merci <strong>${customerName}</strong>.</p>
+    const isCart = createdTickets.length > 1;
+    const total = typeof totalPrice === "number"
+      ? totalPrice
+      : createdTickets.reduce((s, t) => s + parseFloat(t.price || 0), 0);
 
-      <h3>Détails :</h3>
-      <ul>
-        <li><strong>Trajet :</strong> ${journey}</li>
-        <li><strong>Date :</strong> ${date}</li>
-        <li><strong>Heure :</strong> ${time}</li>
-        <li><strong>Passagers :</strong> ${passengers}</li>
-        <li><strong>Prix :</strong> ${price} €</li>
-        <li><strong>ID Billet :</strong> ${ticketId}</li>
-      </ul>
-
-      <p>Vous pouvez retrouver votre billet dans votre espace personnel "Mes réservations".</p>
-    `;
+    const html = isCart
+      ? `
+        <h2>Votre commande Horizons+ est confirmée !</h2>
+        <p>Merci <strong>${customerName}</strong>. Voici le détail de vos ${createdTickets.length} billets :</p>
+        ${createdTickets.map(itemHtmlBlock).join("")}
+        <p style="font-size:18px;margin-top:20px;"><strong>Total payé : ${total.toFixed(2)} €</strong></p>
+        <p>Vous pouvez retrouver vos billets dans votre espace personnel "Mes réservations".</p>
+      `
+      : `
+        <h2>Votre billet Horizons+ est confirmé !</h2>
+        <p>Merci <strong>${customerName}</strong>.</p>
+        ${itemHtmlBlock(createdTickets[0])}
+        <p>Vous pouvez retrouver votre billet dans votre espace personnel "Mes réservations".</p>
+      `;
 
     await sendMail({
       to: email,
-      subject: "Confirmation de votre billet Horizons+",
+      subject: isCart
+        ? `Confirmation de votre commande Horizons+ (${createdTickets.length} billets)`
+        : "Confirmation de votre billet Horizons+",
       html,
-      attachments: [
-        {
-          filename: `Billet-${ticketId}.pdf`,
-          content: pdfBytes,
-          contentType: "application/pdf",
-        },
-      ],
+      attachments,
     });
 
-    res.json({ 
-      success: true, 
-      ticketId,
-      message: "Réservation créée et email envoyé avec succès"
+    console.log("Réservations créées:", createdTickets.map((t) => t.ticketId).join(", "));
+
+    res.json({
+      success: true,
+      ticketIds: createdTickets.map((t) => t.ticketId),
+      ticketId: createdTickets[0]?.ticketId, // legacy field
+      message: isCart
+        ? "Commande enregistrée et email envoyé"
+        : "Réservation créée et email envoyé avec succès",
     });
 
   } catch (error) {

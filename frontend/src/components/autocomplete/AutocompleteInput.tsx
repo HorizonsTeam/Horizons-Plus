@@ -43,24 +43,37 @@ const AutocompleteInput = forwardRef<HTMLInputElement, AutocompleteInputProps>(
                 return;
             }
 
-            const timeout = setTimeout(async () => {
-                try {
-                    const [sncfData, amadeusData] = await Promise.allSettled([
-                        fetch(`${API_BASE_}/api/search/stations?q=${encodeURIComponent(value)}`).then((r) => r.json()),
-                        fetch(`${API_BASE_}/api/search/airports?q=${encodeURIComponent(value)}`).then((r) => r.json()),
-                    ]);
+            const controller = new AbortController();
+            const timeout = setTimeout(() => {
+                let sncfResults: Suggestion[] = [];
+                let amadeusResults: Suggestion[] = [];
 
-                    const sncfResults = sncfData.status === "fulfilled" ? sncfData.value : [];
-                    const amadeusResults = amadeusData.status === "fulfilled" ? amadeusData.value : [];
-
+                const merge = () => {
                     setSuggestions([...sncfResults, ...amadeusResults]);
                     setSelectedIndex(0);
-                } catch {
-                    setSuggestions([]);
-                }
+                };
+
+                fetch(`${API_BASE_}/api/search/stations?q=${encodeURIComponent(value)}`, { signal: controller.signal })
+                    .then((r) => r.json())
+                    .then((data) => {
+                        sncfResults = Array.isArray(data) ? data : [];
+                        merge();
+                    })
+                    .catch(() => {});
+
+                fetch(`${API_BASE_}/api/search/airports?q=${encodeURIComponent(value)}`, { signal: controller.signal })
+                    .then((r) => r.json())
+                    .then((data) => {
+                        amadeusResults = Array.isArray(data) ? data : [];
+                        merge();
+                    })
+                    .catch(() => {});
             }, 300);
 
-            return () => clearTimeout(timeout);
+            return () => {
+                clearTimeout(timeout);
+                controller.abort();
+            };
         }, [value, API_BASE_]);
 
         //  click outside 
