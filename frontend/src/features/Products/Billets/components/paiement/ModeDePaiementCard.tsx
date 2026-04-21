@@ -1,5 +1,5 @@
 import ModeDePaiementItem from '../paiement/paiementItem'
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import PaiementForm from './paymentForm';
 import creditCard_ico from '../../../../../assets/credit-card.svg'
 import Paypal_ico from '../../../../../assets/paypal_ico.svg'
@@ -12,9 +12,17 @@ import ApplePaySelected from '../../../../../assets/ApplePay_IsSelected.webp'
 
 
 
-export default function ModeDePaiementCard({ clientSecret, setValidatePaymentOverlay, setTriggerPayment, passagersData, journey, formattedDepartureDate }: any) {
+export default function ModeDePaiementCard({ clientSecret, setValidatePaymentOverlay, setTriggerPayment, passagersData, journey, formattedDepartureDate, setIsPaying, confirmationBody }: any) {
     const [selectedMode, setSelectedMode] = useState<string>("Carte bancaire");
     const isMobile = useIsMobile();
+
+    const handleReady = useCallback((fn: () => void) => {
+        setTriggerPayment(() => fn);
+    }, [setTriggerPayment]);
+
+    const handleSuccess = useCallback(() => {
+        setValidatePaymentOverlay(true);
+    }, [setValidatePaymentOverlay]);
 
     return (
         <div className={` ${isMobile ? '' : 'm-20'} bg-[#133A40] border-2 border-[#2C474B] rounded-2xl p-5 mb-8 `}>
@@ -54,11 +62,13 @@ export default function ModeDePaiementCard({ clientSecret, setValidatePaymentOve
                 <div style={{ position: "relative", zIndex: 50 }}>
                     <PaiementForm
                         clientSecret={clientSecret}
-                        onSuccess={() => setValidatePaymentOverlay(true)}
-                        onReady={(fn: () => void) => setTriggerPayment(() => fn)}
+                        onSuccess={handleSuccess}
+                        onReady={handleReady}
                         passagersData={passagersData}
                         journey={journey}
                         formattedDepartureDate={formattedDepartureDate}
+                        setIsPaying={setIsPaying}
+                        confirmationBody={confirmationBody}
                     />
                 </div>
             )}

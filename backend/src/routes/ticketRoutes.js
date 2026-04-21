@@ -85,18 +85,11 @@
 // export default router;
 
 import express from "express";
-import pg from "pg";
+import { pool } from "../db.js";
 import { generateTicketPDF } from "../services/ticketService.js";
 import { authMiddleware } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
-
-// Connexion PostgreSQL directe
-const client = new pg.Client({
-  connectionString: process.env.DATABASE_URL,
-});
-
-client.connect().catch(err => console.error("Erreur connexion DB:", err));
 
 // Récupérer toutes les réservations de l'utilisateur connecté
 router.get("/reservations", authMiddleware, async (req, res) => {
@@ -113,7 +106,7 @@ router.get("/reservations", authMiddleware, async (req, res) => {
       ORDER BY date DESC
     `;
 
-    const result = await client.query(query, [userId]);
+    const result = await pool.query(query, [userId]);
     res.json({ reservations: result.rows });
   } catch (error) {
     console.error("Erreur récupération réservations:", error);
@@ -136,7 +129,7 @@ router.get("/ticket/download/:ticketId", authMiddleware, async (req, res) => {
       WHERE ticket_id = $1 AND user_id = $2
     `;
 
-    const result = await client.query(query, [ticketId, userId]);
+    const result = await pool.query(query, [ticketId, userId]);
 
     if (result.rows.length === 0) {
       return res.status(404).json({ error: "Réservation non trouvée" });

@@ -1,5 +1,6 @@
 
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
 import SearchForm from './components/seachForm/SearchForm.tsx';
 import PromotionSlider from './components/PromotionSlider';
 import ImagesSwiper from '../../components/AdditionalsComponents/swipeImges';
@@ -37,7 +38,16 @@ const sectionVariants: Variants = {
 
 export default function HomePage() {
 
+  const location = useLocation();
 
+  useEffect(() => {
+    if (!location.hash) return;
+    const id = location.hash.slice(1);
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [location]);
 
   return (
 
@@ -252,7 +262,8 @@ export default function HomePage() {
 
       {/* Destinations Section */}
       <motion.section
-        className="px-4 py-12 lg:py-16 bg-dark"
+        id="destinations"
+        className="px-4 py-12 lg:py-16 bg-dark scroll-mt-20"
         variants={sectionVariants}
         initial="hidden"
         whileInView="visible"
@@ -272,6 +283,10 @@ export default function HomePage() {
                   <img
                     src="https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=600&h=400&fit=crop"
                     alt="Rome Colisée"
+                    width={600}
+                    height={400}
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-dark/90 to-transparent"></div>
@@ -292,6 +307,10 @@ export default function HomePage() {
                 <img
                   src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=600&h=400&fit=crop"
                   alt="Paris"
+                  width={600}
+                  height={400}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-dark/90 to-transparent"></div>
@@ -311,6 +330,10 @@ export default function HomePage() {
                 <img
                   src="https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600&h=400&fit=crop"
                   alt="Tokyo"
+                  width={600}
+                  height={400}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-dark/90 to-transparent"></div>
@@ -331,6 +354,8 @@ export default function HomePage() {
         </div>
       </motion.section>
       <motion.section
+        id="promotions"
+        className="scroll-mt-20"
         variants={sectionVariants}
         initial="hidden"
         whileInView="visible"
@@ -342,7 +367,8 @@ export default function HomePage() {
 
       {/* Events Section */}
       <motion.section
-        className="px-4 py-12 lg:py-16 bg-dark"
+        id="evenements"
+        className="px-4 py-12 lg:py-16 bg-dark scroll-mt-20"
         variants={sectionVariants}
         initial="hidden"
         whileInView="visible"
@@ -359,6 +385,10 @@ export default function HomePage() {
               <img
                 src="https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?w=800&h=400&fit=crop"
                 alt="Concert"
+                width={800}
+                height={400}
+                loading="lazy"
+                decoding="async"
                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-dark via-dark/50 to-transparent"></div>
@@ -373,6 +403,10 @@ export default function HomePage() {
               <img
                 src="https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=800&h=400&fit=crop"
                 alt="Sport"
+                width={800}
+                height={400}
+                loading="lazy"
+                decoding="async"
                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-dark via-dark/50 to-transparent"></div>

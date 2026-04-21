@@ -5,6 +5,8 @@ import { authClient } from '../../../lib/auth-clients';
 import type React from 'react';
 import useIsMobile from '../../../components/layouts/UseIsMobile';
 import PopUp from '../../../components/AdditionalsComponents/PopUp';
+import { loginSchema, type LoginValues } from '../login-validation';
+import { flattenErrors, type FieldErrors } from '../validation-shared';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -12,8 +14,34 @@ export default function Login() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors<LoginValues>>({});
+  const [submitted, setSubmitted] = useState(false);
+  const [touched, setTouched] = useState<Record<keyof LoginValues, boolean>>({
+    email: false,
+    password: false,
+  });
 
-  // popup et loader
+  const revalidate = (values: LoginValues) => {
+    const parsed = loginSchema.safeParse(values);
+    setFieldErrors(parsed.success ? {} : flattenErrors<LoginValues>(parsed.error));
+  };
+
+  const shouldShow = (field: keyof LoginValues) => (submitted || touched[field]) && !!fieldErrors[field];
+
+  const onEmailChange = (v: string) => {
+    setEmail(v);
+    if (submitted || touched.email) revalidate({ email: v, password });
+  };
+  const onPasswordChange = (v: string) => {
+    setPassword(v);
+    if (submitted || touched.password) revalidate({ email, password: v });
+  };
+
+  const onBlur = (field: keyof LoginValues) => {
+    setTouched((t) => ({ ...t, [field]: true }));
+    revalidate({ email, password });
+  };
+
   const [popupMsg, setPopupMsg] = useState<string | null>(null);
   const [popupMode, setPopupMode] = useState<"good" | "bad" | "question">("question");
   const [popupBtn, setPopupBtn] = useState<React.ReactNode>(null);
@@ -21,18 +49,25 @@ export default function Login() {
 
   const closePopup = () => setPopupMsg(null);
 
+  const showError = (msg: string) => {
+    setPopupMsg(msg);
+    setPopupMode("bad");
+    setPopupBtn(
+      <button className="bg-[#98EAF3] text-[#115E66] w-full h-10 rounded-lg font-bold cursor-pointer" onClick={closePopup}>
+        Réessayer
+      </button>
+    );
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setPopupMsg(null);
+    setFieldErrors({});
 
-    if (!email || !password) {
-      setPopupMsg("Veuillez entrer votre email et votre mot de passe.");
-      setPopupMode("bad");
-      setPopupBtn(
-        <button className="bg-[#98EAF3] text-[#115E66] w-full h-10 rounded-lg font-bold" onClick={closePopup}>
-          OK
-        </button>
-      );
+    setSubmitted(true);
+    const parsed = loginSchema.safeParse({ email, password });
+    if (!parsed.success) {
+      setFieldErrors(flattenErrors<LoginValues>(parsed.error));
       return;
     }
 
@@ -43,24 +78,31 @@ export default function Login() {
 
     try {
       const result = await authClient.signIn.email({
-        email,
-        password,
+        email: parsed.data.email,
+        password: parsed.data.password,
         rememberMe: true,
         callbackURL: "/",
       });
 
-      // Cas 2FA
-      if ((result as any)?.data?.twoFactorRedirect) {
-        navigate("/two-factor", { state: { email } });
+      if (result?.error) {
+        showError(
+          result.error.code === "INVALID_EMAIL_OR_PASSWORD"
+            ? "Email ou mot de passe incorrect."
+            : result.error.message || "Connexion impossible."
+        );
         return;
       }
 
-      // Succès
+      if ((result as any)?.data?.twoFactorRedirect) {
+        navigate("/two-factor", { state: { email: parsed.data.email } });
+        return;
+      }
+
       setPopupMsg("Connexion réussie !");
       setPopupMode("good");
       setPopupBtn(
         <button
-          className="bg-[#98EAF3] text-[#115E66] w-full h-10 rounded-lg font-bold"
+          className="bg-[#98EAF3] text-[#115E66] w-full h-10 rounded-lg font-bold cursor-pointer"
           onClick={() => { closePopup(); navigate("/"); }}
         >
           Continuer
@@ -69,13 +111,7 @@ export default function Login() {
 
     } catch (err: any) {
       console.error("signin error", err);
-      setPopupMsg(err?.message || "Identifiants invalides.");
-      setPopupMode("bad");
-      setPopupBtn(
-        <button className="bg-[#98EAF3] text-[#115E66] w-full h-10 rounded-lg font-bold" onClick={closePopup}>
-          Réessayer
-        </button>
-      );
+      showError(err?.message || "Erreur inattendue. Réessayez.");
     } finally {
       setIsLoading(false);
     }
@@ -85,34 +121,42 @@ export default function Login() {
     setPopupMsg("Connexion avec Google pas encore disponible. Merci de vous connecter normalement. :)");
     setPopupMode("question");
     setPopupBtn(
-      <button className="bg-[#98EAF3] text-[#115E66] w-full h-10 rounded-lg font-bold" onClick={closePopup}>
+      <button className="bg-[#98EAF3] text-[#115E66] w-full h-10 rounded-lg font-bold cursor-pointer" onClick={closePopup}>
         OK
       </button>
     );
   };
+
+  const inputClass = "w-full max-w-md bg-[#2C474B] text-white placeholder-gray-400 rounded-lg p-3 outline-none focus:ring-2 focus:ring-[#98EAF3] transition";
+  const errorClass = "w-full max-w-md text-left text-sm text-red-300 -mt-2";
 
   return (
     <PageTransition>
       <div className={`text-center min-h-screen flex flex-col mt-17 lg:mt-13 gap-6 ${isMobile ? 'w-full px-4' : 'w-full'}`}>
         <h1 className="text-4xl font-bold text-[#98EAF3] mb-5 lg:mb-10">Connectez-vous</h1>
 
-        <form onSubmit={handleSubmit} className="flex flex-col items-center mt-1 space-y-4">
+        <form onSubmit={handleSubmit} noValidate className="flex flex-col items-center mt-1 space-y-4">
           <input
             type="email"
             placeholder="E-mail"
-            className="w-full max-w-md bg-[#2C474B] text-white placeholder-gray-400 rounded-lg p-3 outline-none focus:ring-2 focus:ring-[#98EAF3] transition"
+            className={inputClass}
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
+            onChange={(e) => onEmailChange(e.target.value)}
+            onBlur={() => onBlur("email")}
+            aria-invalid={shouldShow("email")}
           />
+          {shouldShow("email") && <p className={errorClass}>{fieldErrors.email}</p>}
+
           <input
             type="password"
             placeholder="Mot de passe"
-            className="w-full max-w-md bg-[#2C474B] text-white placeholder-gray-400 rounded-lg p-3 outline-none focus:ring-2 focus:ring-[#98EAF3] transition"
+            className={inputClass}
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
+            onChange={(e) => onPasswordChange(e.target.value)}
+            onBlur={() => onBlur("password")}
+            aria-invalid={shouldShow("password")}
           />
+          {shouldShow("password") && <p className={errorClass}>{fieldErrors.password}</p>}
 
           <div className="w-full max-w-md text-right">
             <Link to="/mdpoublie" className="text-sm text-[#98EAF3] hover:underline">Mot de passe oublié ?</Link>
@@ -121,7 +165,7 @@ export default function Login() {
           <button
             type="submit"
             disabled={isLoading}
-            className="bg-[#98EAF3] text-[#115E66] w-full h-10 rounded-lg max-w-md font-bold"
+            className="bg-[#98EAF3] text-[#115E66] w-full h-10 rounded-lg max-w-md font-bold cursor-pointer disabled:cursor-not-allowed disabled:opacity-70"
           >
             {isLoading ? "Connexion..." : "Se connecter"}
           </button>
@@ -136,7 +180,7 @@ export default function Login() {
             type="button"
             onClick={signInWithGoogle}
             disabled={isLoading}
-            className="bg-[#FFFFFF] text-[#115E66] w-full h-10 rounded-lg max-w-md font-bold flex items-center justify-center gap-2"
+            className="bg-[#FFFFFF] text-[#115E66] w-full h-10 rounded-lg max-w-md font-bold flex items-center justify-center gap-2 cursor-pointer disabled:cursor-not-allowed disabled:opacity-70"
           >
             <img src="src/assets/Google_Favicon_2025.svg" alt="google logo" className="mr-2 w-6 h-6" />
             Continuer avec Google

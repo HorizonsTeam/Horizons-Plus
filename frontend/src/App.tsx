@@ -1,52 +1,60 @@
-import './App.css'
+import { lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import 'leaflet/dist/leaflet.css';
+import { ClipLoader } from 'react-spinners'
+import 'leaflet/dist/leaflet.css'
+import './App.css'
 import MainLayout from './components/layouts/MainLayouts.tsx'
 import HomePage from './features/home/HomePage.tsx'
-import Login from './features/connexion/Login/login.tsx';
-import Singin from './features/connexion/Singin/singin.tsx';
-import MdpOublie from './features/connexion/MdpOublie/mdpoublie.tsx';
-import Panier from './features/panier/panier.tsx';
-import Resultats from './features/Recherche/Resultats.tsx';
-import Recap from './features/Products/Billets/Pages/recap.tsx';
-import PaymentPage from './features/Products/Billets/Pages/Payment.tsx';
 
-import Infos_Passagers from './features/Products/Billets/Pages/Infos_Passagers.tsx';
-import Settings from './features/Settings/setingsPage.tsx';
-import UserInfoPageMobile from './features/Settings/components/UserInformation/UserInfoMobilePage.tsx';
-import ResetPassword from './features/connexion/ResetPassword/resetpassword.tsx';
-import AccountSettings from './features/Settings/Pages/AccountSettings/AccountSettings.tsx';
+const Login = lazy(() => import('./features/connexion/Login/login.tsx'))
+const Singin = lazy(() => import('./features/connexion/Singin/singin.tsx'))
+const MdpOublie = lazy(() => import('./features/connexion/MdpOublie/mdpoublie.tsx'))
+const ResetPassword = lazy(() => import('./features/connexion/ResetPassword/resetpassword.tsx'))
+const TwoFactor = lazy(() => import('./features/connexion/2AF/TwoFactor.tsx'))
+const Panier = lazy(() => import('./features/panier/panier.tsx'))
+const Resultats = lazy(() => import('./features/Recherche/Resultats.tsx'))
+const Recap = lazy(() => import('./features/Products/Billets/Pages/recap.tsx'))
+const PaymentPage = lazy(() => import('./features/Products/Billets/Pages/Payment.tsx'))
+const CartPayment = lazy(() => import('./features/Products/Billets/Pages/CartPayment.tsx'))
+const Infos_Passagers = lazy(() => import('./features/Products/Billets/Pages/Infos_Passagers.tsx'))
+const Settings = lazy(() => import('./features/Settings/setingsPage.tsx'))
+const UserInfoPageMobile = lazy(() => import('./features/Settings/components/UserInformation/UserInfoMobilePage.tsx'))
+const AccountSettings = lazy(() => import('./features/Settings/Pages/AccountSettings/AccountSettings.tsx'))
+const ReservationsPages = lazy(() => import('./features/reservations-pages/components/reservationsPages.tsx'))
 
-import ReservationsPages from './features/reservations-pages/components/reservationsPages.tsx';
-import TwoFactor from './features/connexion/2AF/TwoFactor.tsx';
-
+function RouteFallback() {
+  return (
+    <div className="flex items-center justify-center min-h-[60vh]">
+      <ClipLoader color="#98EAF3" size={48} />
+    </div>
+  )
+}
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Routes imbriquées sous ton layout principal */}
         <Route path="/" element={<MainLayout />}>
           <Route index element={<HomePage />} />
-          <Route path="login" element={<Login />} />
-          <Route path="/two-factor" element={<TwoFactor />} />
-          <Route path="mdpoublie" element={<MdpOublie />} />
-          <Route path="ResetPassword" element={<ResetPassword />} />
-          <Route path="singin" element={<Singin />} />
-          <Route path="panier" element={<Panier />} />
-          <Route path="Recherche" element={<Resultats />} />
-          <Route path="Recap" element={<Recap />} />
-          <Route path="PaymentPage" element={<PaymentPage />} />
-          <Route path="Infos_Passagers" element={<Infos_Passagers />} />
-          <Route path="Settings" element={<Settings/>} />
-          <Route path="UserInfoPageMobile" element={<UserInfoPageMobile />} />
-          <Route path="AccountSettings" element={<AccountSettings />} />
-          <Route path="reservations" element={<ReservationsPages />} />
+          <Route path="login" element={<Suspense fallback={<RouteFallback />}><Login /></Suspense>} />
+          <Route path="two-factor" element={<Suspense fallback={<RouteFallback />}><TwoFactor /></Suspense>} />
+          <Route path="mdpoublie" element={<Suspense fallback={<RouteFallback />}><MdpOublie /></Suspense>} />
+          <Route path="ResetPassword" element={<Suspense fallback={<RouteFallback />}><ResetPassword /></Suspense>} />
+          <Route path="singin" element={<Suspense fallback={<RouteFallback />}><Singin /></Suspense>} />
+          <Route path="panier" element={<Suspense fallback={<RouteFallback />}><Panier /></Suspense>} />
+          <Route path="Recherche" element={<Suspense fallback={<RouteFallback />}><Resultats /></Suspense>} />
+          <Route path="Recap" element={<Suspense fallback={<RouteFallback />}><Recap /></Suspense>} />
+          <Route path="PaymentPage" element={<Suspense fallback={<RouteFallback />}><PaymentPage /></Suspense>} />
+          <Route path="CartPayment" element={<Suspense fallback={<RouteFallback />}><CartPayment /></Suspense>} />
+          <Route path="Infos_Passagers" element={<Suspense fallback={<RouteFallback />}><Infos_Passagers /></Suspense>} />
+          <Route path="Settings" element={<Suspense fallback={<RouteFallback />}><Settings /></Suspense>} />
+          <Route path="UserInfoPageMobile" element={<Suspense fallback={<RouteFallback />}><UserInfoPageMobile /></Suspense>} />
+          <Route path="AccountSettings" element={<Suspense fallback={<RouteFallback />}><AccountSettings /></Suspense>} />
+          <Route path="reservations" element={<Suspense fallback={<RouteFallback />}><ReservationsPages /></Suspense>} />
         </Route>
-
       </Routes>
     </BrowserRouter>
-  );
+  )
 }
 
-export default App;
+export default App
