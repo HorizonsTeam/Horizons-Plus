@@ -88,8 +88,8 @@ importers:
         specifier: ^7.0.3
         version: 7.0.3
       '@types/pg':
-        specifier: ^8.15.6
-        version: 8.15.6
+        specifier: ^8.20.0
+        version: 8.20.0
       dotenv:
         specifier: ^17.2.3
         version: 17.2.3
@@ -649,9 +649,6 @@ packages:
 
   '@types/nodemailer@7.0.3':
     resolution: {integrity: sha512-fC8w49YQ868IuPWRXqPfLf+MuTRex5Z1qxMoG8rr70riqqbOp2F5xgOKE9fODEBPzpnvjkJXFgK6IL2xgMSTnA==}
-
-  '@types/pg@8.15.6':
-    resolution: {integrity: sha512-NoaMtzhxOrubeL/7UZuNTrejB4MPAJ0RpxZqXQf2qXuVlTPuG6Y8p4u9dKRaue4yjmC7ZhzVO2/Yyyn25znrPQ==}
 
   '@types/pg@8.20.0':
     resolution: {integrity: sha512-bEPFOaMAHTEP1EzpvHTbmwR8UsFyHSKsRisLIHVMXnpNefSbGA1bD6CVy+qKjGSqmZqNqBDV2azOBo8TgkcVow==}
@@ -2799,12 +2796,6 @@ snapshots:
       '@types/node': 24.10.0
     transitivePeerDependencies:
       - aws-crt
-
-  '@types/pg@8.15.6':
-    dependencies:
-      '@types/node': 24.10.0
-      pg-protocol: 1.10.3
-      pg-types: 2.2.0
 
   '@types/pg@8.20.0':
     dependencies:
