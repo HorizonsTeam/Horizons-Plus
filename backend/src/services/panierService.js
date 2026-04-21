@@ -8,7 +8,8 @@ import {
     getPanierItems,
     deletePanierItem,
     createPassager,
-    checkPanierItemDoublon
+    checkPanierItemDoublon,
+    clearPanierItems
 } from '../repositories/panierRepository.js';
 
 async function ensurePrimaryPassager(userId, panierId, userData) {
@@ -137,9 +138,30 @@ async function deleteBilletFromPanier(userId, sessionId, itemId) {
     return deletedItem;
 }
 
+async function clearPanierForUser(userId, sessionId) {
+    let panier;
+
+    if (userId) {
+        panier = await findActivePanierByUserId(userId);
+    }
+
+    if ((!panier || panier.length === 0) && sessionId) {
+        panier = await findActivePanierBySessionId(sessionId);
+    }
+
+    if (!panier || panier.length === 0) {
+        return { cleared: 0 };
+    }
+
+    const panierId = panier[0].panier_id;
+    await clearPanierItems(panierId);
+    return { cleared: panierId };
+}
+
 export default {
     getPanierForUser,
     addBilletToPanier,
     deleteBilletFromPanier,
+    clearPanierForUser,
     ensurePrimaryPassager
 };

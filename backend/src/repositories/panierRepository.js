@@ -88,6 +88,12 @@ export async function deletePanierItem(panierId, itemId) {
     `
 }
 
+export async function clearPanierItems(panierId) {
+    return await sql`
+        DELETE FROM panier_item WHERE panier_id = ${panierId}
+    `;
+}
+
 export async function checkPanierItemDoublon(panierId, billetData) {
     const result = await sql`
         SELECT 1

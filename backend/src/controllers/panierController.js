@@ -85,3 +85,14 @@ export async function deleteBilletFromPanier(req, res) {
         res.status(500).json({ error: error.message });
     }
 }
+
+export async function clearPanier(req, res) {
+    try {
+        const { userId, sessionId } = req;
+        const result = await panierService.clearPanierForUser(userId, sessionId);
+        res.status(200).json({ success: true, ...result });
+    } catch (error) {
+        console.error("Erreur clearPanier:", error);
+        res.status(500).json({ error: error.message });
+    }
+}

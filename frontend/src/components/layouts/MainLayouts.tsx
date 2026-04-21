@@ -5,6 +5,7 @@ import PanierBtn from '../AdditionalsComponents/PanierBtn.tsx';
 import type { PanierItem, BackendPanierResponse } from "../../features/panier/types.ts";
 import { useState, useEffect } from 'react';
 import useIsMobile from './UseIsMobile.tsx';
+import { UserProvider } from '../../lib/user-context';
 const base = `${import.meta.env.VITE_API_URL || "http://localhost:3005"}`;
 
 export default function MainLayout() {
@@ -59,7 +60,7 @@ export default function MainLayout() {
   }, [panierItems, isMobile]);
 
   return (
-    <>
+    <UserProvider>
       <Header />
       <main>
         <Outlet context={{ panierItems, setPanierItems }} />
@@ -70,6 +71,6 @@ export default function MainLayout() {
         <PanierBtn nombresArticles={panierItems.length} />
       }
       <Footer />
-    </>
+    </UserProvider>
   );
 }
