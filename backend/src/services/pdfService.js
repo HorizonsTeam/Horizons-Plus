@@ -1,7 +1,17 @@
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 
+function formatDate(value) {
+    if (value == null) return "";
+    const d = value instanceof Date ? value : new Date(value);
+    if (isNaN(d.getTime())) return String(value);
+    return d.toLocaleDateString("fr-FR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+    });
+}
+
 export async function generatePDF(ticketInfo, qrBase64) {
-    console.log("tikcketinfo", ticketInfo.journey);
     const pdfDoc = await PDFDocument.create();
 
     const page = pdfDoc.addPage([600, 800]);
@@ -16,23 +26,21 @@ export async function generatePDF(ticketInfo, qrBase64) {
         color: rgb(0, 0, 0),
     });
 
-    console.log("ticket info avant", ticketInfo.journey);
-    ticketInfo.journey = ticketInfo.journey.replace("→", "->");
-    console.log("ticket info apres", ticketInfo.journey);
+    const journey = String(ticketInfo.journey ?? "").replace("→", "->");
 
-    const text = [
-        `Nom : ${ticketInfo.customerName}`,
-        `Trajet : ${ticketInfo.journey}`,
-        `Date : ${ticketInfo.date}`,
-        `Heure : ${ticketInfo.time}`,
-        `Passagers : ${ticketInfo.passengers}`,
-        `Prix : ${ticketInfo.price} €`,
-        `ID Billet : ${ticketInfo.ticketId}`,
+    const lines = [
+        `Nom : ${ticketInfo.customerName ?? ""}`,
+        `Trajet : ${journey}`,
+        `Date : ${formatDate(ticketInfo.date)}`,
+        `Heure : ${ticketInfo.time ?? ""}`,
+        `Passagers : ${ticketInfo.passengers ?? ""}`,
+        `Prix : ${ticketInfo.price ?? ""} €`,
+        `ID Billet : ${ticketInfo.ticketId ?? ""}`,
     ];
 
     let y = height - 140;
-    text.forEach((line) => {
-        page.drawText(line, {
+    lines.forEach((line) => {
+        page.drawText(String(line), {
             x: 50,
             y,
             size: 16,
@@ -53,6 +61,5 @@ export async function generatePDF(ticketInfo, qrBase64) {
         height: qrSize,
     });
 
-    const pdfBytes = await pdfDoc.save();
-    return pdfBytes; 
+    return pdfDoc.save();
 }
