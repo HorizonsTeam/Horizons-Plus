@@ -105,7 +105,7 @@ export async function generatePDF(ticketInfo, qrBase64) {
     });
   }
 
-  //  Note bas de page 
+  // Note bas de page 
   page.drawText(
     "Presentez ce billet au controleur. Valable uniquement pour le trajet et la date indiqueée.",
     { x: 28, y: 28, size: 8, font: fontReg, color: GRAY_TEXT, maxWidth: 440 }
