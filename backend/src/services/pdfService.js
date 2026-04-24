@@ -1,6 +1,17 @@
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 
-const VERT_DARK  = rgb(16 / 255, 48 / 255, 53 / 255); 
+function formatDate(value) {
+  if (value == null) return "";
+  const d = value instanceof Date ? value : new Date(value);
+  if (isNaN(d.getTime())) return String(value);
+  return d.toLocaleDateString("fr-FR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+}
+
+const VERT_DARK  = rgb(16 / 255, 48 / 255, 53 / 255);
 const BLUE_LIGHT = rgb(152 / 255, 234 / 255, 243 / 255); 
 const WHITE      = rgb(1, 1, 1);                      
 const GRAY_TEXT  = rgb(0.42, 0.42, 0.42);              
@@ -75,7 +86,7 @@ export async function generatePDF(ticketInfo, qrBase64) {
   const row2Y = height - 255;
 
   const row1 = [
-    { label: "DATE",      value: date,                   x: 28  },
+    { label: "DATE",      value: formatDate(date),       x: 28  },
     { label: "DEPART",    value: time,                   x: 160 },
     { label: "PASSAGERS", value: `${passengers}`,        x: 292 },
     { label: "CLASSE",    value: "2eme classe",          x: 424 },
@@ -88,7 +99,7 @@ export async function generatePDF(ticketInfo, qrBase64) {
   for (const { label, value, x, accent } of [...row1, ...row2]) {
     const y = row1.find(f => f.x === x && f.label === label) ? row1Y : row2Y;
     page.drawText(label, { x, y: y + 16, size: 8,  font: fontReg,  color: GRAY_TEXT });
-    page.drawText(value, { x, y,         size: 12, font: fontBold, color: accent ? VERT_DARK : BLACK });
+    page.drawText(String(value ?? ""), { x, y, size: 12, font: fontBold, color: accent ? VERT_DARK : BLACK });
   }
 
   // QR Code 
