@@ -236,10 +236,6 @@ export default function SearchForm() {
 
   return (
     <section className="px-4 py-8 lg:py-16">
-      <h1 className="text-4xl lg:text-5xl font-bold text-center mb-10 text-primary">
-        Envie de voyager ?
-      </h1>
-
       {!isMobile && !backgroundDisabled && (
         <BlurBackground closeFocus={closeFocus}/>
       )}

@@ -2,6 +2,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import SearchForm from './components/seachForm/SearchForm.tsx';
+import AISearchInput from './components/aiSearch/AISearchInput';
 import PromotionSlider from './components/PromotionSlider';
 import ImagesSwiper from '../../components/AdditionalsComponents/swipeImges';
 import Plane1 from '../../assets/Plane.png';
@@ -54,14 +55,25 @@ export default function HomePage() {
     <div className="min-h-screen  w-full ">
       
       <motion.section
-        className="lg:py-20 "
+        className="lg:py-20"
         variants={sectionVariants}
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.25 }}
       >
+        <h1 className="text-4xl lg:text-5xl font-bold text-center mb-6 text-primary px-4">
+          Envie de voyager ?
+        </h1>
+        <AISearchInput />
+
+        <div className="flex items-center gap-4 max-w-3xl mx-auto px-4 mb-6">
+          <div className="flex-1 h-px bg-white/15" />
+          <span className="text-xs uppercase tracking-wider text-white/50">ou</span>
+          <div className="flex-1 h-px bg-white/15" />
+        </div>
+
         <SearchForm />
-              </motion.section>
+      </motion.section>
      
 
       {/* Flight Section */}
