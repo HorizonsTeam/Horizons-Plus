@@ -46,6 +46,7 @@ export default function Resultats() {
     const toLon = searchParams.get("toLon") || '';
     const fromSource = searchParams.get("fromSource") || '';
     const toSource = searchParams.get("toSource") || '';
+    const criteria = searchParams.get("criteria") || '';
 
     const [departureDate, setDepartureDate] = useState<string>(
         searchParams.get("departureDate") || new Date().toISOString().split('T')[0]
@@ -189,9 +190,13 @@ export default function Resultats() {
         timeArrivalOption: string;
     };
 
+    const initialPriceOption =
+        criteria === "price_min" ? "Prix croissant" :
+        criteria === "price_max" ? "Prix décroissant" : "";
+
     const [filters, setFilters] = useState<Filters>({
         stopType: "Tout type",
-        priceOption: "",
+        priceOption: initialPriceOption,
         timeDeparturOption: "",
         timeArrivalOption: "",
     });
