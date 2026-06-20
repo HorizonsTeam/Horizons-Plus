@@ -20,6 +20,7 @@ import { authMiddleware } from "./src/middlewares/authMiddleware.js";
 
 // Resevations
 import ticketRoutes from "./src/routes/ticketRoutes.js";
+import aiSearchRoutes from "./src/routes/aiSearch.js";
 
 const app = express();
 const PORT = Number(process.env.PORT || 3005);
@@ -130,6 +131,9 @@ app.use('/api/upload', authMiddleware, uploadRoutes);
 
 // Resevations
 app.use("/api", ticketRoutes);
+
+// Feat : Recherche IA en langage naturel
+app.use("/api", aiSearchRoutes);
 
 // Fichiers 
 app.use('/public', express.static('public'));
