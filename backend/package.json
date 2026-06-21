@@ -9,7 +9,10 @@
     "dev": "npm run build && nodemon server.js",
     "start": "node server.js",
     "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate dev -n init_auth"
+    "prisma:migrate": "prisma migrate dev -n init_auth",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
   },
   "keywords": [],
   "author": "",
@@ -45,10 +48,15 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@babel/core": "^8.0.1",
+    "@babel/preset-env": "^8.0.2",
     "@types/nodemailer": "^7.0.3",
     "@types/pg": "^8.20.0",
-    "dotenv": "^17.2.3",
+    "babel-jest": "^30.4.1",
+    "dotenv": "^17.4.2",
+    "jest": "^30.4.2",
     "prisma": "^7.7.0",
+    "supertest": "^7.2.2",
     "typescript": "^5.9.3"
   }
 }
