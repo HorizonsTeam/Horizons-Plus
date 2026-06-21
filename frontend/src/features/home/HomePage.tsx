@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import SearchForm from './components/seachForm/SearchForm.tsx';
 import AISearchInput from './components/aiSearch/AISearchInput';
 import PromotionSlider from './components/PromotionSlider';
+import EvenementSlider from './components/seachForm/EvenementsSlider.tsx';
 import ImagesSwiper from '../../components/AdditionalsComponents/swipeImges';
 import Plane1 from '../../assets/Plane.png';
 import Plane2 from '../../assets/Plane2.jpg';
@@ -386,49 +387,7 @@ export default function HomePage() {
         whileInView="visible"
         viewport={{ once: true, amount: 0.25 }}
       >
-                <div className="max-w-md mx-auto lg:max-w-7xl">
-          <h2 className="text-2xl lg:text-3xl font-bold mb-6 lg:mb-8 text-center">
-            Réservez votre prochain évènement
-          </h2>
-
-          <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-6 lg:space-y-0">
-            {/* Event 1 */}
-            <div className="relative rounded-xl overflow-hidden h-56 lg:h-64 group cursor-pointer">
-              <img
-                src="https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?w=800&h=400&fit=crop"
-                alt="Concert"
-                width={800}
-                height={400}
-                loading="lazy"
-                decoding="async"
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-dark via-dark/50 to-transparent"></div>
-              <div className="absolute bottom-4 left-4 right-4">
-                <p className="text-xs text-primary mb-1 uppercase">Music</p>
-                <h3 className="text-lg font-bold">Jazz en extérieur à Bordeaux</h3>
-              </div>
-            </div>
-
-            {/* Event 2 */}
-            <div className="relative rounded-xl overflow-hidden h-56 lg:h-64 group cursor-pointer">
-              <img
-                src="https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=800&h=400&fit=crop"
-                alt="Sport"
-                width={800}
-                height={400}
-                loading="lazy"
-                decoding="async"
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-dark via-dark/50 to-transparent"></div>
-              <div className="absolute bottom-4 left-4 right-4">
-                <p className="text-xs text-primary mb-1 uppercase">Sport</p>
-                <h3 className="text-lg font-bold">Racing - Notre-Dame-des-dunes</h3>
-              </div>
-            </div>
-          </div>
-        </div>
+      <EvenementSlider />        
       </motion.section>
     </div>
   );

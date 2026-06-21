@@ -46,7 +46,8 @@ const destinations = [
       { icon: "⛵", text: "Excursions en yacht et visites culturelles" }
     ],
     price: "2899 €"
-  }
+  },
+
 ];
 
 export default function PromotionSlider() {
