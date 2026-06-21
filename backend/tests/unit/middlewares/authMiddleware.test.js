@@ -1,10 +1,8 @@
-// tests/unit/middlewares/authMiddleware.test.js
-
 import { authMiddleware } from "../../../src/middlewares/authMiddleware.js";
 
 // Mock des dépendances externes
 jest.mock("better-auth/node", () => ({
-  fromNodeHeaders: jest.fn((headers) => headers), // retourne les headers tels quels
+  fromNodeHeaders: jest.fn((headers) => headers),
 }));
 
 jest.mock("../../../dist/auth.js", () => ({
@@ -23,7 +21,7 @@ import { auth } from "../../../dist/auth.js";
 const mockReq = (headers = {}) => ({ headers });
 const mockRes = () => {
   const res = {};
-  res.status = jest.fn().mockReturnValue(res); // chaînable : res.status(401).json(...)
+  res.status = jest.fn().mockReturnValue(res);
   res.json = jest.fn().mockReturnValue(res);
   return res;
 };
@@ -31,7 +29,7 @@ const mockNext = () => jest.fn();
 
 describe("authMiddleware", () => {
   afterEach(() => {
-    jest.clearAllMocks(); // reset les mocks entre chaque test
+    jest.clearAllMocks();
   });
 
   it("appelle next() et attache userId si la session est valide", async () => {
